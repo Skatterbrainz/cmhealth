@@ -1,0 +1,10 @@
+﻿{
+    "SQLSERVERAGENT": {
+        "Reference": "https:////docs.microsoft.com//en-us//sql//database-engine//configure-windows//configure-windows-service-accounts-and-permissions?view=sql-server-ver15#Serv_Perm",
+        "Privileges": "SeServiceLogonRight,SeAssignPrimaryTokenPrivilege,SeChangeNotifyPrivilege,SeIncreaseQuotaPrivilege"
+    },
+    "MSSQLSERVER": {
+        "Reference": "https:////docs.microsoft.com//en-us//sql//database-engine//configure-windows//configure-windows-service-accounts-and-permissions?view=sql-server-ver15#Serv_Perm",
+        "Privileges": "SeServiceLogonRight,SeAssignPrimaryTokenPrivilege,SeChangeNotifyPrivilege,SeIncreaseQuotaPrivilege"
+    }
+}
