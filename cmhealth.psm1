@@ -1,11 +1,11 @@
 function Get-SqlIndexFragmentation {
-    [CmdletBinding()]
-    param (
-        [parameter(Mandatory)][string]$SqlInstance,
+	[CmdletBinding()]
+	param (
+		[parameter(Mandatory)][string]$SqlInstance,
 		[parameter(Mandatory)][string]$Database,
 		[parameter()][int] $MinValue = 50
-    )
-    $query = "SELECT dbschemas.[name] as 'Schema',
+	)
+	$query = "SELECT dbschemas.[name] as 'Schema',
 dbtables.[name] as 'Table',
 dbindexes.[name] as 'Index',
 indexstats.avg_fragmentation_in_percent,
@@ -18,7 +18,7 @@ AND indexstats.index_id = dbindexes.index_id
 WHERE indexstats.database_id = DB_ID() and indexstats.avg_fragmentation_in_percent > $MinValue
 ORDER BY indexstats.avg_fragmentation_in_percent desc"
 
-    $result = (Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query $query | ForEach-Object {
+	$result = (Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query $query | ForEach-Object {
 			[pscustomobject]@{
 				Schema = $_.Schema
 				Table  = $_.Table 
@@ -49,6 +49,50 @@ function Get-CmClientCoverage {
 	$query = "select distinct COALESCE(Client_Version0,'NONE'), count(*) as Qty from v_r_system group by Client_Version0"
 	, @(Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -query $query)
 }
+
+function Get-ServiceAccountPrivileges {
+	[CmdletBinding()]
+	param (
+		[parameter(Mandatory)][string] $ComputerName
+	)
+	$privs = ('SeServiceLogonRight','SeAssignPrimaryTokenPrivilege','SeChangeNotifyPrivilege','SeIncreaseQuotaPrivilege')
+	try {
+		$mpath = Split-Path (Get-Module CMhealth).Path -Parent
+		$jfile = "$mpath\services.json"
+		if (!(Test-Path $jfile)) { throw "file not found: $jfile" }
+		Write-Verbose "loading configuration file: $jfile"
+		$jdata = Get-Content $jfile | ConvertFrom-Json
+		$jdata.Services | ForEach-Object {
+			$svcName = $_.Name 
+			$svcRef  = $_.Reference 
+			$privs   = $_.Privileges
+			Write-Verbose "service name: $svcName"
+			try {
+				$svcAcct = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" | Select-Object -ExpandProperty StartName
+				Write-Host "checking service account: $svcAcct"
+				$cprivs = Get-CPrivilege -Identity $svcAcct
+				$privs -split ',' | Foreach-Object { 
+					$priv = $_
+					if ($priv -notin $cprivs) { $res = 'FAIL' } else { $res = 'PASS' } 
+					[pscustomobject]@{
+						ServiceName = $svcName
+						ServiceUser = $svcAcct
+						Reference   = $svcRef
+						Privilege   = $priv
+						Compliant   = $res
+					}
+				}
+			}
+			catch {
+				Write-Error $_.Exception.Message
+			}
+		}
+	}
+	catch {
+		Write-Error $_.Exception.Message
+	}
+}
+
 function Get-CmHealth {
 	[CmdletBinding()]
 	param (
