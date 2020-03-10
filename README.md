@@ -71,8 +71,26 @@ CM  | Site install account not a limited rights user |
 CM  | Network access account not a limited rights user |
 CM  | domain join account in a TS that is a domain admin |
 
-### Host Operating System
+determine if WSUS maintenance including product variant declines are needed.
+#### Configuration Manager Software Update Point
+Comp | Description | Function
+--|--|--
+CM SUP  | Check if common categories and products are enabled |
+CM SUP  | Sum of required plus sum of installed Windows 10 32-bit updates.  If = 0 recommend declining all Windows 10 32-bit updates in WSUS  | 
+CM SUP  | Sum of required plus sum of installed Windows 8.1 32-bit updates.  If = 0 recommend declining all Windows 8.1 32-bit updates in WSUS  | 
+CM SUP  | Sum of required plus sum of installed Windows 8.1 64-bit updates.  If = 0 recommend declining all Windows 8.1 64-bit updates in WSUS  | 
+CM SUP  | Sum of required plus sum of installed Windows 8 32-bit updates.  If = 0 recommend declining all Windows 8 32-bit updates in WSUS  | 
+CM SUP  | Sum of required plus sum of installed Windows 8 64-bit updates.  If = 0 recommend declining all Windows 8 64-bit updates in WSUS  | 
+CM SUP  | Sum of required plus sum of installed Windows 7 32-bit updates.  If = 0 recommend declining all Windows 7 32-bit updates in WSUS  | 
+CM SUP  | Sum of required plus sum of installed Windows 7 64-bit updates.  If = 0 recommend declining all Windows 7 64-bit updates in WSUS  | 
+CM SUP  | Sum of Windows 8.1 operating systems.  If = 0 recommend removing Windows 8.1 from SUP products  | 
+CM SUP  | Sum of Windows 8 operating systems.  If = 0 recommend removing Windows 8 from SUP products  | 
+CM SUP  | Sum of Windows 7 operating systems.  If = 0 recommend removing Windows 7 from SUP products  | 
+CM SUP  | Sum of Windows Vista operating systems.  If = 0 recommend removing Windows Vista from SUP products  | 
+CM SUP  | Sum of Windows XP operating systems.  If = 0 recommend removing Windows XP from SUP products  | 
+CM SUP  | Sum of Windows 2000 operating systems.  If = 0 recommend removing Windows 2000 from SUP products  | 
 
+### Primary Site Server host Operating System
 Comp | Description | Function
 --|--|--
 OS  | Missing Windows Updates | Test-WindowsUpdates.ps1
@@ -80,3 +98,31 @@ OS  | NO_SMS_ON_DRIVE.sms on all drives except (list of drives) | Test-NoSmsOnDr
 OS  | Free disk space on all drives without NO_SMS_ON_DRIVE.sms > 10 GB | Test-DiskSpace.ps1
 OS  | Could check disk I/O for minimum thresholds |
 OS  | Check security roles to report extraneous members |
+
+### Remote SQL Site Server
+Comp | Description | Function
+--|--|--
+OS  | Missing Windows Updates | Test-WindowsUpdates.ps1
+OS  | NO_SMS_ON_DRIVE.sms on all drives except (list of drives) | Test-NoSmsOnDriveFile.ps1
+OS  | Free disk space on all drives without NO_SMS_ON_DRIVE.sms > 10 GB | Test-DiskSpace.ps1
+OS  | Could check disk I/O for minimum thresholds |
+OS  | Check security roles to report extraneous members |
+
+### Remote Distribution Point Server
+Comp | Description | Function
+--|--|--
+OS  | Missing Windows Updates | Test-WindowsUpdates.ps1
+OS  | NO_SMS_ON_DRIVE.sms on all drives except (list of drives) | Test-NoSmsOnDriveFile.ps1
+OS  | Free disk space on all drives without NO_SMS_ON_DRIVE.sms > 10 GB | Test-DiskSpace.ps1
+
+### Remote Management Point Server
+Comp | Description | Function
+--|--|--
+OS  | Missing Windows Updates | Test-WindowsUpdates.ps1
+OS  | Free disk space on all drives without NO_SMS_ON_DRIVE.sms > 10 GB | Test-DiskSpace.ps1
+
+### Remote Software Update Point Server
+Comp | Description | Function
+--|--|--
+OS  | Missing Windows Updates | Test-WindowsUpdates.ps1
+OS  | Free disk space on all drives without NO_SMS_ON_DRIVE.sms > 10 GB | Test-DiskSpace.ps1
