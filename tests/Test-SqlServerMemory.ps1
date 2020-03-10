@@ -1,15 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $True)]
 param (
 	[parameter(Mandatory)][ValidateNotNullOrEmpty()][hashtable] $ScriptParams
-
-	[parameter(Mandatory = $False, HelpMessage = "SQL Instance Name")]
-	[ValidateNotNullOrEmpty()]
-	[string] $SqlServer = $(@($env:COMPUTERNAME, $env:USERDNSDOMAIN) -join '.'),
-	[parameter(Mandatory = $False, HelpMessage = "Percent of Total PhysicalMemory")]
-	[ValidateRange(80, 90)]
-	[int32] $MaxAllocationPercent = 80,
-	[parameter(Mandatory = $False, HelpMessage = "Apply remediation if needed")]
-	[switch] $Remediate
 )
 $UnltdMemory = 2147483647
 try {
