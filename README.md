@@ -76,19 +76,19 @@ determine if WSUS maintenance including product variant declines are needed.
 Comp | Description | Function
 --|--|--
 CM SUP  | Check if common categories and products are enabled |
-CM SUP  | Sum of required plus sum of installed Windows 10 32-bit updates.  If = 0 recommend declining all Windows 10 32-bit updates in WSUS  | 
-CM SUP  | Sum of required plus sum of installed Windows 8.1 32-bit updates.  If = 0 recommend declining all Windows 8.1 32-bit updates in WSUS  | 
-CM SUP  | Sum of required plus sum of installed Windows 8.1 64-bit updates.  If = 0 recommend declining all Windows 8.1 64-bit updates in WSUS  | 
-CM SUP  | Sum of required plus sum of installed Windows 8 32-bit updates.  If = 0 recommend declining all Windows 8 32-bit updates in WSUS  | 
-CM SUP  | Sum of required plus sum of installed Windows 8 64-bit updates.  If = 0 recommend declining all Windows 8 64-bit updates in WSUS  | 
-CM SUP  | Sum of required plus sum of installed Windows 7 32-bit updates.  If = 0 recommend declining all Windows 7 32-bit updates in WSUS  | 
-CM SUP  | Sum of required plus sum of installed Windows 7 64-bit updates.  If = 0 recommend declining all Windows 7 64-bit updates in WSUS  | 
 CM SUP  | Sum of Windows 8.1 operating systems.  If = 0 recommend removing Windows 8.1 from SUP products  | 
 CM SUP  | Sum of Windows 8 operating systems.  If = 0 recommend removing Windows 8 from SUP products  | 
 CM SUP  | Sum of Windows 7 operating systems.  If = 0 recommend removing Windows 7 from SUP products  | 
 CM SUP  | Sum of Windows Vista operating systems.  If = 0 recommend removing Windows Vista from SUP products  | 
 CM SUP  | Sum of Windows XP operating systems.  If = 0 recommend removing Windows XP from SUP products  | 
 CM SUP  | Sum of Windows 2000 operating systems.  If = 0 recommend removing Windows 2000 from SUP products  | 
+CM SUP  | Sum of required and installed updates for each Windows version and architecture (32-bit, 64-bit, ARM64, Itanium).  If = 0 recommend declining all related updates in WSUS  | 
+CM SUP  | Sum of Office 2003 installs.  If = 0 recommend removing from SUP products  | 
+CM SUP  | Sum of Office 2007 installs.  If = 0 recommend removing from SUP products  | 
+CM SUP  | Sum of Office 2010 installs.  If = 0 recommend removing from SUP products  | 
+CM SUP  | Sum of Office 2013 installs.  If = 0 recommend removing from SUP products  | 
+CM SUP  | Sum of Office 2016 installs.  If = 0 recommend removing from SUP products  | 
+CM SUP  | Sum of required and installed updates for each Office version and architecture (32-bit, 64-bit).  If = 0 recommend declining all related updates in WSUS  | 
 
 ### Primary Site Server host Operating System
 Comp | Description | Function
