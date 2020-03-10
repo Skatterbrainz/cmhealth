@@ -1,6 +1,8 @@
 # cmhealth
 
-## Checklist
+## Checklists
+
+### SQL Server Instance
 
 Comp | Description | Function
 --|--|--
@@ -27,34 +29,37 @@ SQL | SQL TRUSTWORTHY database property enabled |
 SQL | SQL Server service account the local SYSTEM or a low rights domain user registered SPN | Test-ServiceAccounts.ps1, TestSqlServiceSPN.ps1
 SQL | SQL Instance admins (sysadmins) include the Primary Site server's computer account | 
 SQL | At least 10GB free on the SQL CM db's disk drive(s) | Test-DiskSpace.ps1
-SQL | is SQL Instant File Initialization enabled for all databases | 
+SQL | SQL Instant File Initialization enabled for all databases | 
 SQL | Latest supported SP installed | Test-SqlUpdates.ps1
 SQL | Latest CU installed | Test-SqlUpdats.ps1
 SQL | Service Accounts have correct privilegs | Test-ServiceAccounts.ps1
 SQL | Check SQL servers' local admin group for minimal membership |
-SQL | Support CM db with custom naming schema (not just CM_<sitecode>) |
+SQL | Support CM DB with custom naming schema (not just CM_<sitecode>) | ??
+SQL | Failed SQL Agent Jobs in last 24 hours | Test-SqlAgentJobStatus.ps1
+
+### Configuration Manager
 
 Comp | Description | Function
 --|--|--
-CM  | check for duplicate Boundaries and Boundaries not in a Group |
-CM  | check for content distributed to individual DPs... all should be distributed to a DP group |
-CM  | drivers not in a Driver Package (and not in a WinPE folder?) |
+CM  | Check for duplicate Boundaries and Boundaries not in a Group |
+CM  | Check for content distributed to individual DPs... all should be distributed to a DP group |
+CM  | Drivers not in a Driver Package (and not in a WinPE folder?) |
 CM  | More than (X) Microsoft Updates (like 3000) | SUP sync or host OS?
 CM  | More than (X) Microsoft Updates not required or installed (should be declined) | SUP sync or host OS?
 CM  | Site and Component Status stuff |
-CM  | # Collections with incremental updates |
-CM  | time for collections to update < incremental update time... analyzed over last 24 hours or all data in colleval.log |
+CM  | Number of Collections with incremental updates |
+CM  | Time for collections to update < incremental update time... analyzed over last 24 hours or all data in colleval.log |
 CM  | "busy" ConfigMgr logs with increased file size and history |
-CM  | MaxMIFsize for hardware inventory < max of 50 MB |
+CM  | MaxMIFsize for hardware inventory < max of 50 MB | (registry value)
 CM  | Certs expired in last month or expiring in next month |
 CM  | Certs expired in last month or expiring in next month |
 CM  | Collections with no members (? and not flagged that they should have no members) |
 CM  | Collections set to never update |
-CM  | Application totals, active vs retired, active and deployed vs not.  active and not deployed and not referenced by a TS |
+CM  | Application totals, active vs retired, active and deployed vs not-active and not-deployed and not-referenced by a TS |
 CM  | Packages same as Applications |
 CM  | TS not deployed and not a child TS |
 CM  | Drivers not in a driver package and not in a boot image |
-CM  | TS not using a custom boot image |
+CM  | TS not using a custom boot image | (include child TS's??)
 CM  | Customizations made to default boot images |
 CM  | DPs not in a DP group |
 CM  | DPs without Content Validation |
@@ -66,10 +71,12 @@ CM  | Site install account not a limited rights user |
 CM  | Network access account not a limited rights user |
 CM  | domain join account in a TS that is a domain admin |
 
+### Host Operating System
+
 Comp | Description | Function
 --|--|--
 OS  | Missing Windows Updates | Test-WindowsUpdates.ps1
 OS  | NO_SMS_ON_DRIVE.sms on all drives except (list of drives) | Test-NoSmsOnDriveFile.ps1
-OS  | Free disk space on all drives without NO_SMS_ON_DRIVE.sms > 10 GB |
+OS  | Free disk space on all drives without NO_SMS_ON_DRIVE.sms > 10 GB | Test-DiskSpace.ps1
 OS  | Could check disk I/O for minimum thresholds |
-OS  | check security roles to report extraneous members |
+OS  | Check security roles to report extraneous members |
