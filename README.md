@@ -27,14 +27,14 @@ SQL | SQL Server common language run time (CLR) enabled |
 SQL | SQL Server Service Broker enabled | Test-ServiceAccounts.ps1
 SQL | SQL TRUSTWORTHY database property enabled | 
 SQL | SQL Server service account the local SYSTEM or a low rights domain user registered SPN | Test-ServiceAccounts.ps1, TestSqlServiceSPN.ps1
-SQL | SQL Instance admins (sysadmins) include the Primary Site server's computer account | 
+SQL | SQL Instance admins (sysadmins) include the Primary Site server's computer account | Test-SqlRoleMembers.ps1
 SQL | At least 10GB free on the SQL CM db's disk drive(s) | Test-DiskSpace.ps1
 SQL | SQL Instant File Initialization enabled for all databases | 
 SQL | Latest supported SP installed | Test-SqlUpdates.ps1
-SQL | Latest CU installed | Test-SqlUpdats.ps1
+SQL | Latest CU installed | Test-SqlUpdates.ps1
 SQL | Service Accounts have correct privilegs | Test-ServiceAccounts.ps1
-SQL | Check SQL servers' local admin group for minimal membership |
-SQL | Support CM DB with custom naming schema (not just CM_<sitecode>) | ??
+SQL | Check SQL servers' local admin group for minimal membership | need to clarify
+SQL | Support CM DB with custom naming schema (not just CM_<sitecode>) | need to clarify
 SQL | Failed SQL Agent Jobs in last 24 hours | Test-SqlAgentJobStatus.ps1
 SQL | Product Group guidance whitepaper from 2018 Oct https://gallery.technet.microsoft.com/Configuration-Manager-ba55428e | To Review
 SQL | Microsoft PFE guidance whitepaper from 2020 Feb https://gallery.technet.microsoft.com/SQL-recommendations-for-ead4747f | To Review
