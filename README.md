@@ -43,8 +43,9 @@ SQL | Microsoft PFE guidance whitepaper from 2020 Feb https://gallery.technet.mi
 
 Comp | Description | Function
 --|--|--
-CM  | Check for duplicate Boundaries and Boundaries not in a Group |
-CM  | Check for content distributed to individual DPs... all should be distributed to a DP group |
+CM  | Check for duplicate Boundaries | Test-CmBoundaries.ps1 -Test DuplicateBoundaries
+CM  | Check for Boundaries not in a Group | Test-CmBoundaries.ps1 -Test Orphaned
+CM  | Check for content distributed to individual DPs... all should be distributed to a DP group | 
 CM  | Drivers not in a Driver Package (and not in a WinPE folder?) |
 CM  | More than (X) Microsoft Updates (like 3000) | SUP sync or host OS?
 CM  | More than (X) Microsoft Updates not required or installed (should be declined) | SUP sync or host OS?
