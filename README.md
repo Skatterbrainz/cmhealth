@@ -36,6 +36,8 @@ SQL | Service Accounts have correct privilegs | Test-ServiceAccounts.ps1
 SQL | Check SQL servers' local admin group for minimal membership |
 SQL | Support CM DB with custom naming schema (not just CM_<sitecode>) | ??
 SQL | Failed SQL Agent Jobs in last 24 hours | Test-SqlAgentJobStatus.ps1
+SQL | Product Group guidance whitepaper from 2018 Oct https://gallery.technet.microsoft.com/Configuration-Manager-ba55428e | To Review
+SQL | Microsoft PFE guidance whitepaper from 2020 Feb https://gallery.technet.microsoft.com/SQL-recommendations-for-ead4747f | To Review
 
 ### Configuration Manager
 
