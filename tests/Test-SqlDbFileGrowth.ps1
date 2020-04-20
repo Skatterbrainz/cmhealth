@@ -8,6 +8,7 @@ param (
 )
 Write-Verbose "test: sql db file autogrowth"
 Write-Verbose "database: $($ScriptParams.Database)"
+if ($null -eq )
 try {
 	$dbfiles = Get-DbaDbFile -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database
 	switch ($ScriptParams.FileType) {
