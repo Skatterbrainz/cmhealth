@@ -11,7 +11,11 @@ function Test-InstalledComponents {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$AppListFile = ".\applist.csv"
+		$msg  = "All required components are installed"
+		$mpath = Split-Path (Get-Module "cmhealth" | Select-Object -ExpandProperty Path)
+		if ([string]::IsNullOrEmpty($mpath)) {
+			$AppListFile = "$($mpath)\tests\applist.csv"
+		}
 		if (!(Test-Path $AppListFile)) {
 			Write-Warning "file not found: $AppListFile"
 			break

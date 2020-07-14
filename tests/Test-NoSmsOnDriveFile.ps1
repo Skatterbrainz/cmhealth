@@ -8,7 +8,9 @@ function Test-NoSmsOnDriveFile {
 		[parameter()][bool] $Remediate = $False
 	)
 	try {
-		$tempdata = $null # for detailed test output to return if needed
+		$stat = "PASS"
+		$msg  = "All non-CM disks are excluded"
+		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ComputerName
 		$disks | ForEach-Object {
 			Write-Verbose "checking disk $($_.DeviceID) to see if distribution point shares are found"
