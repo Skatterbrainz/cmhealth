@@ -6,11 +6,13 @@ function Test-SqlIndexFragmentation {
 		[parameter()][string] $Description = "Validate SQL database index fragmentation status",
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][string] $Database = "",
+		[parameter()][int] $MinValue = 50
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
+		$msg = "No indexes were fragmented more than $MinValue percent"
 		$query = "SELECT dbschemas.[name] as 'Schema',
 dbtables.[name] as 'Table',
 dbindexes.[name] as 'Index',
@@ -21,10 +23,10 @@ INNER JOIN sys.tables dbtables on dbtables.[object_id] = indexstats.[object_id]
 INNER JOIN sys.schemas dbschemas on dbtables.[schema_id] = dbschemas.[schema_id]
 INNER JOIN sys.indexes AS dbindexes ON dbindexes.[object_id] = indexstats.[object_id]
 AND indexstats.index_id = dbindexes.index_id
-WHERE indexstats.database_id = DB_ID() and indexstats.avg_fragmentation_in_percent > $($ScriptParams.MinValue)
+WHERE indexstats.database_id = DB_ID() and indexstats.avg_fragmentation_in_percent > $($MinValue)
 ORDER BY indexstats.avg_fragmentation_in_percent desc"
 	
-		$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query | ForEach-Object {
+		$res = (Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query $query | ForEach-Object {
 				[pscustomobject]@{
 					Schema = $_.Schema
 					Table  = $_.Table 
@@ -33,8 +35,10 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 					PageCount  = $_.PageCount
 				}
 			})
-		if ($res.Count -gt 1) { $stat = 'FAIL' }
-		
+		if ($res.Count -gt 1) { 
+			$stat = 'FAIL' 
+			$msg = "$($res.Count) indexes were fragmented more than $MinValue percent"
+		}
 	}
 	catch {
 		$stat = 'ERROR'
