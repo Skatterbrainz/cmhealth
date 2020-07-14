@@ -1,5 +1,14 @@
 # cmhealth
 
+## Example
+
+```powershell
+$result = Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01"
+
+$result | Select-Object TestName,Status,Message
+
+```
+
 ## Checklists
 
 ### SQL Server Instance
