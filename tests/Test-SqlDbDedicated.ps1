@@ -2,23 +2,40 @@
 function Test-SqlDbDedicated {
 	[CmdletBinding()]
 	param (
-		[parameter(Mandatory)][ValidateNotNull()][hashtable] $ScriptParams
+		[parameter()][string] $TestName = "Dedicated SQL Instance",
+		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $Description = "Verify SQL Instance is dedicated to ConfigMgr site",
+		[parameter()][bool] $Remediate = $False,
+		[parameter()][string] $SqlInstance = "localhost"
 	)
 	try {
-		$result = 'PASS'
+		$stat = 'PASS'
 		$supported = ('master','tempdb','msdb','model','SUSDB','ReportServer','ReportServerTempDB')
-		$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance | Select-Object -ExpandProperty Name
+		$dbnames = Get-DbaDatabase -SqlInstance $SqlInstance | Select-Object -ExpandProperty Name
 		$dbnames | ForEach-Object {
 			if (-not (($_ -match 'CM_') -or ($_ -in $supported))) {
-				$result = 'FAIL'
+				$stat = 'FAIL'
+				throw "Unsupported database: $($_)"
 			}
 		}
+		$msg = "All databases are supported for ConfigMgr licensing"
 	}
 	catch {
-		Write-Error $_.Exception.Message 
-		$result = 'ERROR'
+		$msg = $_.Exception.Message -join ';'
+		if ($msg -match 'Unsupported database') {
+			$stat = "FAIL"
+		} else {
+			$stat = "ERROR"
+		}
 	}
 	finally {
-		$result
+		Write-Output $([pscustomobject]@{
+			TestName    = $TestName
+			TestGroup   = $TestGroup
+			TestData    = $tempdata
+			Description = $Description
+			Status      = $stat 
+			Message     = $msg
+		})
 	}
 }
