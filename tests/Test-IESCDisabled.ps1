@@ -1,12 +1,3 @@
-<#
-.SYNOPSIS
-	Verify Internet Explorer Secure Configuration is Disabled
-.DESCRIPTION
-	Verify Internet Explorer Secure Configuration is Disabled
-.PARAMETER Remediate
-	Apply remediation changes if needed
-#>
-
 function Test-IESCDisabled {
 	[CmdletBinding()]
 	param (

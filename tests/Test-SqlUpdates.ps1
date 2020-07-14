@@ -1,17 +1,31 @@
 function Test-SqlUpdates {
 	[CmdletBinding()]
 	param (
-		[parameter(Mandatory)][ValidateNotNullOrEmpty()][hashtable] $ScriptParams
+		[parameter()][string] $TestName = "SQL Server Updates",
+		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $Description = "Verify SQL Updates and Service Packs",
+		[parameter()][bool] $Remediate = $False,
+		[parameter()][string] $SqlInstance = "localhost",
+		[parameter()][string] $Database = ""
 	)
-	Write-Verbose "test: sql instance updates"
 	try {
+		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
+		$stat = "PASS"
 		$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance
-		if ($res.Compliant -eq $True) { $result = 'PASS' } else { $result = 'FAIL' }
+		if ($res.Compliant -ne $True) { $stat = 'FAIL' }
 	}
 	catch {
-		$result = 'ERROR'
+		$stat = 'ERROR'
+		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$result 
+		Write-Output $([pscustomobject]@{
+			TestName    = $TestName
+			TestGroup   = $TestGroup
+			TestData    = $tempdata
+			Description = $Description
+			Status      = $stat 
+			Message     = $msg
+		})
 	}
 }

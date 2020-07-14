@@ -12,6 +12,7 @@ function Test-CmHealth {
 		Test-DiskSpace -ComputerName $SiteServer
 		Test-DriveBlockSize -ComputerName $SiteServer
 		Test-IESCDisabled -ComputerName $SiteServer
+		Test-InstalledComponents -ComputerName $SiteServer
 		Test-NoSmsOnDriveFile -ComputerName $SiteServer
 		Test-ServiceAccounts -ComputerName $SiteServer
 		Test-IISLogFiles -ComputerName $SiteServer
@@ -20,7 +21,8 @@ function Test-CmHealth {
 
 		Test-SqlServerMemory -SqlInstance $SqlInstance
 		Test-SqlDbDedicated -SqlInstance $SqlInstance
-		Test-SqlServiceSPN -SqlInstance $SqlInstance
+		Test-SqlServicesSPN -SqlInstance $SqlInstance
+		Test-DbRecoveryModel -SqlInstance $SqlInstance -Database $Database
 		Test-SqlDbFileGrowth -SqlInstance $SqlInstance -Database $Database
 		Test-SqlIndexFragmentation -SqlInstance $SqlInstance
 		Test-SqlAgentJobStatus -SqlInstance $SqlInstance

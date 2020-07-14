@@ -4,7 +4,7 @@ function Test-AdSysMgtContainer {
 		[parameter()][string] $TestName = "AD Container",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify System Management container has been created with delegated permissions",
-		[parameter()][string] $SiteServer = "",
+		[parameter()][string] $ComputerName = "localhost",
 		[parameter()][switch] $Remediate
 	)
 	try {
@@ -24,7 +24,7 @@ function Test-AdSysMgtContainer {
 			$msg  = "System Management container verified"
 		} else {
 			if ($Remediate -eq $True) {
-				if ([string]::IsNullOrEmpty($SiteServer)) {
+				if ([string]::IsNullOrEmpty($ComputerName)) {
 					throw "Remediation requires the Site Server hostname to be provided (stop)"
 				}
 				$DomainDn = $([adsi]"").distinguishedName
@@ -37,7 +37,7 @@ function Test-AdSysMgtContainer {
 				Write-Verbose "assigning permissions to container"
 				$path = "AD:\CN=System Management,$SystemDn"
 				$acl = Get-Acl -Path $path
-				$ace = New-Object Security.AccessControl.ActiveDirectoryAccessRule("$ShortDn\$SiteServer",'FullControl')
+				$ace = New-Object Security.AccessControl.ActiveDirectoryAccessRule("$ShortDn\$ComputerName",'FullControl')
 				$acl.AddAccessRule($ace)
 				Set-Acl -Path $path -AclObject $acl
 				$stat = "REMEDIATED"

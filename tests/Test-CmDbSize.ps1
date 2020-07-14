@@ -1,26 +1,43 @@
 function Test-CmDbSize {
 	[CmdletBinding()]
 	param (
-		[parameter(Mandatory)][ValidateNotNullOrEmpty()][hashtable] $ScriptParams
+		[parameter()][string] $TestName = "Check CM Site DB Size",
+		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $Description = "Validate CM site database file size",
+		[parameter()][bool] $Remediate = $False,
+		[parameter()][string] $SqlInstance = "localhost",
+		[parameter()][string] $Database = ""
 	)
-	Write-Verbose "test: database file size utilization"
-	$maxUtilization = 95
 	try {
-		$devices = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query "select distinct ResourceID,Name0 from v_R_System"
+		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
+		$stat = "PASS"
+		$maxUtilization = 95
+		$devices = Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query "select distinct ResourceID,Name0 from v_R_System"
 		Write-Verbose "calculating expected space requirements"
 		$devSizeMB = (($devices.Count * 5MB) + 5GB) / 1MB
 		Write-Verbose "expected space: $devSizeMB MB"
-		$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database).SizeMB
+		$dbSizeMB = (Get-DbaDatabase -SqlInstance $SqlInstance -Database $Database).SizeMB
 		Write-Verbose "actual space: $dbSizeMB MB"
 		$pct = ([math]::Round($devSizeMB / $dbSizeMB, 1)) * 100
 		Write-Verbose "actual utilization: $pct`%"
-		if ($pct -gt $maxUtilization) {$result = 'FAIL'} else {$result = 'PASS'}
+		if ($pct -gt $maxUtilization) {
+			$stat = 'FAIL'
+			$msg  = "Disk space is over allocated"
+		}
+		
 	}
 	catch {
-		$result = 'ERROR'
-		Write-Error $_.Exception.Message
+		$stat = 'ERROR'
+		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$result
+		Write-Output $([pscustomobject]@{
+			TestName    = $TestName
+			TestGroup   = $TestGroup
+			TestData    = $tempdata
+			Description = $Description
+			Status      = $stat 
+			Message     = $msg
+		})
 	}
 }

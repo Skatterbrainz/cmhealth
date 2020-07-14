@@ -14,7 +14,6 @@ function Test-SqlDbDedicated {
 		$dbnames = Get-DbaDatabase -SqlInstance $SqlInstance | Select-Object -ExpandProperty Name
 		$dbnames | ForEach-Object {
 			if (-not (($_ -match 'CM_') -or ($_ -in $supported))) {
-				$stat = 'FAIL'
 				throw "Unsupported database: $($_)"
 			}
 		}

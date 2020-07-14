@@ -1,4 +1,4 @@
-function Test-Example {
+function Test-SqlServerMemory {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "SQL Server Max Memory Allocation",

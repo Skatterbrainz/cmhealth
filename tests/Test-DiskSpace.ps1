@@ -1,18 +1,4 @@
-<#
-.SYNOPSIS
-	Validate Logical Disk Space
-.DESCRIPTION
-	Validate logical disk space usage
-.PARAMETER ComputerName
-	Name of computer or "" for local host
-.PARAMETER Remediate
-	Apply remediation changes if required
-.EXAMPLE
-	Test-LogicalDisks -Remediate
-.NOTES
-#>
-
-function Test-LogicalDisks {
+function Test-DiskSpace {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Logical Disk configurations",

@@ -1,28 +1,9 @@
-<#
-.SYNOPSIS
-	Verify WSUS web.config settings
-.DESCRIPTION
-	Verify WSUS web.config settings are related to number of updates
-.PARAMETER MaxCachedUpdates
-	Maximum number of cached updates (default is 88000)
-	fyi - Built-in default is 22000
-.PARAMETER MaxInstalledPrerequisites
-	Maximum number of installed prerequisites (default is 800)
-	fy - Built-in default is 400
-.PARAMETER ConfigFile
-	Path to WSUS web.config file
-.PARAMETER Remediate
-	Apply remediation changes if needed
-.NOTES
-	1. get number of updates in database
-	2. compare with settings in web.config
-#>
-function Test-Example {
+function Test-WsusWebConfig {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Descriptive Name",
+		[parameter()][string] $TestName = "Check WSUS Web Config File",
 		[parameter()][string] $TestGroup = "configuration",
-		[parameter()][string] $Description = "Description of this test",
+		[parameter()][string] $Description = "Validate WSUS web configuration file parameters",
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $ComputerName = "localhost",
 		[parameter()][int32] $MaxCachedUpdates = 88000,
