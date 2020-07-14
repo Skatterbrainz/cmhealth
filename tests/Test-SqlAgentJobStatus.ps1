@@ -1,9 +1,9 @@
 function Test-SqlAgentJobStatus {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Descriptive Name",
-		[parameter()][string] $TestGroup = "configuration",
-		[parameter()][string] $Description = "Description of this test",
+		[parameter()][string] $TestName = "SQL Agent Jobs",
+		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $Description = "Validate SQL Agent Job status",
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $SqlInstance = "localhost",
 		[parameter()][string] $Database = "",
@@ -12,6 +12,7 @@ function Test-SqlAgentJobStatus {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
+		$msg = "No errors in the past $($HoursBack) hours"
 		$params = @{
 			SqlInstance = $SqlInstance 
 			StartDate   = (Get-Date).AddHours(-$HoursBack)

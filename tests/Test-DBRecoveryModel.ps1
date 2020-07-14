@@ -1,4 +1,4 @@
-function Test-Example {
+function Test-DBRecoveryModel {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Validate DB Recovery Model",
@@ -11,10 +11,11 @@ function Test-Example {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$rm = (Get-DbaDbRecoveryModel -SqlInstance $SqlServer -Database $Database -ErrorAction SilentlyContinue).RecoveryModel
+		$msg  = "Correct configuration"
+		$rm = (Get-DbaDbRecoveryModel -SqlInstance $SqlInstance -Database $Database -ErrorAction SilentlyContinue).RecoveryModel
 		if ($rm -ne 'Simple') {
-			if ($Remediate) {
-				$null = Set-DbaDbRecoveryModel -SqlInstance $SqlServer -Database $Database -RecoveryModel "Simple" -ErrorAction SilentlyContinue
+			if ($Remediate -eq $True) {
+				$null = Set-DbaDbRecoveryModel -SqlInstance $SqlInstance -Database $Database -RecoveryModel "Simple" -ErrorAction SilentlyContinue
 				$stat = "REMEDIATED"
 				$msg  = "Recovery model is now to SIMPLE"
 			} else {

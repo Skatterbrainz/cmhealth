@@ -11,8 +11,13 @@ function Test-SqlUpdates {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance
-		if ($res.Compliant -ne $True) { $stat = 'FAIL' }
+		$res = Test-DbaBuild -Latest -SqlInstance $SqlInstance
+		if ($res.Compliant -ne $True) { 
+			$bcurrent = $res.BuildLevel
+			$btarget  = $res.BuildTarget
+			$stat = 'FAIL' 
+			$msg = "SQL $($res.NameLevel) build level is $($bcurrent), but should be $($btarget): SP: $($res.SPTarget) CU: $($res.CULevel)"
+		}
 	}
 	catch {
 		$stat = 'ERROR'

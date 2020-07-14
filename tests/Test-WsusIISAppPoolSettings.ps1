@@ -4,6 +4,7 @@ function Test-WsusIisAppPoolSettings {
 		[parameter()][string] $TestName = "WSUSAppPoolSettings",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate WSUS IIS application pool settings",
+		[parameter()][string] $ComputerName = "localhost",
 		[parameter()][int32] $QueueLength = 2000,
 		[parameter()][int32] $PrivateMemLimit = 7372800,
 		[parameter()][bool] $Remediate = $False

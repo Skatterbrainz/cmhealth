@@ -11,6 +11,7 @@ function Test-CmBoundaries {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
+		$msg = "No issues found"
 		$query = "select * from vSMS_Boundary"
 		$boundaries = Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query $query
 		$dupes = $boundaries | Group-Object -Property BoundaryType,Value | Select-Object Count,Name

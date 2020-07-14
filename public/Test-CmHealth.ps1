@@ -6,7 +6,7 @@ function Test-CmHealth {
 		[parameter()][ValidateNotNullOrEmpty()][string] $Database = "CM_P01",
 		[parameter()][bool] $Remediate = $False
 	)
-	
+	Test-ServerFeatures -ComputerName $SiteServer 
 	Test-AdSchemaExtension -ComputerName $SiteServer
 	Test-AdSysMgtContainer -ComputerName $SiteServer
 	Test-DiskSpace -ComputerName $SiteServer

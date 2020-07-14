@@ -12,13 +12,14 @@ function Test-SqlServerMemory {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
+		$msg  = "Correct configuration"
 		$unlimited = 2147483647
 		# get total memory allocated to SQL Server in MB
 		$cmax = (Get-DbaMaxMemory -SqlInstance $SqlInstance -EnableException -ErrorAction SilentlyContinue).MaxValue
 		# get total physical memory of host in MB
 		$tmem = (Get-DbaComputerSystem -ComputerName $SqlInstance -EnableException -ErrorAction SilentlyContinue).TotalPhysicalMemory.Megabyte
 		$target = $tmem * ($MaxMemAllocation / 100)
-		$target = [math]::Round($target / 1MB, 0)
+		$target = [math]::Round($target, 0)
 		if ($cmax -eq $unlimited) {
 			$stat = 'FAIL'
 			$msg  = "Current SQL Server max memory is unlimited. Should be $target MB"

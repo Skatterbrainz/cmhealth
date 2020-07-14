@@ -11,7 +11,7 @@ function Test-CmClientCoverage {
 	)
 	try {
 		$tempdata = $null
-		$adcomps = @(Get-ADComputer -Filter * -ErrorAction SilentlyContinue)
+		$adcomps = @(Get-AdsiComputer | Select-Object -ExpandProperty Name)
 		$cmcomps = @(Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query "select distinct name, clientversion, lasthardwarescan from dbo.v_CombinedDeviceResources where (name not like '%unknown%')")
 		if ($adcomps.Count -gt 0 -and $cmcomps.Count -gt 0) {
 			if (($adcomps.Count / $cmcomps.Count) -ge $Threshold) {

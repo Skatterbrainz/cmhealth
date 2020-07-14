@@ -11,11 +11,12 @@ function Test-SqlRoleMembers {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
+		$msg = "No issues found"
 		$rmembers = @(Get-DbaDbRole -SqlInstance $SqlInstance -Database $Database -Role "db_owner" | Get-DbaDbRoleMember )
-		if ($rmembers.Count -ne 1) {
+		if ($rmembers.Count -lt 1) {
 			$stat = 'FAIL'
+			$msg = "Incorrect or unassigned ownership role"
 		}
-		
 	}
 	catch {
 		$stat = 'ERROR'

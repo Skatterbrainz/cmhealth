@@ -26,22 +26,22 @@ function Test-WsusWebConfig {
 
 		if ($c1.value -ne $MaxCachedUpdates) {
 			if ($Remediate -eq $True) {
-				$msg = "Updated $($c1.value) to $MaxCachedUpdates"
+				$msg = "Updated MaxCachedUpdates $($c1.value) to $MaxCachedUpdates"
 				$webconfigraw = $webconfigraw -replace '<add key="maxCachedUpdates" value="22000"/>', '<add key="maxCachedUpdates" value="$MaxCachedUpdates"/>'
 				$stat = "REMEDIATED"
 			} else {
 				$stat = "FAIL"
-				$msg  = "Updated $($c1.value) should be $MaxCachedUpdates"
+				$msg  = "MaxCachedUpdates currently $($c1.value) should be $MaxCachedUpdates"
 			}
 		}
 
 		if ($c2.value -ne $MaxInstalledPrerequisites) {
 			if ($Remediate -eq $True) {
-				$msg = "Updated $($c2.value) to $MaxInstalledPrerequisites"
+				$msg = "Updated MaxInstalledPrerequisites $($c2.value) to $MaxInstalledPrerequisites"
 				$webconfigraw = $webconfigraw -replace '<add key="maxInstalledPrerequisites" value="400"/>', '<add key="maxInstalledPrerequisites" value="$MaxInstalledPrerequisites"/>'
 			} else {
 				$stat = "FAIL"
-				$msg = "Updated $($c2.value) should be $MaxInstalledPrerequisites"
+				$msg = "MaxInstalledPrerequisites currently $($c2.value) should be $MaxInstalledPrerequisites"
 			}
 		} 
 		#$webconfigraw

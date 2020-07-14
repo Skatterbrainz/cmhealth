@@ -6,25 +6,26 @@ function Test-CmDbSize {
 		[parameter()][string] $Description = "Validate CM site database file size",
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][string] $Database = "",
+		[parameter()][int] $maxUtilization = 0.95
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$maxUtilization = 95
+		$msg = "Correct configuration"
 		$devices = Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query "select distinct ResourceID,Name0 from v_R_System"
 		Write-Verbose "calculating expected space requirements"
 		$devSizeMB = (($devices.Count * 5MB) + 5GB) / 1MB
-		Write-Verbose "expected space: $devSizeMB MB"
+		$recSize = $devSizeMB * $maxUtilization
+		Write-Verbose "expected space: $devSizeMB MB (at $($devices.Count) devices)"
 		$dbSizeMB = (Get-DbaDatabase -SqlInstance $SqlInstance -Database $Database).SizeMB
 		Write-Verbose "actual space: $dbSizeMB MB"
-		$pct = ([math]::Round($devSizeMB / $dbSizeMB, 1)) * 100
+		$pct = [math]::Round(($devSizeMB / $dbSizeMB) * 100, 1)
 		Write-Verbose "actual utilization: $pct`%"
-		if ($pct -gt $maxUtilization) {
+		if ($pct -gt $recSize) {
 			$stat = 'FAIL'
-			$msg  = "Disk space is over allocated"
+			$msg = "Current DB size is $dbSizeMB MB ($pct percent of recommended). Recommended: $recSize MB"
 		}
-		
 	}
 	catch {
 		$stat = 'ERROR'
