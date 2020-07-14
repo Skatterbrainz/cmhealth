@@ -21,7 +21,7 @@ function Test-ServiceAccounts {
 			$svcRef  = $_.Reference 
 			$privs   = $_.Privileges
 			$startup = $_.StartMode
-			$delayed = $_.DelayedAutoStart
+			$delayed = if ($_.DelayedAutoStart -eq 'true') { $True } else { $False }
 			Write-Verbose "service name: $svcName"
 			try {
 				$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -ComputerName $ComputerName
