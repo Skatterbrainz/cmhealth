@@ -6,22 +6,22 @@
 
 Comp | Description | Function
 --|--|--
-SQL | Data files stored on a NTFS disk w/64K clusters or ReFS disk w/ => 64k clusters | 
-SQL | Memory allocation (local/remote) | Test-SqlServerMemory.ps1
-SQL | CM DB Data files preallocated | 
-SQL | CM DB Data files set with autogrowth at =>10% or =>256MB per file | Test-SqlCmDbFileGrowth.ps1
-SQL | CM DB same above for TempDB, WSUS, SSRS, etc | Test-SqlCmDbFileGrowth.ps1
-SQL | CM DB Data files equal to # CPU cores  x 2 , but no greater than 8 | 
-SQL | CM DB CM, WSUS, ReportingServices, ReportingServicesTempDB Log files equal to 1, preallocated, autogrowth | 
-SQL | CM DB TempDB Data files equal to # CPU cores, but no greater than 4 | 
-SQL | CM DB TempDB Log files equal to 1 | 
-SQL | CM DB Data files index fragmentation percent | Test-SqlIndexFragmentation.ps1
-SQL | CM DB Database total size within x% of # of clients * 5MB + 5GB (make sure it isn't bloated) | Test-CmDbSize.ps1
-SQL | If bloated what are the larges SQL tables and their size | 
-SQL | SSIS or other SQL features installed that are not used by ConfigMgr | 
-SQL | SQL running on a static TCP port | 
-SQL | Databases on the CM SQL instance that are not supported by usage rights (if SQL is Standard) | Test-SqlDbDedicated.ps1
-SQL | SQL instanced collation SQL_Latin1_General_CP1_CI_AS | 
+SQL | Data files stored on a NTFS disk w/64K clusters or ReFS disk w/ => 64k clusters | Test-DriveBlockSize
+SQL | Memory allocation (local/remote) | Test-SqlServerMemory
+SQL | CM DB Data files preallocated | TBD
+SQL | CM DB Data files set with autogrowth at =>10% or =>256MB per file | Test-SqlCmDbFileGrowth
+SQL | CM DB same above for TempDB, WSUS, SSRS, etc | Test-SqlCmDbFileGrowth
+SQL | CM DB Data files equal to # CPU cores  x 2 , but no greater than 8 | TBD
+SQL | CM DB CM, WSUS, ReportingServices, ReportingServicesTempDB Log files equal to 1, preallocated, autogrowth | TBD
+SQL | CM DB TempDB Data files equal to # CPU cores, but no greater than 4 | TBD
+SQL | CM DB TempDB Log files equal to 1 | TBD
+SQL | CM DB Data files index fragmentation percent | Test-SqlIndexFragmentation
+SQL | CM DB Database total size within x% of # of clients * 5MB + 5GB (make sure it isn't bloated) | Test-CmDbSize
+SQL | If bloated what are the largest SQL tables and their size | TBD
+SQL | SSIS or other SQL features installed that are not used by ConfigMgr | TBD
+SQL | SQL running on a static TCP port | TBD
+SQL | Databases on the CM SQL instance that are not supported by usage rights (if SQL is Standard) | Test-SqlDbDedicated
+SQL | SQL instanced collation SQL_Latin1_General_CP1_CI_AS | TBD
 SQL | SQL nested triggers enabled | 
 SQL | SQL Server common language run time (CLR) enabled | 
 SQL | SQL Server Service Broker enabled | Test-ServiceAccounts.ps1

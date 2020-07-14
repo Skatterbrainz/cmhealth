@@ -7,7 +7,7 @@ function Test-CmHealth {
 		[parameter()][bool] $Remediate = $False
 	)
 	try {
-		Test-AdSchemaExtensions -ComputerName $SiteServer
+		Test-AdSchemaExtension -ComputerName $SiteServer
 		Test-AdSysMgtContainer -ComputerName $SiteServer
 		Test-DiskSpace -ComputerName $SiteServer
 		Test-DriveBlockSize -ComputerName $SiteServer
