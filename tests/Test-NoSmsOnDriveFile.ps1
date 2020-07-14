@@ -1,41 +1,62 @@
 function Test-NoSmsOnDriveFile {
 	[CmdletBinding()]
 	param (
-		[parameter(Mandatory)][ValidateNotNullOrEmpty()][hashtable] $ScriptParams
+		[parameter()][string] $TestName = "Confirm NO_SMS_ON_DRIVE file exists",
+		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $Description = "Confirm NO_SMS_ON_DRIVE.SMS file resides on appropriate disks",
+		[parameter()][string] $ComputerName = "localhost",
+		[parameter()][bool] $Remediate = $False
 	)
-	Write-Verbose "test: no_sms_on_drive.sms on each drive"
 	try {
-		$disks = Get-CimInstance -ClassName "Win32_LogicalDisk" -Filter "DriveType=3" -ComputerName $ScriptParams.ComputerName
-		#$disks = Get-WmiObject -Class Win32_LogicalDisk -Filter "DriveType=3"
-		$result = @()
+		$tempdata = $null # for detailed test output to return if needed
+		$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ComputerName
 		$disks | ForEach-Object {
 			Write-Verbose "checking disk $($_.DeviceID) to see if distribution point shares are found"
 			$fpth = (Join-Path -Path $_.DeviceID -ChildPath "NO_SMS_ON_DRIVE.SMS")
 			$clib = (Join-Path -Path $_.DeviceID -ChildPath "SMSPKGSIG")
 			if (Test-Path $clib) {
-				Write-Output "PASS: $($_.DeviceID) appears to be a content library drive (not excluded)"
-			}
-			else {
+				$tempdata.Add([pscustomobject]@{
+					Test    = $TestName
+					Status  = "PASS"
+					Message = "$($_.DeviceID) appears to be a content library drive (not excluded)"
+				})
+			} else {
 				if (Test-Path $fpth) {
-					$result += @{Drive = $_.DeviceID; Status = 'PASS'}
-				}
-				else {
-					if ($ScriptParams.Remediate) {
-						"added by remediation: $(Get-Date)" | Out-File -FilePath $fpth -Force
-						$result += @{Drive = $_.DeviceID; Status = 'REMEDIATED'}
-					}
-					else {
-						$result += @{Drive = $_.DeviceID; Status = 'FAIL'}
+					$tempdata.Add([pscustomobject]@{
+						Test = $TestName
+						Status = "PASS"
+						Message = "$($_.DeviceID) is excluded from ConfigMgr content storage"
+					})
+				} else {
+					if ($Remediate) {
+						$tempdata.Add([pscustomobject]@{
+							Test = $TestName
+							Status = "REMEDIATED"
+							Message = "$($_.DeviceID) is now excluded from ConfigMgr content storage"
+						})
+					} else {
+						$tempdata.Add([pscustomobject]@{
+							Test = $TestName
+							Status = "FAIL"
+							Message = "$($_.DeviceID) is not excluded from ConfigMgr content storage"
+						})
 					}
 				}
 			}
 		}
 	}
 	catch {
-		Write-Error $Error[0].Exception.Message
-		$result = 'ERROR'
+		$stat = 'ERROR'
+		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$result
+		Write-Output $([pscustomobject]@{
+			TestName    = $TestName
+			TestGroup   = $TestGroup
+			TestData    = $tempdata
+			Description = $Description
+			Status      = $stat 
+			Message     = $msg
+		})
 	}
 }

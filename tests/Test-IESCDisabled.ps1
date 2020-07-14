@@ -10,7 +10,6 @@
 function Test-IESCDisabled {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestID = "IESCDisable",
 		[parameter()][string] $TestName = "Disable IESC",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Disable Internet Explorer Enhanced Security Configuration",
@@ -43,7 +42,6 @@ function Test-IESCDisabled {
 	}
 	finally {
 		Write-Output $([pscustomobject]@{
-			TestId      = $TestID
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata

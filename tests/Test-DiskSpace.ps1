@@ -1,31 +1,61 @@
-function Test-DiskSpace {
+<#
+.SYNOPSIS
+	Validate Logical Disk Space
+.DESCRIPTION
+	Validate logical disk space usage
+.PARAMETER ComputerName
+	Name of computer or "" for local host
+.PARAMETER Remediate
+	Apply remediation changes if required
+.EXAMPLE
+	Test-LogicalDisks -Remediate
+.NOTES
+#>
+
+function Test-LogicalDisks {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Disk Space",
-		[parameter()][string] $TestGroup = "Operation"
+		[parameter()][string] $TestName = "Logical Disk configurations",
+		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $Description = "",
+		[parameter()][string] $ComputerName = "",
+		[parameter()][bool] $Remediate = $False,
+		[parameter()][int] $MaxPctUsed = 80
 	)
-	Write-Verbose "test: disk space"
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @()
-		Get-CimInstance -ClassName "Win32_LogicalDisk" -ComputerName $cmhealthParams.ComputerName | Foreach-Object {
-			if ($FreeSpaceGB -lt 10GB) {
-				$stat = 'FAIL'
-			} else {
-				$stat = 'PASS'
+		if ([string]::IsNullOrEmpty($ComputerName)) {
+			$disks = Get-CimInstance -ComputerName $ComputerName -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+		}
+		else {
+			$disks = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+		}
+		$stat = 'PASS'
+		$disks | Foreach-Object {
+			$drv  = $_.DeviceID 
+			$size = $_.Size 
+			$free = $_.FreeSpace
+			$used = $size - $free
+			$pct  = $([math]::Round($used / $size, 1)) * 100
+			if ($pct -gt 80) {
+				$tempdata.Add([pscustomobject]@{
+					Test    = $TestName
+					Status  = "FAIL"
+					Message = "logical disk $drv is $pct`% full ($used of $size bytes)"
+				})
 			}
-			$tempdata.Add([pscustomobject]@{ 
-				Drive  = $_.DeviceID
-				Name   = $_.VolumeName
-				SizeGB = [math]::Round(($_.Size / 1GB),2)
-				FreeSpaceGB = [math]::Round(($_.FreeSpace / 1GB),2)
-				Used   = [math]::Round($_.FreeSpace / $_.Size, 2)
-				Status = $stat
-			})
+			else {
+				$tempdata.Add([pscustomobject]@{
+					Test    = $TestName
+					Status  = "PASS"
+					Message = "logical disk $drv is $pct`% full ($used of $size bytes)"
+				})
+			}
 		}
 	}
 	catch {
 		$stat = 'ERROR'
-		$msg  = $_.Exception.Message
+		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
 		Write-Output $([pscustomobject]@{

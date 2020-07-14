@@ -5,7 +5,7 @@ function Test-Example {
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Description of this test",
 		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "",
+		[parameter()][string] $SqlInstance = "localhost",
 		[parameter()][string] $Database = ""
 	)
 	try {
