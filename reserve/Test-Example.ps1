@@ -11,6 +11,7 @@ function Test-Example {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
+		$msg  = "No issues found"
 		<# 
 		DELETE THIS COMMENT BLOCK WHEN FINISHED:
 		perform test and return result as an object...
