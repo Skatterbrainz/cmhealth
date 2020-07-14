@@ -10,6 +10,8 @@ function Test-WsusIisAppPoolSettings {
 		[parameter()][bool] $Remediate = $False
 	)
 	try {
+		$stat = "PASS"
+		$msg = "No issues found"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		Import-Module webadministration
 		$WsusAppPool = Get-ItemProperty IIS:\AppPools\WsusPool
@@ -19,21 +21,26 @@ function Test-WsusIisAppPoolSettings {
 			if ($Remediate -eq $True) {
 				Set-ItemProperty -Path $WsusAppPool.PSPath -Name queueLength -Value $QueueLength
 				$tempdata.Add([pscustomobject]@{
+					Test    = "QueueLength"
 					Status  = "REMEDIATED"
 					Message = "new queue length: $((Get-ItemProperty IIS:\AppPools\WsusPool\).queueLength)"
 				})
+				$stat = "REMEDIATED"
+				$msg  = "QueueLenght has been updated to $QueueLength"
 			}
 			else {
 				$tempdata.Add([pscustomobject]@{
-					Test    = $TestName
+					Test    = "QueueLength"
 					Status  = "FAIL"
 					Message = "queue length is currently: $cql.  Should be $QueueLength"
 				})
+				$stat = "FAIL"
+				$msg = "Queuelength is incorrect"
 			}
 		}
 		else {
 			$tempdata.Add([pscustomobject]@{
-				Test    = $TestName
+				Test    = "QueueLength"
 				Status  = "PASS"
 				Message = "queue length is currently set to: $cql"
 			})
@@ -51,22 +58,26 @@ function Test-WsusIisAppPoolSettings {
 						Set-WebConfiguration "$appPoolPath/recycling/periodicRestart/@privateMemory" -Value $PrivateMemLimit
 						$newpm = Get-WebConfiguration "$appPoolPath/recycling/periodicRestart/@privateMemory" 
 						$tempdata.Add([pscustomobject]@{
-							Test    = $TestName
+							Test    = "PrivateMemLimit"
 							Status  = "REMEDIATE"
 							Message = "new private memory limit: $newpm"
 						})
+						$stat = "REMEDIATED"
+						$msg = "PrivateMemLimit has been updated to $PrivateMemLimit"
 					}
 					else {
 						$tempdata.Add([pscustomobject]@{
-							Test    = $TestName
+							Test    = "PrivateMemLimit"
 							Status  = "FAIL"
 							Message = "private memory limit is set to: $cpm.  Should be $PrivateMemLimit"
 						})
+						$stat = "FAIL"
+						$msg = "PrivateMemLimit is incorrect"
 					}
 				}
 				else {
 					$tempdata.Add([pscustomobject]@{
-						Test    = $TestName
+						Test    = "PrivateMemLimit"
 						Status  = "PASS"
 						Message = "private memory limit is currently set to: $cpm"
 					})
