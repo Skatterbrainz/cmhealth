@@ -28,7 +28,7 @@ function Test-ServiceAccounts {
 				$svcAcct  = $svc.StartName
 				$svcStart = $svc.StartMode
 				$svcDelay = $svc.DelayedAutoStart
-				Write-Host "checking service account: $svcAcct"
+				Write-Verbose "checking service account: $svcAcct"
 				if ($svcAcct -in $builtin) {
 					Write-Verbose "built-in account with default privileges"
 				}
@@ -36,11 +36,32 @@ function Test-ServiceAccounts {
 					$cprivs = Get-CPrivilege -Identity $svcAcct
 					$privs -split ',' | Foreach-Object { 
 						$priv = $_
-						if ($priv -in $cprivs) { $res = 'PASS' } else { $res = 'FAIL'; $stat = 'FAIL' } 
+						if ($priv -notin $cprivs) { 
+							$res  = 'FAIL'
+							$stat = 'FAIL' 
+							$msgx = 'Insufficient privileges'
+						} else {
+							$res  = 'PASS'
+							$msgx = 'Correct configuration'
+						}
 						Write-Verbose "service account privileges: $res"
-						if ($svcStart -eq $startup) { $res = 'PASS' } else { $res = 'FAIL'; $stat = 'FAIL' }
+						if ($svcStart -ne $startup) { 
+							$res  = 'FAIL'
+							$stat = 'FAIL' 
+							$msgx = 'Startup type'
+						} else {
+							$res  = 'PASS'
+							$msgx = 'Correct configuration'
+						}
 						Write-Verbose "startup mode = $res"
-						if ($svcDelay -eq $delayed) { $res = 'PASS' } else { $res = 'FAIL'; $stat = 'FAIL' }
+						if ($svcDelay -ne $delayed) { 
+							$res  = 'FAIL'
+							$stat = 'FAIL'
+							$msgx = 'Delayed start'
+						} else {
+							$res  = 'PASS'
+							$msgx = 'Correct configuration'
+						}
 						Write-Verbose "startup delay = $res"
 						$tempdata.Add([pscustomobject]@{
 							ServiceName = $svcName
@@ -50,6 +71,7 @@ function Test-ServiceAccounts {
 							StartMode   = $startup
 							DelayStart  = $delayed
 							Compliant   = $res
+							Reason      = $msgx
 						})
 					}
 				}

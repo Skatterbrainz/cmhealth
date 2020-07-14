@@ -13,14 +13,17 @@ function Test-InstalledComponents {
 		$stat = "PASS"
 		$msg  = "All required components are installed"
 		$mpath = Split-Path (Get-Module "cmhealth" | Select-Object -ExpandProperty Path)
-		if ([string]::IsNullOrEmpty($mpath)) {
+		Write-Verbose "module path = $mpath"
+		if (![string]::IsNullOrEmpty($mpath)) {
 			$AppListFile = "$($mpath)\tests\applist.csv"
+			Write-Verbose "applist file = $AppListFile"
 		}
 		if (!(Test-Path $AppListFile)) {
-			Write-Warning "file not found: $AppListFile"
-			break
+			throw "file not found: $AppListFile"
+		} else {
+			Write-Verbose "path verified to $AppListFile"
 		}
-		$applist = Import-Csv -Path $AppListFile
+		$applist = Import-Csv -Path "$AppListFile"
 	
 		$reg64 = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall
 		$reg32 = Get-ChildItem -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
@@ -45,7 +48,8 @@ function Test-InstalledComponents {
 			}
 		}
 		$app = $null
-		$p = $null
+		$pn = $null
+		$pv = $null
 		$reg32 | ForEach-Object {
 			if ($_.Property -contains 'DisplayName') {
 				$pn = $_.GetValue('DisplayName')
