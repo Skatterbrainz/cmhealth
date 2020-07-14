@@ -11,7 +11,7 @@ function Test-SqlUpdates {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$res = Test-DbaBuild -Latest -SqlInstance $SqlInstance
+		$res = Test-DbaBuild -Latest -SqlInstance $SqlInstance -Update
 		if ($res.Compliant -ne $True) { 
 			$bcurrent = $res.BuildLevel
 			$btarget  = $res.BuildTarget
