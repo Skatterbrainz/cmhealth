@@ -21,8 +21,10 @@ function Test-CmHealth {
 	Test-WsusWebConfig -ComputerName $SiteServer
 
 	Test-SqlServerMemory -SqlInstance $SqlInstance
+	Test-SqlDbCollation -SqlInstance $SqlInstance -Database $Database
 	Test-SqlDbDedicated -SqlInstance $SqlInstance
 	Test-SqlServicesSPN -SqlInstance $SqlInstance
+	Test-SqlDbBackupHistory -SqlInstance $SqlInstance -Database $Database
 	Test-DbRecoveryModel -SqlInstance $SqlInstance -Database $Database
 	Test-SqlDbFileGrowth -SqlInstance $SqlInstance -Database $Database
 	Test-SqlIndexFragmentation -SqlInstance $SqlInstance
