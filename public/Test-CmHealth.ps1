@@ -7,19 +7,27 @@ function Test-CmHealth {
 		[parameter()][ValidateLength(3,3)][string] $SiteCode = "",
 		[parameter()][bool] $Remediate = $False
 	)
+	# Site System Host
+	Test-HostOperatingSystem -ComputerName $SiteServer
+	Test-HostMemory -ComputerName $SiteServer
 	Test-ServerFeatures -ComputerName $SiteServer 
-	Test-AdSchemaExtension -ComputerName $SiteServer
-	Test-AdSysMgtContainer -ComputerName $SiteServer
 	Test-DiskSpace -ComputerName $SiteServer
 	Test-DriveBlockSize -ComputerName $SiteServer
 	Test-IESCDisabled -ComputerName $SiteServer
 	Test-InstalledComponents -ComputerName $SiteServer
 	Test-NoSmsOnDriveFile -ComputerName $SiteServer
+
+	# Site System Configuration
 	Test-ServiceAccounts -ComputerName $SiteServer
 	Test-IISLogFiles -ComputerName $SiteServer
 	Test-WsusIisAppPoolSettings -ComputerName $SiteServer
 	Test-WsusWebConfig -ComputerName $SiteServer
 
+	# Active Directory
+	Test-AdSchemaExtension -ComputerName $SiteServer
+	Test-AdSysMgtContainer -ComputerName $SiteServer
+
+	# SQL Server
 	Test-SqlServerMemory -SqlInstance $SqlInstance
 	Test-SqlDbCollation -SqlInstance $SqlInstance -Database $Database
 	Test-SqlDbDedicated -SqlInstance $SqlInstance
@@ -33,6 +41,8 @@ function Test-CmHealth {
 	Test-CmDbSize -SqlInstance $SqlInstance -Database $Database
 	Test-SqlUpdates -SqlInstance $SqlInstance
 	
+	# Configuration Manager Site
+	Test-CmMpResponse -ComputerName $SiteServer
 	Test-CmBoundaries -SqlInstance $SqlInstance -Database $Database
 	Test-CmCollectionRefresh -SqlInstance $SqlInstance -Database $Database
 	# 
