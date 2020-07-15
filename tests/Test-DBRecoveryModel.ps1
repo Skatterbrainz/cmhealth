@@ -4,18 +4,16 @@ function Test-DBRecoveryModel {
 		[parameter()][string] $TestName = "Validate DB Recovery Model",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate database recovery model settings",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "Correct configuration"
-		$rm = (Get-DbaDbRecoveryModel -SqlInstance $SqlInstance -Database $Database -ErrorAction SilentlyContinue).RecoveryModel
+		$rm = (Get-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -ErrorAction SilentlyContinue).RecoveryModel
 		if ($rm -ne 'Simple') {
 			if ($Remediate -eq $True) {
-				$null = Set-DbaDbRecoveryModel -SqlInstance $SqlInstance -Database $Database -RecoveryModel "Simple" -ErrorAction SilentlyContinue
+				$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel "Simple" -ErrorAction SilentlyContinue
 				$stat = "REMEDIATED"
 				$msg  = "Recovery model is now to SIMPLE"
 			} else {

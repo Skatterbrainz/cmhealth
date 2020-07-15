@@ -4,8 +4,7 @@ function Test-IISLogFiles {
 		[parameter()][string] $TestName = "Check IIS Log Files",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate IIS Log File retention",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $ComputerName = "localhost",
+		[parameter()][hashtable] $ScriptParams,
 		[parameter()][ValidateRange(1, 366)][int] $MaxDaysOld = 30,
 		[parameter()][ValidateRange(1, 90)][int] $MaxSpacePct = 5
 	)

@@ -4,9 +4,7 @@ function Test-SqlDbDiskAlignment {
 		[parameter()][string] $TestName = "Validate SQL Disk Alignment",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate disk alignment with SQL recommended practices",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
@@ -18,7 +16,7 @@ function Test-SqlDbDiskAlignment {
 			$stat = 'PASS' or 'FAIL'
 			$msg = "whatever you want to provide"
 		#>
-		$da = Test-DbaDiskAlignment -ComputerName $SqlInstance
+		$da = Test-DbaDiskAlignment -ComputerName $ScriptParams.SqlInstance
 		if ($da -eq $false) {
 			$stat = "FAIL"
 			$msg  = "One or more disks are not aligned using recommended practices"

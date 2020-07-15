@@ -4,14 +4,13 @@ function Test-HostMemory {
 		[parameter()][string] $TestName = "Validate Host Memory",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify site system has at least minimum required memory",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $ComputerName = "localhost"
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$SystemInfo = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ComputerName | Select-Object Name, TotalVisibleMemorySize, FreePhysicalMemory
+		$SystemInfo = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName | Select-Object Name, TotalVisibleMemorySize, FreePhysicalMemory
 		$TotalRAM = $SystemInfo.TotalVisibleMemorySize/1MB
 		$FreeRAM = $SystemInfo.FreePhysicalMemory/1MB
 		$UsedRAM = $TotalRAM - $FreeRAM

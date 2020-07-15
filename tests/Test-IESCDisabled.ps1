@@ -4,9 +4,7 @@ function Test-IESCDisabled {
 		[parameter()][string] $TestName = "Disable IESC",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Disable Internet Explorer Enhanced Security Configuration",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $ComputerName = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed

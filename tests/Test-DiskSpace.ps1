@@ -3,15 +3,14 @@ function Test-DiskSpace {
 	param (
 		[parameter()][string] $TestName = "Logical Disk configurations",
 		[parameter()][string] $TestGroup = "configuration",
-		[parameter()][string] $Description = "",
-		[parameter()][string] $ComputerName = "",
-		[parameter()][bool] $Remediate = $False,
+		[parameter()][string] $Description = "Validate logical disk utilitization",
+		[parameter()][hashtable] $ScriptParams,
 		[parameter()][int] $MaxPctUsed = 80
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @()
-		if ([string]::IsNullOrEmpty($ComputerName)) {
-			$disks = Get-CimInstance -ComputerName $ComputerName -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+		if ([string]::IsNullOrEmpty($ScriptParams.ComputerName)) {
+			$disks = Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
 		}
 		else {
 			$disks = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }

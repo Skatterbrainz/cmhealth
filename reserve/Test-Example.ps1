@@ -4,9 +4,7 @@ function Test-Example {
 		[parameter()][string] $TestName = "Descriptive Name",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Description of this test",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
@@ -15,8 +13,9 @@ function Test-Example {
 		<# 
 		DELETE THIS COMMENT BLOCK WHEN FINISHED:
 		perform test and return result as an object...
-			$stat = 'PASS' or 'FAIL'
-			$msg = "whatever you want to provide"
+			Set $stat = "FAIL" only if test fails, or "WARNING" if not critical
+			No need to set "PASS" since it is the default
+			Set $msg = description of result
 		#>
 		
 	}

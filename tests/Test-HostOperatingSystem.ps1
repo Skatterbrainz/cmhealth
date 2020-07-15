@@ -4,15 +4,14 @@ function Test-HostOperatingSystem {
 		[parameter()][string] $TestName = "Validate Host Operating System",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate supported operating system for CM site system roles",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $ComputerName = "localhost"
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
 		$supported = @('Microsoft Windows Server 2016','Microsoft Windows Server 2019','Microsoft Windows 10 Enterprise')
-		$osdata = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ComputerName 
+		$osdata = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName 
 		$osname = $osdata.Caption
 		$osbuild = $osdata.BuildNumber
 		if ($osname -notin $supported) {

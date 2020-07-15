@@ -4,8 +4,7 @@ function Test-AdSysMgtContainer {
 		[parameter()][string] $TestName = "AD Container",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify System Management container has been created with delegated permissions",
-		[parameter()][string] $ComputerName = "localhost",
-		[parameter()][switch] $Remediate
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		Write-Verbose "Searching for AD container: System Management"

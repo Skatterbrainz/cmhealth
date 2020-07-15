@@ -5,13 +5,12 @@ function Test-SqlDbDedicated {
 		[parameter()][string] $TestName = "Dedicated SQL Instance",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Verify SQL Instance is dedicated to ConfigMgr site",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost"
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		$stat = 'PASS'
 		$supported = ('master','tempdb','msdb','model','SUSDB','ReportServer','ReportServerTempDB')
-		$dbnames = Get-DbaDatabase -SqlInstance $SqlInstance | Select-Object -ExpandProperty Name
+		$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance | Select-Object -ExpandProperty Name
 		$dbnames | ForEach-Object {
 			if (-not (($_ -match 'CM_') -or ($_ -in $supported))) {
 				throw "Unsupported database: $($_)"

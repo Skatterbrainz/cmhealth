@@ -4,9 +4,7 @@ function Test-SqlAgentJobStatus {
 		[parameter()][string] $TestName = "SQL Agent Jobs",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate SQL Agent Job status",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = "",
+		[parameter()][hashtable] $ScriptParams,
 		[parameter()][int] $HoursBack = 24
 	)
 	try {
@@ -14,7 +12,7 @@ function Test-SqlAgentJobStatus {
 		$stat = "PASS"
 		$msg = "No errors in the past $($HoursBack) hours"
 		$params = @{
-			SqlInstance = $SqlInstance 
+			SqlInstance = $ScriptParams.SqlInstance 
 			StartDate   = (Get-Date).AddHours(-$HoursBack)
 		}
 		$res = @(Get-DbaAgentJobHistory @params | Where-Object {$_.Status -ne "Succeeded"})

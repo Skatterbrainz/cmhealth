@@ -7,46 +7,52 @@ function Test-CmHealth {
 		[parameter()][ValidateLength(3,3)][string] $SiteCode = "",
 		[parameter()][bool] $Remediate = $False
 	)
+	$params = [ordered]@{
+		ComputerName = $SiteServer
+		SqlInstance = $SqlInstance
+		SiteCode = $SiteCode
+		Database = $Database
+	}
 	# Site System Host
-	Test-HostOperatingSystem -ComputerName $SiteServer
-	Test-HostMemory -ComputerName $SiteServer
-	Test-ServerFeatures -ComputerName $SiteServer 
-	Test-DiskSpace -ComputerName $SiteServer
-	Test-DriveBlockSize -ComputerName $SiteServer
-	Test-IESCDisabled -ComputerName $SiteServer
-	Test-InstalledComponents -ComputerName $SiteServer
-	Test-NoSmsOnDriveFile -ComputerName $SiteServer
+	Test-HostOperatingSystem -ScriptParams $ScriptParams
+	Test-HostMemory -ScriptParams $ScriptParams
+	Test-ServerFeatures -ScriptParams $ScriptParams
+	Test-DiskSpace -ScriptParams $ScriptParams
+	Test-DriveBlockSize -ScriptParams $ScriptParams
+	Test-IESCDisabled -ScriptParams $ScriptParams
+	Test-InstalledComponents -ScriptParams $ScriptParams
+	Test-NoSmsOnDriveFile -ScriptParams $ScriptParams
 
 	# Site System Configuration
-	Test-ServiceAccounts -ComputerName $SiteServer
-	Test-IISLogFiles -ComputerName $SiteServer
-	Test-WsusIisAppPoolSettings -ComputerName $SiteServer
-	Test-WsusWebConfig -ComputerName $SiteServer
+	Test-ServiceAccounts -ScriptParams $ScriptParams
+	Test-IISLogFiles -ScriptParams $ScriptParams
+	Test-WsusIisAppPoolSettings -ScriptParams $ScriptParams
+	Test-WsusWebConfig -ScriptParams $ScriptParams
 
 	# Active Directory
-	Test-AdSchemaExtension -ComputerName $SiteServer
-	Test-AdSysMgtContainer -ComputerName $SiteServer
+	Test-AdSchemaExtension -ScriptParams $ScriptParams
+	Test-AdSysMgtContainer -ScriptParams $ScriptParams
 
 	# SQL Server
-	Test-SqlServerMemory -SqlInstance $SqlInstance
-	Test-SqlDbCollation -SqlInstance $SqlInstance -Database $Database
-	Test-SqlDbDedicated -SqlInstance $SqlInstance
-	Test-SqlServicesSPN -SqlInstance $SqlInstance
-	Test-SqlDbBackupHistory -SqlInstance $SqlInstance -Database $Database
-	Test-DbRecoveryModel -SqlInstance $SqlInstance -Database $Database
-	Test-SqlDbFileGrowth -SqlInstance $SqlInstance -Database $Database
-	Test-SqlIndexFragmentation -SqlInstance $SqlInstance
-	Test-SqlAgentJobStatus -SqlInstance $SqlInstance
-	Test-SqlRoleMembers -SqlInstance $SqlInstance
-	Test-CmDbSize -SqlInstance $SqlInstance -Database $Database
-	Test-SqlUpdates -SqlInstance $SqlInstance
+	Test-SqlServerMemory -ScriptParams $ScriptParams
+	Test-SqlDbCollation -ScriptParams $ScriptParams
+	Test-SqlDbDedicated -ScriptParams $ScriptParams
+	Test-SqlServicesSPN -ScriptParams $ScriptParams
+	Test-SqlDbBackupHistory -ScriptParams $ScriptParams
+	Test-DbRecoveryModel -ScriptParams $ScriptParams
+	Test-SqlDbFileGrowth -ScriptParams $ScriptParams
+	Test-SqlIndexFragmentation -ScriptParams $ScriptParams
+	Test-SqlAgentJobStatus -ScriptParams $ScriptParams
+	Test-SqlRoleMembers -ScriptParams $ScriptParams
+	Test-CmDbSize -ScriptParams $ScriptParams
+	Test-SqlUpdates -ScriptParams $ScriptParams
 	
 	# Configuration Manager Site
-	Test-CmMpResponse -ComputerName $SiteServer
-	Test-CmBoundaries -SqlInstance $SqlInstance -Database $Database
-	Test-CmCollectionRefresh -SqlInstance $SqlInstance -Database $Database
+	Test-CmMpResponse -ScriptParams $ScriptParams
+	Test-CmBoundaries -ScriptParams $ScriptParams
+	Test-CmCollectionRefresh -ScriptParams $ScriptParams
 	# 
 	# more tests needed!
 	# 
-	Test-CmClientCoverage -SqlInstance $SqlInstance -Database $Database
+	Test-CmClientCoverage -ScriptParams $ScriptParams
 }

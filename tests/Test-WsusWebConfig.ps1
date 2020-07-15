@@ -4,8 +4,7 @@ function Test-WsusWebConfig {
 		[parameter()][string] $TestName = "Check WSUS Web Config File",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate WSUS web configuration file parameters",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $ComputerName = "localhost",
+		[parameter()][hashtable] $ScriptParams,
 		[parameter()][int32] $MaxCachedUpdates = 88000,
 		[parameter()][int32] $MaxInstalledPrerequisites = 800,
 		[parameter()][ValidateNotNullOrEmpty()][string] $ConfigFile = "C:\Program Files\Update Services\WebServices\ClientWebService\Web.config"

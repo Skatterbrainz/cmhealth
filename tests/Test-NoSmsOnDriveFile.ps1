@@ -4,14 +4,13 @@ function Test-NoSmsOnDriveFile {
 		[parameter()][string] $TestName = "Confirm NO_SMS_ON_DRIVE file exists",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Confirm NO_SMS_ON_DRIVE.SMS file resides on appropriate disks",
-		[parameter()][string] $ComputerName = "localhost",
-		[parameter()][bool] $Remediate = $False
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		$stat = "PASS"
 		$msg  = "All non-CM disks are excluded"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ComputerName
+		$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ScriptParams.ComputerName
 		$disks | ForEach-Object {
 			Write-Verbose "checking disk $($_.DeviceID) to see if distribution point shares are found"
 			$fpth = (Join-Path -Path $_.DeviceID -ChildPath "NO_SMS_ON_DRIVE.SMS")

@@ -4,9 +4,7 @@ function Test-CmCollectionRefresh {
 		[parameter()][string] $TestName = "CM Collection Refresh",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate Collections refresh impact on performance",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
@@ -19,7 +17,7 @@ when RefreshType = 6 then 'Scheduled and Incremental'
 else 'Unknown' end) as RefreshType, count(SiteID) as Collections
 from v_Collections
 group by RefreshType"
-		$cdat = Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query $query
+		$cdat = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query
 		$c1 = $cdat | Where-Object {$_.RefreshType -eq 'Incremental'} | Select-Object -ExpandProperty Collections
 		$c2 = $cdat | Where-Object {$_.RefreshType -eq 'Scheduled'} | Select-Object -ExpandProperty Collections
 		$c3 = $c1 + $c2

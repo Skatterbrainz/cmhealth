@@ -4,9 +4,7 @@ function Test-SqlServerMemory {
 		[parameter()][string] $TestName = "SQL Server Max Memory Allocation",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate maximum memory allocation of SQL instance",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = "",
+		[parameter()][hashtable] $ScriptParams,
 		[parameter()][int] $MaxMemAllocation = 0.8
 	)
 	try {
@@ -15,9 +13,9 @@ function Test-SqlServerMemory {
 		$msg  = "Correct configuration"
 		$unlimited = 2147483647
 		# get total memory allocated to SQL Server in MB
-		$cmax = (Get-DbaMaxMemory -SqlInstance $SqlInstance -EnableException -ErrorAction SilentlyContinue).MaxValue
+		$cmax = (Get-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).MaxValue
 		# get total physical memory of host in MB
-		$tmem = (Get-DbaComputerSystem -ComputerName $SqlInstance -EnableException -ErrorAction SilentlyContinue).TotalPhysicalMemory.Megabyte
+		$tmem = (Get-DbaComputerSystem -ComputerName $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).TotalPhysicalMemory.Megabyte
 		$target = $tmem * ($MaxMemAllocation / 100)
 		$target = [math]::Round($target, 0)
 		if ($cmax -eq $unlimited) {
@@ -30,7 +28,7 @@ function Test-SqlServerMemory {
 			}
 		}
 		if ($Remediate -eq $True) {
-			Set-DbaMaxMemory -SqlInstance $SqlInstance -Max $target -EnableException -ErrorAction SilentlyContinue
+			Set-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -Max $target -EnableException -ErrorAction SilentlyContinue
 			$stat = 'REMEDIATED'
 			$msg  = "SQL Server max memory is now set to $target MB"
 		}

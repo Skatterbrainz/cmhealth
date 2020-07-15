@@ -4,14 +4,12 @@ function Test-SqlUpdates {
 		[parameter()][string] $TestName = "SQL Server Updates",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Verify SQL Updates and Service Packs",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$res = Test-DbaBuild -Latest -SqlInstance $SqlInstance -Update
+		$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update
 		if ($res.Compliant -ne $True) { 
 			$bcurrent = $res.BuildLevel
 			$btarget  = $res.BuildTarget

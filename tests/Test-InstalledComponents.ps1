@@ -4,9 +4,7 @@ function Test-InstalledComponents {
 		[parameter()][string] $TestName = "Validate Prerequisites",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate CM prerequisites and support components",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $ComputerName = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed

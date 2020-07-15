@@ -4,7 +4,7 @@ function Test-AdSchemaExtension {
 		[parameter()][string] $TestName = "AD Schema Extension",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify AD schema extensions have been installed",
-		[parameter()][string] $ComputerName = "localhost"
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		$tempdata = $null

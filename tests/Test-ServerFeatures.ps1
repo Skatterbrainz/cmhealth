@@ -4,8 +4,7 @@ function Test-ServerFeatures {
 		[parameter()][string] $TestName = "Windows Server Features",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate Windows Server roles and features for CM site systems",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $ComputerName = "localhost",
+		[parameter()][hashtable] $ScriptParams,
 		[parameter()][string] $Source = ""
 	)
 	try {

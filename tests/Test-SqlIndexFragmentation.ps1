@@ -4,9 +4,7 @@ function Test-SqlIndexFragmentation {
 		[parameter()][string] $TestName = "SQL Index Fragmentation",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate SQL database index fragmentation status",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = "",
+		[parameter()][hashtable] $ScriptParams,
 		[parameter()][int] $MinValue = 50
 	)
 	try {
@@ -26,7 +24,7 @@ AND indexstats.index_id = dbindexes.index_id
 WHERE indexstats.database_id = DB_ID() and indexstats.avg_fragmentation_in_percent > $($MinValue)
 ORDER BY indexstats.avg_fragmentation_in_percent desc"
 	
-		$res = (Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query $query | ForEach-Object {
+		$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query | ForEach-Object {
 				[pscustomobject]@{
 					Schema = $_.Schema
 					Table  = $_.Table 

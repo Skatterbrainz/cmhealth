@@ -4,8 +4,7 @@ function Test-CmMpResponse {
 		[parameter()][string] $TestName = "Validate MP Response",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate MP web service reponse",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $ComputerName = "localhost"
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed

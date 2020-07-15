@@ -4,14 +4,12 @@ function Test-SqlDbFileGrowth {
 		[parameter()][string] $TestName = "Check DB File AutoGrowth",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate SQL Database File Auto-Growth settings",
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = ""
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$dbfiles = Get-DbaDbFile -SqlInstance $SqlInstance -Database $Database
+		$dbfiles = Get-DbaDbFile -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database
 		switch ($ScriptParams.FileType) {
 			'Database' {
 				$files = $dbfiles | Where-Object {$_.TypeDescription -eq 'Rows'}

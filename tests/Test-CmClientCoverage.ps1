@@ -4,15 +4,14 @@ function Test-CmClientCoverage {
 		[parameter()][string] $TestName = "CM Client Coverage",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Confirm AD computers managed by CM",
-		[parameter()][string] $SqlInstance = "localhost",
-		[parameter()][string] $Database = "",
-		[parameter()][bool] $Remediate = $False,
+		[parameter()][hashtable] $ScriptParams,
 		[parameter()][int] $Threshold = 0.9
 	)
 	try {
 		$tempdata = $null
 		$adcomps = @(Get-AdsiComputer | Select-Object -ExpandProperty Name)
-		$cmcomps = @(Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query "select distinct name, clientversion, lasthardwarescan from dbo.v_CombinedDeviceResources where (name not like '%unknown%')")
+		$query = "select distinct name, clientversion, lasthardwarescan from dbo.v_CombinedDeviceResources where (name not like '%unknown%')"
+		$cmcomps = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		if ($adcomps.Count -gt 0 -and $cmcomps.Count -gt 0) {
 			if (($adcomps.Count / $cmcomps.Count) -ge $Threshold) {
 				$stat = 'PASS'

@@ -4,7 +4,7 @@ function Test-ServiceAccounts {
 		[parameter()][string] $TestName = "Validate Service Accounts",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate services accounts and permissions",
-		[parameter()][string] $ComputerName = "localhost"
+		[parameter()][hashtable] $ScriptParams
 	)
 	$privs = ('SeServiceLogonRight','SeAssignPrimaryTokenPrivilege','SeChangeNotifyPrivilege','SeIncreaseQuotaPrivilege')
 	$builtin = ('LocalSystem','NT AUTHORITY\NetworkService','NT AUTHORITY\LocalService')
@@ -24,7 +24,7 @@ function Test-ServiceAccounts {
 			$delayed = if ($_.DelayedAutoStart -eq 'true') { $True } else { $False }
 			Write-Verbose "service name: $svcName"
 			try {
-				$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -ComputerName $ComputerName
+				$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -ComputerName $ScriptParams.ComputerName
 				$svcAcct  = $svc.StartName
 				$svcStart = $svc.StartMode
 				$svcDelay = $svc.DelayedAutoStart
