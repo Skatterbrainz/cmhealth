@@ -14,7 +14,8 @@ function Test-IISLogFiles {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		if (!(Get-Module WebAdministration -ListAvailable)) { throw "WebAdministration module not installed. Please install RSAT" }
 		Import-Module WebAdministration 
-		$LogsBase = $(Get-ItemProperty -Path 'IIS:\Sites\Default Web Site').logFile.directory -replace '%SystemDrive%', 'C:'
+		$LogsBase = $(Get-Item 'IIS:\Sites\Default Web Site').logfile.directory -replace '%SystemDrive%', "$($env:SYSTEMDRIVE)"
+		#$LogsBase = $(Get-ItemProperty -Path 'IIS:\Sites\Default Web Site').logFile.directory -replace '%SystemDrive%', 'C:'
 		$IISLogsPath = Join-Path $LogsBase -ChildPath "W3SVC1"
 		$logs = Get-ChildItem -Path $IISLogsPath -Filter "*.log"
 		$numlogs = $logs.Count

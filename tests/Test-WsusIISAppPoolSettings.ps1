@@ -19,7 +19,7 @@ function Test-WsusIisAppPoolSettings {
 		Write-Verbose "recommended queue length: $QueueLength"
 		$cql = $(Get-ItemProperty IIS:\AppPools\WsusPool\).queueLength
 		if ($cql -ne $QueueLength) {
-			if ($Remediate -eq $True) {
+			if ($ScriptParams.Remediate -eq $True) {
 				Set-ItemProperty -Path $WsusAppPool.PSPath -Name queueLength -Value $QueueLength
 				$tempdata.Add([pscustomobject]@{
 					Test    = "QueueLength"
@@ -55,12 +55,12 @@ function Test-WsusIisAppPoolSettings {
 				$cpm = $(Get-WebConfiguration "$appPoolPath/recycling/periodicRestart/@privateMemory").Value
 				Write-Verbose "current private memory limit: $cpm"
 				if ($cpm -ne $PrivateMemLimit) {
-					if ($Remediate) {
+					if ($ScriptParams.Remediate -eq $True) {
 						Set-WebConfiguration "$appPoolPath/recycling/periodicRestart/@privateMemory" -Value $PrivateMemLimit
 						$newpm = Get-WebConfiguration "$appPoolPath/recycling/periodicRestart/@privateMemory" 
 						$tempdata.Add([pscustomobject]@{
 							Test    = "PrivateMemLimit"
-							Status  = "REMEDIATE"
+							Status  = "REMEDIATED"
 							Message = "new private memory limit: $newpm"
 						})
 						$stat = "REMEDIATED"

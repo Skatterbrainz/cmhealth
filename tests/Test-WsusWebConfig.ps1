@@ -22,7 +22,7 @@ function Test-WsusWebConfig {
 		$c2 = $webconfig.configuration.appSettings.add | Where-Object {$_.key -eq 'maxInstalledPrerequisites'}
 
 		if ($c1.value -ne $MaxCachedUpdates) {
-			if ($Remediate -eq $True) {
+			if ($ScriptParams.Remediate -eq $True) {
 				$msg = "Updated MaxCachedUpdates $($c1.value) to $MaxCachedUpdates"
 				$webconfigraw = $webconfigraw -replace '<add key="maxCachedUpdates" value="22000"/>', '<add key="maxCachedUpdates" value="$MaxCachedUpdates"/>'
 				$stat = "REMEDIATED"
@@ -33,7 +33,7 @@ function Test-WsusWebConfig {
 		}
 
 		if ($c2.value -ne $MaxInstalledPrerequisites) {
-			if ($Remediate -eq $True) {
+			if ($ScriptParams.Remediate -eq $True) {
 				$msg = "Updated MaxInstalledPrerequisites $($c2.value) to $MaxInstalledPrerequisites"
 				$webconfigraw = $webconfigraw -replace '<add key="maxInstalledPrerequisites" value="400"/>', '<add key="maxInstalledPrerequisites" value="$MaxInstalledPrerequisites"/>'
 			} else {
