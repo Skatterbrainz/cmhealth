@@ -12,6 +12,7 @@ function Test-WsusIisAppPoolSettings {
 		$stat = "PASS"
 		$msg = "No issues found"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
+		$oldLoc = $(Get-Location).Path
 		if (!(Get-Module WebAdministration -ListAvailable)) { throw "WebAdministration module not installed. Please install RSAT" }
 		Import-Module WebAdministration
 		$WsusAppPool = Get-ItemProperty IIS:\AppPools\WsusPool
@@ -90,6 +91,7 @@ function Test-WsusIisAppPoolSettings {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		Set-Location $oldLoc
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
