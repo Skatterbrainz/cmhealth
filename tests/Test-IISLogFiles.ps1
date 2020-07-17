@@ -9,7 +9,10 @@ function Test-IISLogFiles {
 		[parameter()][ValidateRange(1, 90)][int] $MaxSpacePct = 5
 	)
 	try {
+		$stat = "PASS"
+		$msg  = "No issues found"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
+		if (!(Get-Module WebAdministration -ListAvailable)) { throw "WebAdministration module not installed. Please install RSAT" }
 		Import-Module WebAdministration 
 		$LogsBase = $(Get-ItemProperty -Path 'IIS:\Sites\Default Web Site').logFile.directory -replace '%SystemDrive%', 'C:'
 		$IISLogsPath = Join-Path $LogsBase -ChildPath "W3SVC1"
@@ -21,6 +24,7 @@ function Test-IISLogFiles {
 		$OldLogs = @($logs | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-$MaxDaysOld) })
 		$TotalSpaceMB = [math]::Round($tsize / 1MB, 2)
 		if ($OldLogs.Count -gt 0) {
+			Write-Verbose "$($oldLogs.Count) older log files were found"
 			if ($Remediate -eq $True) {
 				$OldLogs | Select-Object -ExpandProperty FullName | Remove-Item -Force
 				$stat = "REMEDIATED"
@@ -50,19 +54,30 @@ function Test-IISLogFiles {
 			Status = $stat
 			Message = $msg
 		})
-	}
-	catch {
-		$stat = 'ERROR'
-		$msg = $_.Exception.Message -join ';'
-	}
-	finally {
-		Write-Output $([pscustomobject]@{
+		$result = [pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
-		})
+		}
+	}
+	catch {
+		$result = [pscustomobject]@{
+			TestName    = $TestName
+			TestGroup   = $TestGroup
+			TestData    = $tempdata
+			Description = $Description
+			Status   = 'ERROR'
+			Activity = $($_.CategoryInfo.Activity -join(";"))
+			Message  = $($_.Exception.Message -join(";"))
+			Trace    = $($_.ScriptStackTrace -join(";"))
+			RunAs    = $($env:USERNAME)
+			RunOn    = $($env:COMPUTERNAME)
+		}
+	}
+	finally {
+		Write-Output $result
 	}
 }
