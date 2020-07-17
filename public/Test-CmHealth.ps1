@@ -1,3 +1,31 @@
+<#
+.SYNOPSIS
+	Validate MECM/ConfigMgr site systems and configuration
+.DESCRIPTION
+	Validate MECM/ConfigMgr site systems and configuration
+.PARAMETER SiteServer
+	NetBIOS or FQDN of site server (primary, CAS, secondary)
+.PARAMETER SqlInstance
+	NetBIOS or FQDN of site database SQL instance
+.PARAMETER Database
+	Name of site database
+.PARAMETER SiteCode
+	ConfigMgr site code
+.PARAMETER TestingScope
+	Scope of tests to execute
+.PARAMETER Remediate
+	Attempt remediation when possible
+.EXAMPLE
+	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "ALL"
+	Runs all tests
+.EXAMPLE
+	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host"
+	Runs only the site server host tests
+.EXAMPLE
+	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate
+	Runs only the site server host tests and attempts to remediate identified deficiences
+
+#>
 function Test-CmHealth {
 	[CmdletBinding()]
 	param (
