@@ -33,8 +33,9 @@ function Test-CmHealth {
 		[parameter()][ValidateNotNullOrEmpty()][string] $SqlInstance = "localhost",
 		[parameter()][ValidateNotNullOrEmpty()][string] $Database = "CM_P01",
 		[parameter()][ValidateLength(3,3)][string] $SiteCode = "",
-		[parameter()][ValidateSet('All','Host','AD','SQL','CM')][string] $TestingScope = 'All',
-		[parameter()][bool] $Remediate = $False
+		[parameter()][ValidateSet('All','Host','AD','SQL','CM','IIS','Select')][string] $TestingScope = 'All',
+		[parameter()][bool] $Remediate = $False,
+		[parameter()][string] $Source = "c:\windows\winsxs"
 	)
 	$startTime = (Get-Date)
 	$params = [ordered]@{
@@ -42,6 +43,8 @@ function Test-CmHealth {
 		SqlInstance = $SqlInstance
 		SiteCode = $SiteCode
 		Database = $Database
+		Source = $Source
+		Remediate = $Remediate
 	}
 	switch ($TestingScope) {
 		{ $_ -in ('All','Host') } {
@@ -54,11 +57,7 @@ function Test-CmHealth {
 			Test-IESCDisabled -ScriptParams $params
 			Test-InstalledComponents -ScriptParams $params
 			Test-NoSmsOnDriveFile -ScriptParams $params	
-			# Site System Configuration
 			Test-ServiceAccounts -ScriptParams $params
-			Test-IISLogFiles -ScriptParams $params
-			Test-WsusIisAppPoolSettings -ScriptParams $params
-			Test-WsusWebConfig -ScriptParams $params
 		}
 		{ $_ -in ('All','SQL') } {
 			Test-SqlServerMemory -ScriptParams $params
@@ -79,6 +78,11 @@ function Test-CmHealth {
 			Test-AdSchemaExtension -ScriptParams $params
 			Test-AdSysMgtContainer -ScriptParams $params
 		}
+		{ $_ -in ('All','IIS') } {
+			Test-IISLogFiles -ScriptParams $params
+			Test-WsusIisAppPoolSettings -ScriptParams $params
+			Test-WsusWebConfig -ScriptParams $params
+		}
 		{ $_ -in ('All','CM') } {
 			# Configuration Manager Site
 			Test-CmMpResponse -ScriptParams $params
@@ -89,6 +93,17 @@ function Test-CmHealth {
 			# more tests needed!
 			# 
 			Test-CmClientCoverage -ScriptParams $params
+		}
+		'Select' {
+			$mpath = Split-Path $(Get-Module cmhealth).Path
+			$tpath = "$($mpath)\tests"
+			$tests = Get-ChildItem -Path $tpath -Filter "*.ps1" | Select Name,FullName | Sort-Object Name
+			$test = $tests | Out-GridView -Title "Select Test to Execute" -OutputMode Single
+			if ($null -ne $test) {
+				$testname = $($test.Name -replace '.ps1','')
+				$testname += ' -ScriptParams $params'
+				iex $testname
+			}
 		}
 	}
 	$runTime = New-TimeSpan -Start $startTime -End (Get-Date)
