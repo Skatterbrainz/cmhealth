@@ -1,7 +1,7 @@
 function Test-WindowsUpdates {
 	[CmdletBinding()]
 	param (
-		[parameter(Mandatory)][ValidateNotNullOrEmpty()][hashtable] $ScriptParams
+		[parameter(Mandatory)][hashtable] $ScriptParams
 	)
 	Write-Verbose "test: missing windows updates"
 	try {
