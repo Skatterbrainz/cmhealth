@@ -10,11 +10,11 @@ function Test-HostOperatingSystem {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$supported = @('Microsoft Windows Server 2016','Microsoft Windows Server 2019','Microsoft Windows 10 Enterprise')
+		$supported = @('Windows Server 2016','Windows Server 2019','Windows 10 Enterprise')
 		$osdata = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName 
 		$osname = $osdata.Caption
 		$osbuild = $osdata.BuildNumber
-		if ($osname -notin $supported) {
+		if (($supported | Foreach-Object { $osname -match $_ }) -ne $true) {
 			$stat = "FAIL"
 			$msg = "Unsupported operating system for site system roles: $osname $osbuild"
 		}
