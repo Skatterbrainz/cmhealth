@@ -29,7 +29,7 @@ function Test-NoSmsOnDriveFile {
 						Message = "$($_.DeviceID) is excluded from ConfigMgr content storage"
 					})
 				} else {
-					if ($Remediate) {
+					if ($ScriptParams.Remediate -eq $True) {
 						$tempdata.Add([pscustomobject]@{
 							Test = $TestName
 							Status = "REMEDIATED"
