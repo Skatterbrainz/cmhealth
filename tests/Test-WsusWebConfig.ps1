@@ -12,9 +12,7 @@ function Test-WsusWebConfig {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		if (!(Test-Path $ConfigFile)) {
-			throw "config file not found: $ConfigFile"
-		}
+		if (!(Test-Path $ConfigFile)) {	throw "config file not found: $ConfigFile" }
 		# read file contents into XML DOM instance
 		[xml]$webconfig = Get-Content $ConfigFile
 		# read file contents into text stream instance
@@ -43,7 +41,10 @@ function Test-WsusWebConfig {
 				$msg = "MaxInstalledPrerequisites currently $($c2.value) should be $MaxInstalledPrerequisites"
 			}
 		} 
-		#$webconfigraw
+		
+		# more voodoo witchcraft and smoking chickenbones needed here
+
+		# $webconfigraw
 		
 	}
 	catch {
