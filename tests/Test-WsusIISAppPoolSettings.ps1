@@ -12,7 +12,8 @@ function Test-WsusIisAppPoolSettings {
 		$stat = "PASS"
 		$msg = "No issues found"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		Import-Module webadministration
+		if (!(Get-Module WebAdministration -ListAvailable)) { throw "WebAdministration module not installed. Please install RSAT" }
+		Import-Module WebAdministration
 		$WsusAppPool = Get-ItemProperty IIS:\AppPools\WsusPool
 		Write-Verbose "recommended queue length: $QueueLength"
 		$cql = $(Get-ItemProperty IIS:\AppPools\WsusPool\).queueLength
