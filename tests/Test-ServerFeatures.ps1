@@ -4,8 +4,7 @@ function Test-ServerFeatures {
 		[parameter()][string] $TestName = "Windows Server Features",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate Windows Server roles and features for CM site systems",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][string] $Source = ""
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
@@ -14,7 +13,7 @@ function Test-ServerFeatures {
 		Import-Module ServerManager
 		$features = Get-WindowsFeature
 		$LogFile = Join-Path $env:TEMP "serverfeatures.log"
-		if ($Remediate -eq $True -and ([string]::IsNullOrEmpty($Source))) {
+		if ($ScriptParams.Remediate -eq $True -and ([string]::IsNullOrEmpty($ScriptParams.Source))) {
 			throw "Source parameter is required for -Remediate but was not specified"
 		}
 		$flist = @(
@@ -77,10 +76,10 @@ function Test-ServerFeatures {
 				if ($feature.Installed -ne $True) {
 					Write-Verbose "$($feature.Name) is not installed!"
 					
-					if ($Remediate -eq $True) {
+					if ($ScriptParams.Remediate -eq $True) {
 						try {
 							Write-Host "installing: $($Feature.Name)" -ForegroundColor Cyan
-							Install-WindowsFeature -Name "$($Feature.Name)" -Source $Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
+							Install-WindowsFeature -Name "$($Feature.Name)" -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
 							$tempdata.Add([pscustomobject]@{
 								Feature = $feature.Name
 								Status  = "Remediated"
