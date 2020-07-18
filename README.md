@@ -2,6 +2,13 @@
 
 ## Examples
 
+### Install Module
+
+```powershell
+Install-Module cmhealth
+```
+(Note: this also installs modules dbatools, adsips, and carbon)
+
 ### Run all tests (default)
 
 ```powershell
