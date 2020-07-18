@@ -22,7 +22,7 @@ function Test-Example {
 		# FOR SQL QUERY RELATED TESTS... DELETE THIS BLOCK IF NOT USED
 		$query = ""
 		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		if ($null -ne $res) {
+		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.SoftwareName -join ',')"
 		}
