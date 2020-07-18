@@ -1,7 +1,7 @@
 function Test-SqlServerMemory {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "SQL Server Max Memory Allocation",
+		[parameter()][string] $TestName = "Test-SqlServerMemory",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate maximum memory allocation of SQL instance",
 		[parameter()][hashtable] $ScriptParams,
@@ -10,21 +10,28 @@ function Test-SqlServerMemory {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$msg  = "Correct configuration"
+		$msg  = "No issues found"
 		$unlimited = 2147483647
 		# get total memory allocated to SQL Server in MB
 		$cmax = (Get-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).MaxValue
+		Write-Verbose "current sql limit = $cmax MB"
 		# get total physical memory of host in MB
 		$tmem = (Get-DbaComputerSystem -ComputerName $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).TotalPhysicalMemory.Megabyte
-		$target = $tmem * ($MaxMemAllocation / 100)
+		Write-Verbose "total physical memory = $tmem MB"
+		$target = $tmem * $MaxMemAllocation
+		Write-Verbose "target memory = $target"
 		$target = [math]::Round($target, 0)
+		Write-Verbose "target memory = $target (rounded)"
 		if ($cmax -eq $unlimited) {
 			$stat = 'FAIL'
-			$msg  = "Current SQL Server max memory is unlimited. Should be $target MB"
+			$msg  = "Current SQL Server max memory is unlimited. Should be limited to 80 percent of total physical memory."
 		} else {
-			if ($cmax -ne $target) {
-				$stat = 'FAIL'
-				$msg =  "Current SQL Server max memory is constrained to $($cmax). Should be $target MB"
+			if ($cmax -gt $tmem) {
+				$stat = "FAIL"
+				$msg  = "Current limit $($cmax) MB is greater than physical $($tmem) MB - possibly due to virtual dynamic memory"
+			} elseif ($cmax -gt $target) {
+				$stat = "FAIL"
+				$msg  = "Current limit $($cmax) MB is greater than 80 percent physical $($tmem) MB or $($target) MB"
 			}
 		}
 		if ($Remediate -eq $True) {
