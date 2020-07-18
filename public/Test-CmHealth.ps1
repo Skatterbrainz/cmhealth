@@ -40,11 +40,12 @@ function Test-CmHealth {
 	$startTime = (Get-Date)
 	$params = [ordered]@{
 		ComputerName = $SiteServer
-		SqlInstance = $SqlInstance
-		SiteCode = $SiteCode
-		Database = $Database
-		Source = $Source
-		Remediate = $Remediate
+		SqlInstance  = $SqlInstance
+		SiteCode     = $SiteCode
+		Database     = $Database
+		Source       = $Source
+		Remediate    = $Remediate
+		Verbose      = $VerbosePreference
 	}
 	switch ($TestingScope) {
 		{ $_ -in ('All','Host') } {
@@ -58,6 +59,7 @@ function Test-CmHealth {
 			Test-InstalledComponents -ScriptParams $params
 			Test-NoSmsOnDriveFile -ScriptParams $params	
 			Test-ServiceAccounts -ScriptParams $params
+			Test-HostServices -ScriptParams $params
 		}
 		{ $_ -in ('All','SQL') } {
 			Test-SqlServerMemory -ScriptParams $params
@@ -89,6 +91,8 @@ function Test-CmHealth {
 			Test-CmBoundaries -ScriptParams $params
 			Test-CmCollectionRefresh -ScriptParams $params
 			Test-CmCompStatus -ScriptParams $params
+			Test-CmLastBackup -ScriptParams $params
+			Test-CmWsusLastSync -ScriptParams $params 
 			# 
 			# more tests needed!
 			# 
@@ -102,7 +106,7 @@ function Test-CmHealth {
 			if ($null -ne $test) {
 				$testname = $($test.Name -replace '.ps1','')
 				$testname += ' -ScriptParams $params'
-				iex $testname
+				Invoke-Expression -Command $testname
 			}
 		}
 	}
