@@ -1,3 +1,4 @@
+#Requires -RunAsAdministrator
 <#
 .SYNOPSIS
 	Validate MECM/ConfigMgr site systems and configuration
