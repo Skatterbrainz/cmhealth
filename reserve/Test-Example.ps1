@@ -8,16 +8,25 @@ function Test-Example {
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg  = "No issues found"
+		$stat = "PASS" # do not change this
+		$msg  = "No issues found" # do not change this either
 		<# 
 		DELETE THIS COMMENT BLOCK WHEN FINISHED:
 		perform test and return result as an object...
-			Set $stat = "FAIL" only if test fails, or "WARNING" if not critical
-			No need to set "PASS" since it is the default
-			Set $msg = description of result
+			$stat = "FAIL" or "WARNING" (no need to set "PASS" since it's the default)
+			$msg = (details of failure or warning)
+			loop output into $tempdata.Add() array to return as TestData param in output
 		#>
-		
+
+		<#
+		# FOR SQL QUERY RELATED TESTS... DELETE THIS BLOCK IF NOT USED
+		$query = ""
+		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($null -ne $res) {
+			$stat = "WARNING" # or "FAIL"
+			$msg  = "$($res.Count) items found: $($res.SoftwareName -join ',')"
+		}
+		#>
 	}
 	catch {
 		$stat = 'ERROR'
