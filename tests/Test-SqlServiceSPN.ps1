@@ -1,7 +1,7 @@
 function Test-SqlServicesSPN {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "SQL SPN Registration",
+		[parameter()][string] $TestName = "Test-SqlServicesSPN",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify SQL instance Service Principal Name registration",
 		[parameter()][hashtable] $ScriptParams

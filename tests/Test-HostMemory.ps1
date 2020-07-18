@@ -1,7 +1,7 @@
 function Test-HostMemory {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Validate Host Memory",
+		[parameter()][string] $TestName = "Test-HostMemory",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify site system has at least minimum required memory",
 		[parameter()][hashtable] $ScriptParams
@@ -21,7 +21,7 @@ function Test-HostMemory {
 		$RAMPercentFree = [Math]::Round($RAMPercentFree, 2)
 		if ($TotalRAM -lt 24GB) {
 			$stat = "FAIL"
-			$msg  = "24 GB is the minimum for CM with SQL Server instance on the same host"
+			$msg  = "$($TotalRam) GB is below the minimum recommended 24 GB"
 		} elseif ($RAMPercentFree -lt 10) {
 			$stat = "FAIL"
 			$msg = "Less than 10 percent memory is available"

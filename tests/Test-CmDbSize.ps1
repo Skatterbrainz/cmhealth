@@ -1,7 +1,7 @@
 function Test-CmDbSize {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Check CM Site DB Size",
+		[parameter()][string] $TestName = "Test-CmDbSize",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate CM site database file size",
 		[parameter()][hashtable] $ScriptParams,

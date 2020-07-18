@@ -1,7 +1,7 @@
 function Test-SqlDbBackupHistory {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Validate CM SQL DB Backup History",
+		[parameter()][string] $TestName = "Test-SqlDbBackupHistory",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate CM SQL database backup history",
 		[parameter()][hashtable] $ScriptParams,

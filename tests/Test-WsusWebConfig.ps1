@@ -1,17 +1,18 @@
 function Test-WsusWebConfig {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Check WSUS Web Config File",
+		[parameter()][string] $TestName = "Test-WsusWebConfig",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate WSUS web configuration file parameters",
 		[parameter()][hashtable] $ScriptParams,
 		[parameter()][int32] $MaxCachedUpdates = 88000,
 		[parameter()][int32] $MaxInstalledPrerequisites = 800,
-		[parameter()][ValidateNotNullOrEmpty()][string] $ConfigFile = "C:\Program Files\Update Services\WebServices\ClientWebService\Web.config"
+		[parameter()][ValidateNotNullOrEmpty()][string] $ConfigFile = "$($env:PROGRAMFILES)\Update Services\WebServices\ClientWebService\Web.config"
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
+		$msg = "No issues found"
 		if (!(Test-Path $ConfigFile)) {	throw "config file not found: $ConfigFile" }
 		# read file contents into XML DOM instance
 		[xml]$webconfig = Get-Content $ConfigFile

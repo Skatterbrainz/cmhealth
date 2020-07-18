@@ -1,7 +1,7 @@
 function Test-DBRecoveryModel {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Validate DB Recovery Model",
+		[parameter()][string] $TestName = "Test-DBRecoveryModel",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate database recovery model settings",
 		[parameter()][hashtable] $ScriptParams

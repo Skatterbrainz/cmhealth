@@ -1,7 +1,7 @@
 function Test-DiskSpace {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Logical Disk configurations",
+		[parameter()][string] $TestName = "Test-DiskSpace",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate logical disk utilitization",
 		[parameter()][hashtable] $ScriptParams,
@@ -9,13 +9,14 @@ function Test-DiskSpace {
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @()
+		$stat = 'PASS'
+		$msg = "No issues found"
 		if ([string]::IsNullOrEmpty($ScriptParams.ComputerName)) {
 			$disks = Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
 		}
 		else {
 			$disks = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
 		}
-		$stat = 'PASS'
 		$disks | Foreach-Object {
 			$drv  = $_.DeviceID 
 			$size = $_.Size 

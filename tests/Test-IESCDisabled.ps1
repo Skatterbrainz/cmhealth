@@ -1,7 +1,7 @@
 function Test-IESCDisabled {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Disable IESC",
+		[parameter()][string] $TestName = "Test-IESCDisabled",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Disable Internet Explorer Enhanced Security Configuration",
 		[parameter()][hashtable] $ScriptParams

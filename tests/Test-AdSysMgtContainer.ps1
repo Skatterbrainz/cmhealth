@@ -1,7 +1,7 @@
 function Test-AdSysMgtContainer {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "AD Container",
+		[parameter()][string] $TestName = "Test-AdSysMgtContainer",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify System Management container has been created with delegated permissions",
 		[parameter()][hashtable] $ScriptParams

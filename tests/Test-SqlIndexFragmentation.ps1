@@ -1,7 +1,7 @@
 function Test-SqlIndexFragmentation {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "SQL Index Fragmentation",
+		[parameter()][string] $TestName = "Test-SqlIndexFragmentation",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate SQL database index fragmentation status",
 		[parameter()][hashtable] $ScriptParams,

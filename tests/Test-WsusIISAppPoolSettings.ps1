@@ -1,7 +1,7 @@
 function Test-WsusIisAppPoolSettings {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "WSUSAppPoolSettings",
+		[parameter()][string] $TestName = "Test-WsusIisAppPoolSettings",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate WSUS IIS application pool settings",
 		[parameter()][hashtable] $ScriptParams,

@@ -1,7 +1,7 @@
 function Test-ServiceAccounts {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Validate Service Accounts",
+		[parameter()][string] $TestName = "Test-ServiceAccounts",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate services accounts and permissions",
 		[parameter()][hashtable] $ScriptParams
@@ -11,6 +11,7 @@ function Test-ServiceAccounts {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
+		$msg = "No issues found"
 		$mpath = Split-Path (Get-Module CMhealth).Path -Parent
 		$jfile = "$mpath\tests\services.json"
 		if (!(Test-Path $jfile)) { throw "file not found: $jfile" }

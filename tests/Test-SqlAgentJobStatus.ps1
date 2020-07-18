@@ -1,7 +1,7 @@
 function Test-SqlAgentJobStatus {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "SQL Agent Jobs",
+		[parameter()][string] $TestName = "Test-SqlAgentJobStatus",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate SQL Agent Job status",
 		[parameter()][hashtable] $ScriptParams,

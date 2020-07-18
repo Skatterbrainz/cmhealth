@@ -1,7 +1,7 @@
 function Test-NoSmsOnDriveFile {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Confirm NO_SMS_ON_DRIVE file exists",
+		[parameter()][string] $TestName = "Test-NoSmsOnDriveFile",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Confirm NO_SMS_ON_DRIVE.SMS file resides on appropriate disks",
 		[parameter()][hashtable] $ScriptParams

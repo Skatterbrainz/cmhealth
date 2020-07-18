@@ -1,7 +1,7 @@
 function Test-DriveBlockSize {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Check Disk Format Block Size",
+		[parameter()][string] $TestName = "Test-DriveBlockSize",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate disk format block size",
 		[parameter()][hashtable] $ScriptParams

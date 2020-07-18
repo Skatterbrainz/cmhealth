@@ -1,7 +1,7 @@
 function Test-CmBoundaries {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Validate Site Boundaries",
+		[parameter()][string] $TestName = "Test-CmBoundaries",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate Site Boundaries",
 		[parameter()][hashtable] $ScriptParams

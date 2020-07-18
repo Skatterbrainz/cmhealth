@@ -1,14 +1,14 @@
-#Databases on the CM SQL instance that are not supported by usage rights (if SQL is Standard)
 function Test-SqlDbDedicated {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Dedicated SQL Instance",
+		[parameter()][string] $TestName = "Test-SqlDbDedicated",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Verify SQL Instance is dedicated to ConfigMgr site",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		$stat = 'PASS'
+		$msg  = "No issues found"
 		$supported = ('master','tempdb','msdb','model','SUSDB','ReportServer','ReportServerTempDB')
 		$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance | Select-Object -ExpandProperty Name
 		$dbnames | ForEach-Object {

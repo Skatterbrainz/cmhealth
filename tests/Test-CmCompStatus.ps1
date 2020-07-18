@@ -1,22 +1,30 @@
 function Test-CmCompStatus {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Check Component Status",
+		[parameter()][string] $TestName = "Test-CmCompStatus",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check Component Status Error messages",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int] $BackDays = 2
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$FromDate = (Get-Date).AddDays(-$BackDays).ToString('yyyy-MM-dd')
-		$query = "select * from vSMS_ComponentSummarizer where LastContacted > '$($FromDate)' and Errors > 0"
+		$query = "SELECT 
+ComponentName, Errors, Infos, Warnings,
+CASE WHEN Status = 0 THEN 'OK'
+	WHEN Status = 1 THEN 'Warning'
+	WHEN Status = 2 THEN 'Critical'
+END AS Status
+FROM v_ComponentSummarizer 
+WHERE 
+TallyInterval='0001128000100008' AND
+SiteCode = '$($ScriptParams.SiteCode)' AND
+Errors > 0"
 		$comps = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		if ($comps.Count -gt 0) {
 			$stat = "FAIL"
-			$msg  = "$($comps.Count) Component Status Errors were found in the last"
+			$msg  = "$($comps.Count) Component errors since 12:00 = $($comps.ComponentName -join ',')"
 		}
 	}
 	catch {
@@ -34,4 +42,3 @@ function Test-CmCompStatus {
 		})
 	}
 }
-
