@@ -12,24 +12,24 @@ function Test-HostMemory {
 		$msg  = "No issues found"
 		$SystemInfo = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName | Select-Object Name, TotalVisibleMemorySize, FreePhysicalMemory
 		$TotalRAM = $SystemInfo.TotalVisibleMemorySize/1MB
-		$FreeRAM = $SystemInfo.FreePhysicalMemory/1MB
-		$UsedRAM = $TotalRAM - $FreeRAM
+		$FreeRAM  = $SystemInfo.FreePhysicalMemory/1MB
+		$UsedRAM  = $TotalRAM - $FreeRAM
 		$RAMPercentFree = ($FreeRAM / $TotalRAM) * 100
 		$TotalRAM = [Math]::Round($TotalRAM, 2)
-		$FreeRAM = [Math]::Round($FreeRAM, 2)
-		$UsedRAM = [Math]::Round($UsedRAM, 2)
+		$FreeRAM  = [Math]::Round($FreeRAM, 2)
+		$UsedRAM  = [Math]::Round($UsedRAM, 2)
 		$RAMPercentFree = [Math]::Round($RAMPercentFree, 2)
 		if ($TotalRAM -lt 24GB) {
 			$stat = "FAIL"
 			$msg  = "$($TotalRam) GB is below the minimum recommended 24 GB"
 		} elseif ($RAMPercentFree -lt 10) {
 			$stat = "FAIL"
-			$msg = "Less than 10 percent memory is available"
+			$msg  = "Less than 10 percent memory is available"
 		}
 	}
 	catch {
 		$stat = 'ERROR'
-		$msg = $_.Exception.Message -join ';'
+		$msg  = $_.Exception.Message -join ';'
 	}
 	finally {
 		Write-Output $([pscustomobject]@{
