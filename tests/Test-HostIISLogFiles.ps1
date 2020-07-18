@@ -1,7 +1,7 @@
-function Test-IISLogFiles {
+function Test-HostIISLogFiles {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-IISLogFiles",
+		[parameter()][string] $TestName = "Test-HostIISLogFiles",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate IIS Log File retention",
 		[parameter()][hashtable] $ScriptParams,

@@ -1,7 +1,7 @@
-function Test-WindowsUpdates {
+function Test-HostWindowsUpdates {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-WindowsUpdates",
+		[parameter()][string] $TestName = "Test-HostWindowsUpdates",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Description of this test",
 		[parameter()][hashtable] $ScriptParams

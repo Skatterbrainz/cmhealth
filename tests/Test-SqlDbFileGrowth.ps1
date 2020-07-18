@@ -11,6 +11,9 @@ function Test-SqlDbFileGrowth {
 		$stat = "PASS"
 		$msg = "No issues found"
 		$dbfiles = Get-DbaDbFile -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database
+		$query = "select distinct Name from v_CombinedDeviceResources where (Name not like '%Unknown%') and (Name not like 'Provisioning Device%')"
+		$clients = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query).Count
+		Write-Verbose "clients = $clients"
 		switch ($ScriptParams.FileType) {
 			'Database' {
 				$files = $dbfiles | Where-Object {$_.TypeDescription -eq 'Rows'}

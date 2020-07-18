@@ -1,7 +1,7 @@
-function Test-InstalledComponents {
+function Test-HostInstalledComponents {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-InstalledComponents",
+		[parameter()][string] $TestName = "Test-HostInstalledComponents",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate CM prerequisites and support components",
 		[parameter()][hashtable] $ScriptParams

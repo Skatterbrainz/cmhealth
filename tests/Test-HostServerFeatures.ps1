@@ -1,7 +1,7 @@
-function Test-ServerFeatures {
+function Test-HostServerFeatures {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-ServerFeatures",
+		[parameter()][string] $TestName = "Test-HostServerFeatures",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate Windows Server roles and features for CM site systems",
 		[parameter()][hashtable] $ScriptParams
