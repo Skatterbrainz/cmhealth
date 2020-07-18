@@ -1,7 +1,7 @@
-function Test-SqlServicesSPN {
+function Test-SqlServiceSPN {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlServicesSPN",
+		[parameter()][string] $TestName = "Test-SqlServiceSPN",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify SQL instance Service Principal Name registration",
 		[parameter()][hashtable] $ScriptParams
@@ -9,18 +9,24 @@ function Test-SqlServicesSPN {
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		if (-not ($spn = Get-DbaSpn -ComputerName $ScriptParams.SqlInstance -ErrorAction SilentlyContinue)) {
-			if ($Remediate -eq $True) {
-				
-				# more work needed here!
-
-				$stat = 'REMEDIATED'
-				$msg  = 'SPN has been successfully registered'
+		$msg  = "No issues found"
+		$spns = Test-DbaSpn -ComputerName $ScriptParams.ComputerName -EnableException
+		if ($spns.Count -gt 0) {
+			foreach ($spn in $spns) {
+				if ($spn.IsSet -ne $True) {
+					if ($ScriptParams.Remediate -eq $True) {
+						Set-DbaSpn -SPN $spn.RequiredSPN -ServiceAccount $spn.InstanceServiceAccount -WhatIf
+					} else {
+						$stat = "FAIL"
+						$msg = "Missing SPN for $($spn.RequiredSPN)"
+					}
+				} else {
+					$tempdata.Add($spn.RequiredSPN)
+				}
 			}
-			else {
-				$stat = 'FAIL'
-				$msg  = 'SPN is not currently registered'
-			}
+		} else {
+			$stat = "FAIL"
+			$msg  = "No SPNs have been registered"
 		}
 	}
 	catch {
