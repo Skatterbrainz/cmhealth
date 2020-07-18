@@ -4,18 +4,23 @@
 .DESCRIPTION
 	Validate MECM/ConfigMgr site systems and configuration
 .PARAMETER SiteServer
-	NetBIOS or FQDN of site server (primary, CAS, secondary)
+	NetBIOS or FQDN of site server (primary, CAS, secondary). Default is localhost
 .PARAMETER SqlInstance
-	NetBIOS or FQDN of site database SQL instance
+	NetBIOS or FQDN of site database SQL instance. Default is localhost
 .PARAMETER Database
-	Name of site database
+	Name of site database. Default is "CM_P01"
 .PARAMETER SiteCode
-	ConfigMgr site code
+	ConfigMgr site code. Default is "P01"
 .PARAMETER TestingScope
-	Scope of tests to execute: All (default), Host, AD, SQL, CM, SUP, Select
+	Scope of tests to execute: All (default), Host, AD, SQL, CM, WSUS, Select
 	The Select option displays a gridview to select the individual tests to perform
 .PARAMETER Remediate
 	Attempt remediation when possible
+.PARAMETER Source
+	Alternate source path for WinSXS referencing. Used only for Test-HostServerFeatures
+	Default is C:\Windows\WinSxS
+.PARAMETER DaysBack
+	Number of days to go back for checking status messages, errors, warnings, etc. Default is 7
 .EXAMPLE
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "ALL"
 	Runs all tests
@@ -25,7 +30,13 @@
 .EXAMPLE
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate
 	Runs only the site server host tests and attempts to remediate identified deficiences
-
+.EXAMPLE
+	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
+	Runs only the site server host tests and attempts to remediate identified deficiences with WinSXS source path provided
+.LINK
+	https://github.com/Skatterbrainz/cmhealth
+.NOTES
+	Thank you!
 #>
 function Test-CmHealth {
 	[CmdletBinding()]
@@ -36,7 +47,8 @@ function Test-CmHealth {
 		[parameter()][ValidateLength(3,3)][string] $SiteCode = "",
 		[parameter()][ValidateSet('All','Host','AD','SQL','CM','WSUS','Select')][string] $TestingScope = 'All',
 		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $Source = "c:\windows\winsxs"
+		[parameter()][string] $Source = "c:\windows\winsxs",
+		[parameter()][int] $DaysBack = 7
 	)
 	$startTime = (Get-Date)
 	$params = [ordered]@{
@@ -46,7 +58,7 @@ function Test-CmHealth {
 		Database     = $Database
 		Source       = $Source
 		Remediate    = $Remediate
-		BackDays     = 7
+		BackDays     = $DaysBack
 		Verbose      = $VerbosePreference
 	}
 	$mpath = $(Split-Path (Get-Module cmhealth).Path)
