@@ -46,6 +46,7 @@ function Test-CmHealth {
 		Database     = $Database
 		Source       = $Source
 		Remediate    = $Remediate
+		BackDays     = 7
 		Verbose      = $VerbosePreference
 	}
 	$mpath = $(Split-Path (Get-Module cmhealth).Path)
