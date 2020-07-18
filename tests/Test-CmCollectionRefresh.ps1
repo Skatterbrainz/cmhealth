@@ -1,3 +1,9 @@
+<#
+.NOTES
+	Adapted from example:
+	Source: https://model-technology.com/blog/troubleshooting-slow-collection-evaluation-in-sccm-2012-part-3-aka-how-to-identify-collection-update-loitering/
+	By original author: Steve Bowman
+#>
 function Test-CmCollectionRefresh {
 	[CmdletBinding()]
 	param (
