@@ -12,7 +12,8 @@
 .PARAMETER SiteCode
 	ConfigMgr site code
 .PARAMETER TestingScope
-	Scope of tests to execute
+	Scope of tests to execute: All (default), Host, AD, SQL, CM, SUP, Select
+	The Select option displays a gridview to select the individual tests to perform
 .PARAMETER Remediate
 	Attempt remediation when possible
 .EXAMPLE
@@ -33,7 +34,7 @@ function Test-CmHealth {
 		[parameter()][ValidateNotNullOrEmpty()][string] $SqlInstance = "localhost",
 		[parameter()][ValidateNotNullOrEmpty()][string] $Database = "CM_P01",
 		[parameter()][ValidateLength(3,3)][string] $SiteCode = "",
-		[parameter()][ValidateSet('All','Host','AD','SQL','CM','IIS','Select')][string] $TestingScope = 'All',
+		[parameter()][ValidateSet('All','Host','AD','SQL','CM','WSUS','Select')][string] $TestingScope = 'All',
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $Source = "c:\windows\winsxs"
 	)
@@ -47,69 +48,26 @@ function Test-CmHealth {
 		Remediate    = $Remediate
 		Verbose      = $VerbosePreference
 	}
+	$mpath = $(Split-Path (Get-Module cmhealth).Path)
+	$tpath = "$($mpath)\tests"
+	$tests = Get-ChildItem -Path $tpath -Filter "*.ps1"
+	Write-Verbose "$($tests.Count) tests found in library"
 	switch ($TestingScope) {
-		{ $_ -in ('All','Host') } {
-			# Site System Host
-			Test-HostOperatingSystem -ScriptParams $params
-			Test-HostMemory -ScriptParams $params
-			Test-ServerFeatures -ScriptParams $params
-			Test-DiskSpace -ScriptParams $params
-			Test-DriveBlockSize -ScriptParams $params
-			Test-IESCDisabled -ScriptParams $params
-			Test-InstalledComponents -ScriptParams $params
-			Test-NoSmsOnDriveFile -ScriptParams $params	
-			Test-ServiceAccounts -ScriptParams $params
-			Test-HostServices -ScriptParams $params
-		}
-		{ $_ -in ('All','SQL') } {
-			Test-SqlServerMemory -ScriptParams $params
-			Test-SqlDbCollation -ScriptParams $params
-			Test-SqlDbDedicated -ScriptParams $params
-			Test-SqlServicesSPN -ScriptParams $params
-			Test-SqlDbBackupHistory -ScriptParams $params
-			Test-DbRecoveryModel -ScriptParams $params
-			Test-SqlDbFileGrowth -ScriptParams $params
-			Test-SqlIndexFragmentation -ScriptParams $params
-			Test-SqlAgentJobStatus -ScriptParams $params
-			Test-SqlRoleMembers -ScriptParams $params
-			Test-CmDbSize -ScriptParams $params
-			Test-SqlUpdates -ScriptParams $params
-		}
-		{ $_ -in ('All','AD') } {
-			# Active Directory
-			Test-AdSchemaExtension -ScriptParams $params
-			Test-AdSysMgtContainer -ScriptParams $params
-		}
-		{ $_ -in ('All','IIS') } {
-			Test-IISLogFiles -ScriptParams $params
-			Test-WsusIisAppPoolSettings -ScriptParams $params
-			Test-WsusWebConfig -ScriptParams $params
-		}
-		{ $_ -in ('All','CM') } {
-			# Configuration Manager Site
-			Test-CmMpResponse -ScriptParams $params
-			Test-CmBoundaries -ScriptParams $params
-			Test-CmCollectionRefresh -ScriptParams $params
-			Test-CmCompStatus -ScriptParams $params
-			Test-CmLastBackup -ScriptParams $params
-			Test-CmWsusLastSync -ScriptParams $params 
-			# 
-			# more tests needed!
-			# 
-			Test-CmClientCoverage -ScriptParams $params
+		'All' {
+			$testset = @($tests.BaseName)
 		}
 		'Select' {
-			$mpath = Split-Path $(Get-Module cmhealth).Path
-			$tpath = "$($mpath)\tests"
-			$tests = Get-ChildItem -Path $tpath -Filter "*.ps1" | Select Name,FullName | Sort-Object Name
-			$test = $tests | Out-GridView -Title "Select Test to Execute" -OutputMode Single
-			if ($null -ne $test) {
-				$testname = $($test.Name -replace '.ps1','')
-				$testname += ' -ScriptParams $params'
-				Invoke-Expression -Command $testname
-			}
+			$testset = @($tests.BaseName | Out-GridView -Title "Select Test to Execute" -OutputMode Multiple)
+		}
+		Default {
+			$testset = @($tests.BaseName | Where-Object {$_ -match "Test-$($TestingScope)"})
 		}
 	}
+	Write-Verbose "$($testset.Count) tests were selected"
+	foreach ($test in $testset) {
+		$testname = $test += ' -ScriptParams $params'
+		Invoke-Expression -Command $testname
+	}
 	$runTime = New-TimeSpan -Start $startTime -End (Get-Date)
-	Write-Host "testing completed: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec"
+	Write-Host "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec"
 }
