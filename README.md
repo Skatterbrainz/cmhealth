@@ -1,12 +1,26 @@
 # cmhealth
 
-## Example
+## Examples
+
+### Run all tests (default)
 
 ```powershell
 $result = Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01"
-
 $result | Select-Object TestName,Status,Message
+```
 
+### Run only site server host tests
+
+```powershell
+$result = Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host"
+$result | Select-Object TestName,Status,Message
+```
+
+### Run only one test which is selected from grid-view
+
+```powershell
+$result = Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Select"
+$result | Select-Object TestName,Status,Message
 ```
 
 ## Checklists
