@@ -24,7 +24,8 @@ function Test-Example {
 		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
-			$msg  = "$($res.Count) items found: $($res.SoftwareName -join ',')"
+			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
+			#$res | Foreach-Object {$tempdata.Add($_.Name)}
 		}
 		#>
 	}
