@@ -31,7 +31,7 @@ END AS ObjectTYpeName
 FROM fn_ListObjectContentExtraInfo(1033) AS SMS_ObjectContentExtraInfo
 WHERE Targeted > 0 AND NumberInstalled <> Targeted"
 		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		if ($null -ne $res) {
+		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING"
 			$msg  = "$($res.Count) items missing content: $($res.SoftwareName -join ',')"
 		}
