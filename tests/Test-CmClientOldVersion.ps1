@@ -23,7 +23,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
-			$res | Foreach-Object {$tempdata.Add(@($_.Name, $_.Client_Version0))}
+			$res | Foreach-Object {$tempdata.Add("Name=$($_.Name),Version=$($_.Client_Version0)")}
 		}
 	}
 	catch {

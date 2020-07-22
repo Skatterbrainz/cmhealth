@@ -23,7 +23,6 @@ INNER JOIN sys.indexes AS dbindexes ON dbindexes.[object_id] = indexstats.[objec
 AND indexstats.index_id = dbindexes.index_id
 WHERE indexstats.database_id = DB_ID() and indexstats.avg_fragmentation_in_percent > $($MinValue)
 ORDER BY indexstats.avg_fragmentation_in_percent desc"
-	
 		$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query | ForEach-Object {
 				[pscustomobject]@{
 					Schema = $_.Schema
@@ -36,6 +35,7 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 		if ($res.Count -gt 1) { 
 			$stat = 'FAIL' 
 			$msg = "$($res.Count) indexes were fragmented more than $MinValue percent"
+			$res | Foreach-Object {$tempdata.Add("Table=$($_.Table),Index=$($_.Index),FragPct=$($_.AvgFragPct)") }
 		}
 	}
 	catch {

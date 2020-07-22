@@ -22,9 +22,11 @@ function Test-HostMemory {
 		if ($TotalRAM -lt 24GB) {
 			$stat = "FAIL"
 			$msg  = "$($TotalRam) GB is below the minimum recommended 24 GB"
+			$res | Foreach-Object {$tempdata.Add("Total=$($TotalRam),Expected=24")}
 		} elseif ($RAMPercentFree -lt 10) {
 			$stat = "FAIL"
 			$msg  = "Less than 10 percent memory is available"
+			$res | Foreach-Object {$tempdata.Add("PctFree=$($RAMPercentFree),Expected=10")}
 		}
 	}
 	catch {

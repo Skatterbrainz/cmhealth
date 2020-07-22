@@ -30,6 +30,7 @@ function Test-WsusWebConfig {
 			} else {
 				$stat = "FAIL"
 				$msg  = "MaxCachedUpdates currently $($c1.value) should be $MaxCachedUpdates"
+				$tempdata.Add("MaxCachedUpdates=$($c1.Value),Expected=$($MaxCachedUpdates)")
 			}
 		}
 
@@ -40,6 +41,7 @@ function Test-WsusWebConfig {
 			} else {
 				$stat = "FAIL"
 				$msg = "MaxInstalledPrerequisites currently $($c2.value) should be $MaxInstalledPrerequisites"
+				$tempdata.Add("MaxInstalledPrerequisites=$($c2.Value),Expected=$($MaxInstalledPrerequisites)")
 			}
 		} 
 		

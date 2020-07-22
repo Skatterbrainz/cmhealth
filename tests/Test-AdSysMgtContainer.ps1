@@ -8,6 +8,7 @@ function Test-AdSysMgtContainer {
 	)
 	try {
 		Write-Verbose "Searching for AD container: System Management"
+		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$strFilter = "(&(objectCategory=Container)(Name=System Management))"
 		$objDomain = New-Object System.DirectoryServices.DirectoryEntry
 		$objSearcher = New-Object System.DirectoryServices.DirectorySearcher

@@ -1,9 +1,9 @@
-function Test-Example {
+function Test-CmClientStaleInventory {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-Example",
-		[parameter()][string] $TestGroup = "configuration",
-		[parameter()][string] $Description = "Description of this test",
+		[parameter()][string] $TestName = "Test-CmClientStaleInventory",
+		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $Description = "Clients with outdated or missing inventory data",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -26,6 +26,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND chs.LastActiveTime < DATEADD(dd,-CONVERT
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) clients inventory older than $($ScriptParams.DaysBack) days: $($res.Name -join ',')"
+			$res | Foreach-Object {$tempdata.Add("Name=$($_.Name),LastHW=$($_.LastHWScan),SiteCode=$($_.SiteCode)")}
 		}
 	}
 	catch {

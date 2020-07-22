@@ -24,6 +24,7 @@ WHERE fcm.CollectionID = 'SMS00001'"
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
+			$res | Foreach-Object { $tempdata.Add($_.Name) }
 		}
 	}
 	catch {

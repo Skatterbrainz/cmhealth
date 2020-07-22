@@ -21,10 +21,11 @@ WHERE
 TallyInterval='0001128000100008' AND
 SiteCode = '$($ScriptParams.SiteCode)' AND
 Errors > 0"
-		$comps = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		if ($comps.Count -gt 0) {
+		$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($res.Count -gt 0) {
 			$stat = "FAIL"
-			$msg  = "$($comps.Count) Component errors since 12:00 = $($comps.ComponentName -join ',')"
+			$msg  = "$($res.Count) Component errors since 12:00 = $($res.ComponentName -join ',')"
+			$res | Foreach-Object {$tempdata.Add("$($_.ComponentName)=$($_.Errors)")}
 		}
 	}
 	catch {

@@ -24,6 +24,7 @@ AND sys.Operating_System_Name_and0 IS NOT NULL AND sys.Operating_System_Name_and
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
+			$res | Foreach-Object {$tempdata.Add("Name=$($_.Name),SiteCode=$($_.SiteCode)")}
 		}
 	}
 	catch {
