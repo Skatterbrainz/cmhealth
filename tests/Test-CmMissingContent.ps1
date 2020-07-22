@@ -27,13 +27,14 @@ CASE ObjectType
 	WHEN 259 THEN 'Operating System Installer'
 	WHEN 512 THEN 'Application'
 	ELSE 'Unknown ID ' +  CONVERT(VARCHAR(200), ObjectType)
-END AS ObjectTYpeName
+END AS ObjectTypeName
 FROM fn_ListObjectContentExtraInfo(1033) AS SMS_ObjectContentExtraInfo
 WHERE Targeted > 0 AND NumberInstalled <> Targeted"
 		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING"
 			$msg  = "$($res.Count) items missing content: $($res.SoftwareName -join ',')"
+			$res | Foreach-Object {$tempdata.Add("Name=$($_.SoftwareName),Type=$($_.ObjectTypeName),Errors=$($_.NumberErrors)")}
 		}
 	}
 	catch {
