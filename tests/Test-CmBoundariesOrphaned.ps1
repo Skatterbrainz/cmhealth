@@ -17,7 +17,7 @@ function Test-CmBoundariesOrphaned {
 			$boundaries = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
 		$orphaned = $boundaries | Where-Object {$_.GroupCount -eq 0}
-		if ($orphaned.Count -gt 1) { $stat = 'FAIL' }
+		if ($orphaned.Count -gt 1) { $stat = 'WARNING' }
 	}
 	catch {
 		$stat = 'ERROR'
