@@ -1,4 +1,4 @@
-function Test-CmBoundaries {
+function Test-CmBoundariesOrphaned {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Test-CmBoundariesOrphaned",

@@ -1,4 +1,4 @@
-function Test-CmBoundaries {
+function Test-CmBoundariesDuplicates {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Test-CmBoundariesDuplicates",
