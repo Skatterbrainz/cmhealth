@@ -11,8 +11,13 @@ function Test-HostDriveBlockSize {
 		$stat = "PASS"
 		$msg  = "Success"
 		$bsize = 65536
-		Get-CimInstance "Win32_Volume" -ComputerName $ScriptParams.ComputerName -Filter "DriveType = 3" | 
-			Where-Object {![string]::IsNullOrEmpty($_.DriveLetter)} | Foreach-Object {
+		if ($ScriptParams.Credential) {	
+			$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
+			$vols = Get-CimInstance "Win32_Volume" -CimSession $cs -Filter "DriveType = 3" | Where-Object {![string]::IsNullOrEmpty($_.DriveLetter)}
+		} else {
+			$vols = Get-CimInstance "Win32_Volume" -ComputerName $ScriptParams.ComputerName -Filter "DriveType = 3" | Where-Object {![string]::IsNullOrEmpty($_.DriveLetter)}
+		}
+		$vols | Foreach-Object {
 				if ($_.BlockSize -eq $bsize) {$res = 'PASS'} else {$res = 'FAIL'}
 				$tempdata.Add([pscustomobject]@{
 					Computer = $ScriptParams.ComputerName
@@ -26,6 +31,7 @@ function Test-HostDriveBlockSize {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		if ($cs) { $cs.Close(); $cs = $null }
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

@@ -17,6 +17,9 @@ function Test-HostServiceAccounts {
 		if (!(Test-Path $jfile)) { throw "file not found: $jfile" }
 		Write-Verbose "loading configuration file: $jfile"
 		$jdata = Get-Content $jfile | ConvertFrom-Json
+		if ($ScriptParams.Credential) {
+			$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Authentication Negotiate -Credential $ScriptParams.Credential -ErrorAction Stop
+		}
 		$jdata.Services | ForEach-Object {
 			$svcName = $_.Name 
 			$svcRef  = $_.Reference 
@@ -25,7 +28,11 @@ function Test-HostServiceAccounts {
 			$delayed = if ($_.DelayedAutoStart -eq 'true') { $True } else { $False }
 			Write-Verbose "service name: $svcName"
 			try {
-				$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -ComputerName $ScriptParams.ComputerName
+				if ($ScriptParams.Credential) {
+					$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -CimSession $cs 
+				} else {
+					$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -ComputerName $ScriptParams.ComputerName
+				}
 				$svcAcct  = $svc.StartName
 				$svcStart = $svc.StartMode
 				$svcDelay = $svc.DelayedAutoStart
@@ -87,6 +94,7 @@ function Test-HostServiceAccounts {
 		$msg  = $_.Exception.Message -join ';'
 	}
 	finally {
+		if ($cs) { $cs.Close(); $cs = $null }
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
