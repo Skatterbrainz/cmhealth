@@ -1,9 +1,8 @@
-#Requires -RunAsAdministrator
 <#
 .SYNOPSIS
-	Validate MECM/ConfigMgr site systems and configuration
+	Validate MECM/ConfigMgr site systems and configuration.
 .DESCRIPTION
-	Validate MECM/ConfigMgr site systems and configuration
+	Validate MECM/ConfigMgr site systems and configuration.
 .PARAMETER SiteServer
 	NetBIOS or FQDN of site server (primary, CAS, secondary). Default is localhost
 .PARAMETER SqlInstance
@@ -41,6 +40,7 @@
 .NOTES
 	Thank you!
 #>
+
 function Test-CmHealth {
 	[CmdletBinding()]
 	param (
