@@ -10,7 +10,7 @@ function Test-HostWindowsUpdates {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$res = Get-WindowsUpdate -ComputerName $ScriptParams.ComputerName -WindowsUpdate
+		$res = Get-WindowsUpdate -ComputerName $ScriptParams.ComputerName -WindowsUpdate -ErrorAction Stop
 		if ($res.Count -gt 0) {
 			Write-Verbose "$($res.Count) updates are not installed"
 			if ($ScriptParams.Remediate -eq $True) {
@@ -25,7 +25,11 @@ function Test-HostWindowsUpdates {
 	}
 	catch {
 		$stat = 'ERROR'
-		$msg = $_.Exception.Message -join ';'
+		if ($_.CategoryInfo -match 'PermissionDenied') {
+			$msg = "PsWindowsUpdate module dependency - does not support remote credentials"
+		} else {
+			$msg = $_.Exception.Message -join ';'
+		}
 	}
 	finally {
 		Write-Output $([pscustomobject]@{
