@@ -22,6 +22,8 @@
 	Default is C:\Windows\WinSxS
 .PARAMETER DaysBack
 	Number of days to go back for checking status messages, errors, warnings, etc. Default is 7
+.PARAMETER Credential
+	PS Credential object for authenticating under alternate context
 .EXAMPLE
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "ALL"
 	Runs all tests
@@ -29,8 +31,8 @@
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host"
 	Runs only the site server host tests
 .EXAMPLE
-	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate
-	Runs only the site server host tests and attempts to remediate identified deficiences
+	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Credential $cred
+	Runs only the site server host tests and attempts to remediate identified deficiences using alternate user credentials
 .EXAMPLE
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
 	Runs only the site server host tests and attempts to remediate identified deficiences with WinSXS source path provided
@@ -49,7 +51,8 @@ function Test-CmHealth {
 		[parameter()][ValidateSet('All','Host','AD','SQL','CM','WSUS','Select')][string] $TestingScope = 'All',
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $Source = "c:\windows\winsxs",
-		[parameter()][int] $DaysBack = 7
+		[parameter()][int] $DaysBack = 7,
+		[parameter()][pscredential] $Credential
 	)
 	$startTime = (Get-Date)
 	$params = [ordered]@{
@@ -60,6 +63,7 @@ function Test-CmHealth {
 		Source       = $Source
 		Remediate    = $Remediate
 		BackDays     = $DaysBack
+		Credential   = $Credential
 		Verbose      = $VerbosePreference
 	}
 	$mpath = $(Split-Path (Get-Module cmhealth).Path)
