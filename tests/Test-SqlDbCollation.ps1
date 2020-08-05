@@ -11,7 +11,11 @@ function Test-SqlDbCollation {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$coll = Test-DbaDbCollation -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database
+		if ($ScriptParams.Credential) {
+			$coll = Test-DbaDbCollation -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -SqlCredential $ScriptParams.Credential
+		} else {
+			$coll = Test-DbaDbCollation -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database
+		}
 		if ($coll.DatabaseCollation -ne $Collation) {
 			$stat = "FAIL"
 			$msg  = "Collection is $($coll.DatabaseCollation) but should be $Collation"

@@ -12,12 +12,20 @@ function Test-CmDbSize {
 		$stat = "PASS"
 		$msg = "Correct configuration"
 		$query = "select distinct ResourceID,Name0 from v_R_System"
-		$devices = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query
+		if ($ScriptParams.Credential) {
+			$devices = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential
+		} else {
+			$devices = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query
+		}
 		Write-Verbose "calculating expected space requirements"
 		$devSizeMB = (($devices.Count * 5MB) + 5GB) / 1MB
 		$recSize = $devSizeMB * $maxUtilization
 		Write-Verbose "expected space: $devSizeMB MB (at $($devices.Count) devices)"
-		$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database).SizeMB
+		if ($ScriptParams.Credential) {
+			$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -SqlCredential $ScriptParams.Credential).SizeMB 	
+		} else {
+			$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database).SizeMB
+		}
 		Write-Verbose "actual space: $dbSizeMB MB"
 		$pct = [math]::Round(($devSizeMB / $dbSizeMB) * 100, 1)
 		Write-Verbose "actual utilization: $pct`%"

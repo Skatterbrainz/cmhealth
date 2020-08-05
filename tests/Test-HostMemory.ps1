@@ -10,7 +10,13 @@ function Test-HostMemory {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$SystemInfo = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName | Select-Object Name, TotalVisibleMemorySize, FreePhysicalMemory
+		if ($ScriptParams.Credential) {
+			$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Authentication Negotiate -Credential $ScriptParams.Credential
+			$SystemInfo = Get-CimInstance -CimSession $cs -ClassName Win32_OperatingSystem -ErrorAction SilentlyContinue | Select-Object Name, TotalVisibleMemorySize, FreePhysicalMemory
+			$cs.Close()
+		} else {
+			$SystemInfo = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName -ErrorAction SilentlyContinue | Select-Object Name, TotalVisibleMemorySize, FreePhysicalMemory
+		}
 		$TotalRAM = $SystemInfo.TotalVisibleMemorySize/1MB
 		$FreeRAM  = $SystemInfo.FreePhysicalMemory/1MB
 		$UsedRAM  = $TotalRAM - $FreeRAM

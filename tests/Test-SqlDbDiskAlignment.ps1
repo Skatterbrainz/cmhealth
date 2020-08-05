@@ -10,7 +10,11 @@ function Test-SqlDbDiskAlignment {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$da = Test-DbaDiskAlignment -ComputerName $ScriptParams.SqlInstance
+		if ($ScriptParams.Credential) {
+			$da = Test-DbaDiskAlignment -ComputerName $ScriptParams.SqlInstance -SqlCredential $ScriptParams.Credential
+		} else {
+			$da = Test-DbaDiskAlignment -ComputerName $ScriptParams.SqlInstance
+		}
 		if ($da -eq $false) {
 			$stat = "FAIL"
 			$msg  = "One or more disks are not aligned using recommended practices"

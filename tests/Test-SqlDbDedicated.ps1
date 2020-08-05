@@ -10,7 +10,11 @@ function Test-SqlDbDedicated {
 		$stat = 'PASS'
 		$msg  = "No issues found"
 		$supported = ('master','tempdb','msdb','model','SUSDB','ReportServer','ReportServerTempDB')
-		$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance | Select-Object -ExpandProperty Name
+		if ($ScriptParams.Credential) {
+			$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -SqlCredential $ScriptParams.Credential | Select-Object -ExpandProperty Name
+		} else { 
+			$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance | Select-Object -ExpandProperty Name
+		}
 		$dbnames | ForEach-Object {
 			if (-not (($_ -match 'CM_') -or ($_ -in $supported))) {
 				throw "Unsupported database: $($_)"

@@ -21,7 +21,11 @@ WHERE
 TallyInterval='0001128000100008' AND
 SiteCode = '$($ScriptParams.SiteCode)' AND
 Errors > 0"
-		$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($res.Count -gt 0) {
 			$stat = "FAIL"
 			$msg  = "$($res.Count) Component errors since 12:00 = $($res.ComponentName -join ',')"

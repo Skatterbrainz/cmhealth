@@ -11,9 +11,17 @@ function Test-SqlAgentJobStatus {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg = "No errors in the past $($HoursBack) hours"
-		$params = @{
-			SqlInstance = $ScriptParams.SqlInstance 
-			StartDate   = (Get-Date).AddHours(-$HoursBack)
+		if ($ScriptParams.Credential) {
+			$params = @{
+				SqlInstance   = $ScriptParams.SqlInstance 
+				StartDate     = (Get-Date).AddHours(-$HoursBack)
+				SqlCredential = $ScriptParams.Credential
+			}
+		} else {
+			$params = @{
+				SqlInstance = $ScriptParams.SqlInstance 
+				StartDate   = (Get-Date).AddHours(-$HoursBack)
+			}	
 		}
 		$res = @(Get-DbaAgentJobHistory @params | Where-Object {$_.Status -ne "Succeeded"})
 		if ($res.Count -gt 0) { 

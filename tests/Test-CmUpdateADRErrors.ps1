@@ -11,7 +11,11 @@ function Test-CmUpdateADRErrors {
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
 		$query = "SELECT Name, LastRunTime, LastErrorCode, LastErrorTime FROM vSMS_AutoDeployments WHERE LastErrorCode IS NOT NULL"
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"

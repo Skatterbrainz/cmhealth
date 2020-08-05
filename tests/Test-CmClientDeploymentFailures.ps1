@@ -21,7 +21,7 @@ LastMessageParam AS DescriptionParam,
 LastMessageStateID
 FROM v_ClientDeploymentState 
 WHERE LastMessageStateID < 100 AND LastMessageStateID > 400"
-		if ($null -ne $ScriptParams.Credential) {
+		if ($ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)

@@ -11,12 +11,12 @@ function Test-HostNoSmsOnDriveFile {
 		$msg  = "All non-CM disks are excluded"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		if ($ScriptParams.Credential) {
-			$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName 
-			$disks = Get-CimInstance -CimSession $cs -ClassName Win32_LogicalDisk -Filter "DriveType=3"
+			$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName -ErrorAction Stop
+			$disks = Get-CimInstance -CimSession $cs -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction SilentlyContinue
 			$cs.Close()
 			$cs = $null
 		} else {
-			$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ScriptParams.ComputerName
+			$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ScriptParams.ComputerName -ErrorAction SilentlyContinue
 		}
 		
 		$disks | ForEach-Object {

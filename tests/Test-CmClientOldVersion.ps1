@@ -19,7 +19,11 @@ FROM v_FullCollectionMembership_Valid fcm
 INNER JOIN v_R_System_Valid sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_Site st ON st.SiteCode = fcm.SiteCode
 WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"

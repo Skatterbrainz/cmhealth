@@ -12,7 +12,11 @@ function Test-CmDpNoGroups {
 		$msg  = "No issues found" # do not change this either
 		# FOR SQL QUERY RELATED TESTS... DELETE THIS BLOCK IF NOT USED
 		$query = "SELECT ServerName FROM v_DistributionPointInfo WHERE GroupCount < 1"
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.ServerName -join ',')"

@@ -30,7 +30,11 @@ s.backup_start_date >= DATEADD(dd,-CONVERT(INT, $DaysBack),GETDATE())
 ) T1
 WHERE T1.Seconds > $MaxRunTime
 ORDER BY T1.Seconds DESC"
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($res.Count -gt 0) {
 			$stat = "WARNING"
 			$msg = "$($res.Count) backups took longer than $MaxRunTime seconds"

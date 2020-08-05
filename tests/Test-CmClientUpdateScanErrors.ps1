@@ -25,7 +25,11 @@ join v_SoftwareUpdateSource sus with (NOLOCK) on sus.UpdateSource_ID = uss.Updat
 join v_R_System rsys with (NOLOCK) on rsys.ResourceID = uss.ResourceID 
 join v_FullCollectionMembership_Valid fcm with (NOLOCK) on uss.ResourceID = fcm.ResourceID
 where uss.LastStatusMessageID <> 0 and fcm.CollectionID = 'SMS00001' "
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.MachineName -join ',')"

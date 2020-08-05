@@ -10,10 +10,18 @@ function Test-SqlDbRecoveryModel {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "Correct configuration"
-		$rm = (Get-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -ErrorAction SilentlyContinue).RecoveryModel
+		if ($ScriptParams.Credential) {
+			$rm = (Get-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -ErrorAction SilentlyContinue -SqlCredential $ScriptParams.Credential).RecoveryModel
+		} else {
+			$rm = (Get-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -ErrorAction SilentlyContinue).RecoveryModel
+		}
 		if ($rm -ne 'Simple') {
 			if ($Remediate -eq $True) {
-				$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel "Simple" -ErrorAction SilentlyContinue
+				if ($ScriptParams.Credential) {
+					$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel "Simple" -ErrorAction SilentlyContinue -SqlCredential $ScriptParams.Credential 
+				} else {
+					$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel "Simple" -ErrorAction SilentlyContinue
+				}
 				$stat = "REMEDIATED"
 				$msg  = "Recovery model is now to SIMPLE"
 			} else {

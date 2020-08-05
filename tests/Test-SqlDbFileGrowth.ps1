@@ -10,9 +10,17 @@ function Test-SqlDbFileGrowth {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg = "No issues found"
-		$dbfiles = Get-DbaDbFile -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database
+		if ($ScriptParams.Credential) {
+			$dbfiles = Get-DbaDbFile -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -SqlCredential $ScriptParams.Credential
+		} else {
+			$dbfiles = Get-DbaDbFile -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database
+		}
 		$query = "select distinct Name from v_CombinedDeviceResources where (Name not like '%Unknown%') and (Name not like 'Provisioning Device%')"
-		$clients = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query).Count
+		if ($ScriptParams.Credential) {
+			$clients = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential).Count
+		} else {
+			$clients = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query).Count
+		}
 		Write-Verbose "clients = $clients"
 		switch ($ScriptParams.FileType) {
 			'Database' {

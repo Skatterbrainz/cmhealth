@@ -23,7 +23,7 @@ function Test-HostInstalledComponents {
 		}
 		$applist = Import-Csv -Path "$AppListFile"
 	
-		$reg64 = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall
+		$reg64 = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall 
 		$reg32 = Get-ChildItem -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
 	
 		$reg64 | ForEach-Object {

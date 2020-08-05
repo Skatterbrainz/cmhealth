@@ -11,7 +11,10 @@ function Test-HostServices {
 		$stat = "PASS"
 		$msg  = "No issues found"
 		if (![string]::IsNullOrEmpty($ScriptParams.ComputerName) -and $Script.Params.ComputerName -ne $env:COMPUTERNAME) {
-			$services = @(Get-CimInstance -ClassName Win32_Service -ComputerName $ScriptParams.ComputerName | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
+			$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
+			$services = @(Get-CimInstance -CimSession $cs -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
+			$cs.Close()
+			$cs = $null
 		} else {
 			$services = @(Get-CimInstance -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
 		}
@@ -26,6 +29,7 @@ function Test-HostServices {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		if ($cs) { $cs.Close(); $cs = $null }
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

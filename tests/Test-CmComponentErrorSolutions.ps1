@@ -18,7 +18,11 @@ AND stat.Component NOT IN ('Advanced Client', 'Windows Installer SourceList Upda
 'Desired Configuration Management', 'Software Updates Scan Agent', 'File Collection Agent', 
 'Hardware Inventory Agent', 'Software Distribution', 'Software Inventory Agent')
 AND stat.Time >= DATEADD(dd,-CONVERT(INT,$($ScriptParams.DaysBack)),GETDATE())"
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
