@@ -36,7 +36,7 @@
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
 	Runs only the site server host tests and attempts to remediate identified deficiences with WinSXS source path provided
 .LINK
-	https://github.com/Skatterbrainz/cmhealth
+	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md
 .NOTES
 	Thank you!
 #>
