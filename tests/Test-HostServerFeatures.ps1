@@ -11,7 +11,15 @@ function Test-HostServerFeatures {
 		$stat = "PASS"
 		$msg = "No issues found"
 		Import-Module ServerManager
-		$features = Get-WindowsFeature
+		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
+			if ($ScriptParams.Credential) {
+				$features = Get-WindowsFeature -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -ErrorAction Stop 
+			} else {
+				$features = Get-WindowsFeature -ComputerName $ScriptParams.ComputerName -ErrorAction Stop 
+			}
+		} else {
+			$features = Get-WindowsFeature -ErrorAction Stop
+		}
 		$LogFile = Join-Path $env:TEMP "serverfeatures.log"
 		if ($ScriptParams.Remediate -eq $True -and ([string]::IsNullOrEmpty($ScriptParams.Source))) {
 			throw "Source parameter is required for -Remediate but was not specified"
@@ -75,11 +83,18 @@ function Test-HostServerFeatures {
 			if ($feature.Name -in $flist) {
 				if ($feature.Installed -ne $True) {
 					Write-Verbose "$($feature.Name) is not installed!"
-					
 					if ($ScriptParams.Remediate -eq $True) {
 						try {
 							Write-Host "installing: $($Feature.Name)" -ForegroundColor Cyan
-							Install-WindowsFeature -Name "$($Feature.Name)" -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
+							if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
+								if ($ScriptParams.Credential) {
+									Install-WindowsFeature -Name "$($Feature.Name)" -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
+								} else {
+									Install-WindowsFeature -Name "$($Feature.Name)" -ComputerName $ScriptParams.ComputerName -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
+								}
+							} else {
+								Install-WindowsFeature -Name "$($Feature.Name)" -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
+							}
 							$tempdata.Add([pscustomobject]@{
 								Feature = $feature.Name
 								Status  = "Remediated"

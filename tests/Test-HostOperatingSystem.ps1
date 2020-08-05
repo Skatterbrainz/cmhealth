@@ -12,7 +12,12 @@ function Test-HostOperatingSystem {
 		$msg  = "No issues found"
 		$supported = @('Windows Server 2016','Windows Server 2019','Windows 10 Enterprise')
 		if (![string]::IsNullOrEmpty($ScriptParams.ComputerName) -and $ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			$osdata = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName | Select-Object Caption,Version,BuildNumber
+			if ($ScriptParams.Credential) {
+				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
+				$osdata = Get-CimInstance -ClassName Win32_OperatingSystem -CimSession $cs | Select-Object Caption,Version,BuildNumber
+			} else {
+				$osdata = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName | Select-Object Caption,Version,BuildNumber
+			}
 		} else {
 			$osdata = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object Caption,Version,BuildNumber
 		}
@@ -29,6 +34,7 @@ function Test-HostOperatingSystem {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		if ($cs) { $cs.Close(); $cs = $null }
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
