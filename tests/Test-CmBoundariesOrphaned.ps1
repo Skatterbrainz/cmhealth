@@ -10,14 +10,17 @@ function Test-CmBoundariesOrphaned {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat  = "PASS"
 		$msg   = "No issues found"
-		$query = "select * from vSMS_Boundary"
+		$query = "select * from vSMS_Boundary where GroupCount < 1"
 		if ($ScriptParams.Credential) {
-			$boundaries = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
-			$boundaries = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
-		$orphaned = $boundaries | Where-Object {$_.GroupCount -eq 0}
-		if ($orphaned.Count -gt 1) { $stat = 'WARNING'; $msg = "$($orphaned.Count) boundaries found not in a boundary group" }
+		if ($res.Count -gt 1) { 
+			$stat = 'WARNING'
+			$msg = "$($res.Count) boundaries found not in a boundary group" 
+			$res | Foreach-Object {$tempdata.Add(@("Name=$($_.DisplayName)","Scope=$($_.Value)"))}
+		}
 	}
 	catch {
 		$stat = 'ERROR'

@@ -23,7 +23,7 @@ function Test-HostInstalledSoftware {
 		}
 		if ($res.Count -gt $MaxProducts) {
 			$stat = "WARNING" # or "FAIL"
-			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
+			$msg  = "$($res.Count) items found. See TestData for item details"
 			$res | Foreach-Object {$tempdata.Add(@($_.Name,$_.Version,$_.Vendor,$_.ProductCode))}
 		}
 	}
