@@ -12,42 +12,63 @@ function Test-HostNoSmsOnDriveFile {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		if ($ScriptParams.Credential) {
 			$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName -ErrorAction Stop
-			$disks = Get-CimInstance -CimSession $cs -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction SilentlyContinue
-			$cs.Close()
-			$cs = $null
-		} else {
-			$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ScriptParams.ComputerName -ErrorAction SilentlyContinue
-		}
-		
-		$disks | ForEach-Object {
-			Write-Verbose "checking disk $($_.DeviceID) to see if distribution point shares are found"
-			$fpth = (Join-Path -Path $_.DeviceID -ChildPath "NO_SMS_ON_DRIVE.SMS")
-			$clib = (Join-Path -Path $_.DeviceID -ChildPath "SMSPKGSIG")
-			if (Test-Path $clib) {
-				$tempdata.Add([pscustomobject]@{
-					Test    = $TestName
-					Status  = "PASS"
-					Message = "$($_.DeviceID) appears to be a content library drive (not excluded)"
-				})
-			} else {
-				if (Test-Path $fpth) {
+			$disks = Get-CimInstance -CimSession $cs -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DeviceID
+			foreach ($disk in $disks) {
+				$fpth = "$($disk)\\NO_SMS_ON_DRIVE.sms"
+				$clib = "$($disk)\\SMSPKGSIG"
+				if (Get-CimInstance -Query "SELECT Name FROM CIM_Directory WHERE Name='$clib'" -CimSession $cs -ErrorAction SilentlyContinue) {
 					$tempdata.Add([pscustomobject]@{
-						Test = $TestName
-						Status = "PASS"
-						Message = "$($_.DeviceID) is excluded from ConfigMgr content storage"
+						Test    = $TestName
+						Status  = "PASS"
+						Message = "$($disk) appears to be a content library drive (not excluded)"
+					})
+				} else {
+					if (Get-CimInstance -CimSession $cs -Query "SELECT Name FROM CIM_DataFile WHERE Name = '$fpth'" -ErrorAction SilentlyContinue) {
+						$tempdata.Add([pscustomobject]@{
+							Test    = $TestName
+							Status  = "PASS"
+							Message = "$($disk) is excluded from ConfigMgr content storage"
+						})
+					} else {
+						if ($ScriptParams.Remediate -eq $True) {
+							$tempdata.Add([pscustomobject]@{
+								Test    = $TestName
+								Status  = "REMEDIATED"
+								Message = "$($disk) is now excluded from ConfigMgr content storage"
+							})
+						} else {
+							$tempdata.Add([pscustomobject]@{
+								Test    = $TestName
+								Status  = "FAIL"
+								Message = "$($_.DeviceID) is not excluded from ConfigMgr content storage"
+							})
+						}
+					}
+				}
+			} # foreaach
+		} else {
+			$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ScriptParams.ComputerName -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DeviceID
+			foreach ($disk in $disks) {
+				$fpth = "$($disk)\NO_SMS_ON_DRIVE.sms"
+				$clib = "$($disk)\SMSPKGSIG"
+				if (Test-Path $clib) {
+					$tempdata.Add([pscustomobject]@{
+						Test    = $TestName
+						Status  = "PASS"
+						Message = "$($disk) appears to be a content library drive (not excluded)"
 					})
 				} else {
 					if ($ScriptParams.Remediate -eq $True) {
 						$tempdata.Add([pscustomobject]@{
-							Test = $TestName
-							Status = "REMEDIATED"
-							Message = "$($_.DeviceID) is now excluded from ConfigMgr content storage"
+							Test    = $TestName
+							Status  = "REMEDIATED"
+							Message = "$($disk) is now excluded from ConfigMgr content storage"
 						})
 					} else {
 						$tempdata.Add([pscustomobject]@{
-							Test = $TestName
-							Status = "FAIL"
-							Message = "$($_.DeviceID) is not excluded from ConfigMgr content storage"
+							Test    = $TestName
+							Status  = "FAIL"
+							Message = "$($disk) is not excluded from ConfigMgr content storage"
 						})
 					}
 				}
