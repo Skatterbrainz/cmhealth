@@ -23,7 +23,12 @@ INNER JOIN sys.indexes AS dbindexes ON dbindexes.[object_id] = indexstats.[objec
 AND indexstats.index_id = dbindexes.index_id
 WHERE indexstats.database_id = DB_ID() and indexstats.avg_fragmentation_in_percent > $($MinValue)
 ORDER BY indexstats.avg_fragmentation_in_percent desc"
-		$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query | ForEach-Object {
+		if ($ScriptParams.Credential) {
+			$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
+		$res = $res | ForEach-Object {
 				[pscustomobject]@{
 					Schema = $_.Schema
 					Table  = $_.Table 
@@ -31,7 +36,7 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 					AvgFragPct = [math]::Round($_.avg_fragmentation_in_percent,2)
 					PageCount  = $_.PageCount
 				}
-			})
+		}
 		if ($res.Count -gt 1) { 
 			$stat = 'FAIL' 
 			$msg = "$($res.Count) indexes were fragmented more than $MinValue percent"
@@ -50,6 +55,7 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

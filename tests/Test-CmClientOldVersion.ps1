@@ -38,6 +38,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

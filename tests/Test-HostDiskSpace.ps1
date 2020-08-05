@@ -12,7 +12,7 @@ function Test-HostDiskSpace {
 		$stat = 'PASS'
 		$msg = "No issues found"
 		if ([string]::IsNullOrEmpty($ScriptParams.ComputerName)) {
-			$disks = Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
+			$disks = Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_LogicalDisk -Credential $ScriptParams.Credential | Where-Object { $_.DriveType -eq 3 }
 		}
 		else {
 			$disks = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
@@ -51,6 +51,7 @@ function Test-HostDiskSpace {
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

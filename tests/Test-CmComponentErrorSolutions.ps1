@@ -37,6 +37,7 @@ AND stat.Time >= DATEADD(dd,-CONVERT(INT,$($ScriptParams.DaysBack)),GETDATE())"
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

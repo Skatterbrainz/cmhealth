@@ -18,7 +18,11 @@ FROM v_StatusMessage stat
 INNER JOIN v_FullCollectionMembership_Valid fcm ON fcm.Name = stat.MachineName
 WHERE stat.Time > DATEADD(dd,-CONVERT(INT,7),GETDATE())  and 
 stat.Severity=0xC0000000 AND stat.PerClient!=0 AND fcm.CollectionID = 'SMS00001'"
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.MachineName -join ',')"
@@ -37,6 +41,7 @@ stat.Severity=0xC0000000 AND stat.PerClient!=0 AND fcm.CollectionID = 'SMS00001'
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

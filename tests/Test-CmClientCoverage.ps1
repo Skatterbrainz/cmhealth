@@ -11,7 +11,11 @@ function Test-CmClientCoverage {
 		$tempdata = $null
 		$adcomps = @(Get-AdsiComputer | Select-Object -ExpandProperty Name)
 		$query = "select distinct name, clientversion, lasthardwarescan from dbo.v_CombinedDeviceResources where (name not like '%unknown%')"
-		$cmcomps = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$cmcomps = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$cmcomps = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($adcomps.Count -gt 0 -and $cmcomps.Count -gt 0) {
 			if (($adcomps.Count / $cmcomps.Count) -ge $Threshold) {
 				$stat = 'PASS'
@@ -38,6 +42,7 @@ function Test-CmClientCoverage {
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

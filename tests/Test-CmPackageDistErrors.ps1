@@ -16,7 +16,11 @@ cds.NumberErrors, pkg.Description, pkg.PkgSourcePath
 FROM dbo.v_ContDistStatSummary AS cds INNER JOIN
 dbo.v_Package AS pkg ON cds.PkgID = pkg.PackageID
 WHERE (cds.NumberErrors > 0)"
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) { 
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "FAIL"
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
@@ -35,6 +39,7 @@ WHERE (cds.NumberErrors > 0)"
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

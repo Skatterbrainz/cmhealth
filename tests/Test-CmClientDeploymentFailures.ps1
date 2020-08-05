@@ -21,7 +21,12 @@ LastMessageParam AS DescriptionParam,
 LastMessageStateID
 FROM v_ClientDeploymentState 
 WHERE LastMessageStateID < 100 AND LastMessageStateID > 400"
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($null -ne $ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
+		
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.MachineName -join ',')"
@@ -39,6 +44,7 @@ WHERE LastMessageStateID < 100 AND LastMessageStateID > 400"
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

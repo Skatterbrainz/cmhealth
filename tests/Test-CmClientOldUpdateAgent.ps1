@@ -72,6 +72,7 @@ WHERE ops.Version0 > '6.2' AND uss.LastWUAVersion < '7.9.9600.16422'"
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

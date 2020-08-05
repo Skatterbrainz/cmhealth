@@ -10,7 +10,15 @@ function Test-HostNoSmsOnDriveFile {
 		$stat = "PASS"
 		$msg  = "All non-CM disks are excluded"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ScriptParams.ComputerName
+		if ($ScriptParams.Credential) {
+			$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName 
+			$disks = Get-CimInstance -CimSession $cs -ClassName Win32_LogicalDisk -Filter "DriveType=3"
+			$cs.Close()
+			$cs = $null
+		} else {
+			$disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ComputerName $ScriptParams.ComputerName
+		}
+		
 		$disks | ForEach-Object {
 			Write-Verbose "checking disk $($_.DeviceID) to see if distribution point shares are found"
 			$fpth = (Join-Path -Path $_.DeviceID -ChildPath "NO_SMS_ON_DRIVE.SMS")
@@ -51,6 +59,7 @@ function Test-HostNoSmsOnDriveFile {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		if ($cs) { $cs.Close(); $cs = $null }
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -58,6 +67,7 @@ function Test-HostNoSmsOnDriveFile {
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

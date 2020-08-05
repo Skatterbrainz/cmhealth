@@ -40,7 +40,11 @@ CASE
 	WHEN (@id = 6702) THEN 'Success'
 	WHEN (@id = 6703) THEN 'Error'
 END AS 'Comments'"
-		$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($null -eq $res) {
 			throw "No status found. Confirm SUP and WSUS are configured."
 		} else {
@@ -62,6 +66,7 @@ END AS 'Comments'"
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

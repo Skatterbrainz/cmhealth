@@ -10,7 +10,12 @@ function Test-SqlServiceSPN {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$spns = Test-DbaSpn -ComputerName $ScriptParams.ComputerName -EnableException
+		if ($ScriptParams.Credential) {
+			$spns = Test-DbaSpn -ComputerName $ScriptParams.ComputerName -EnableException -Credential $ScriptParams.Credential
+		} else {
+			$spns = Test-DbaSpn -ComputerName $ScriptParams.ComputerName -EnableException
+		}
+		
 		if ($spns.Count -gt 0) {
 			foreach ($spn in $spns) {
 				if ($spn.IsSet -ne $True) {
@@ -41,6 +46,7 @@ function Test-SqlServiceSPN {
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

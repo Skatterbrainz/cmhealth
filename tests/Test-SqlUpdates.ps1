@@ -10,7 +10,11 @@ function Test-SqlUpdates {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg = "No issues found"
-		$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update
+		if ($ScriptParams.Credential) {
+			$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update -SqlCredential $ScriptParams.Credential 
+		} else {
+			$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update
+		}
 		if ($res.Compliant -ne $True) { 
 			$bcurrent = $res.BuildLevel
 			$btarget  = $res.BuildTarget
@@ -30,6 +34,7 @@ function Test-SqlUpdates {
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

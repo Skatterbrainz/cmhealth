@@ -11,7 +11,12 @@ function Test-CmBoundaries {
 		$stat = "PASS"
 		$msg = "No issues found"
 		$query = "select * from vSMS_Boundary"
-		$boundaries = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query
+		if ($ScriptParams.Credential) {
+			$boundaries = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$boundaries = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
+		
 		$dupes = $boundaries | Group-Object -Property BoundaryType,Value | Select-Object Count,Name
 		$orphaned = $boundaries | Where-Object {$_.GroupCount -eq 0}
 		switch ($ScriptParams.Test) {
@@ -39,6 +44,7 @@ function Test-CmBoundaries {
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

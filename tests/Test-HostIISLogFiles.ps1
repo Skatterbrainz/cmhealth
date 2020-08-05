@@ -62,6 +62,7 @@ function Test-HostIISLogFiles {
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		}
 	}
 	catch {
@@ -76,6 +77,7 @@ function Test-HostIISLogFiles {
 			Trace    = $($_.ScriptStackTrace -join(";"))
 			RunAs    = $($env:USERNAME)
 			RunOn    = $($env:COMPUTERNAME)
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		}
 	}
 	finally {

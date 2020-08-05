@@ -33,6 +33,7 @@ FROM sys.dm_os_wait_stats OPTION (RECOMPILE)"
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

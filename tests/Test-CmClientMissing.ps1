@@ -20,7 +20,11 @@ FROM v_FullCollectionMembership fcm
 INNER JOIN v_R_System sys ON fcm.ResourceID = sys.ResourceID
 WHERE fcm.IsClient != 1 AND fcm.Name NOT LIKE '%Unknown%' AND fcm.CollectionID = 'SMS00001'
 AND sys.Operating_System_Name_and0 IS NOT NULL AND sys.Operating_System_Name_and0 <> ''"
-		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		if ($ScriptParams.Credential) {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
+		} else {
+			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
+		}
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
@@ -39,6 +43,7 @@ AND sys.Operating_System_Name_and0 IS NOT NULL AND sys.Operating_System_Name_and
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }

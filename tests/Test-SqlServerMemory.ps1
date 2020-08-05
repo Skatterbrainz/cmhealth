@@ -13,10 +13,18 @@ function Test-SqlServerMemory {
 		$msg  = "No issues found"
 		$unlimited = 2147483647
 		# get total memory allocated to SQL Server in MB
-		$cmax = (Get-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).MaxValue
+		if ($ScriptParams.Credential) {
+			$cmax = (Get-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue -SqlCredential $ScriptParams.Credential).MaxValue
+		} else {
+			$cmax = (Get-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).MaxValue
+		}
 		Write-Verbose "current sql limit = $cmax MB"
 		# get total physical memory of host in MB
-		$tmem = (Get-DbaComputerSystem -ComputerName $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).TotalPhysicalMemory.Megabyte
+		if ($ScriptParams.Credential) {
+			$tmem = (Get-DbaComputerSystem -ComputerName $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue -Credential $ScriptParams.Credential).TotalPhysicalMemory.Megabyte
+		} else {
+			$tmem = (Get-DbaComputerSystem -ComputerName $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).TotalPhysicalMemory.Megabyte
+		}
 		Write-Verbose "total physical memory = $tmem MB"
 		$target = $tmem * $MaxMemAllocation
 		Write-Verbose "target memory = $target"
@@ -35,7 +43,11 @@ function Test-SqlServerMemory {
 			}
 		}
 		if ($Remediate -eq $True) {
-			Set-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -Max $target -EnableException -ErrorAction SilentlyContinue
+			if ($ScriptParams.Credential) {
+				Set-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -Max $target -EnableException -ErrorAction SilentlyContinue -SqlCredential $ScriptParams.Credential
+			} else {
+				Set-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -Max $target -EnableException -ErrorAction SilentlyContinue
+			}
 			$stat = 'REMEDIATED'
 			$msg  = "SQL Server max memory is now set to $target MB"
 		}
@@ -52,6 +64,7 @@ function Test-SqlServerMemory {
 			Description = $Description
 			Status      = $stat 
 			Message     = $msg
+			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }
