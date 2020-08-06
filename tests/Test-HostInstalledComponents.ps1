@@ -12,17 +12,6 @@ function Test-HostInstalledComponents {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "All required components are installed"
-		$mpath = Split-Path (Get-Module "cmhealth" | Select-Object -ExpandProperty Path)
-		Write-Verbose "module path = $mpath"
-		if (![string]::IsNullOrEmpty($mpath)) {
-			$AppListFile = "$($mpath)\tests\applist.csv"
-			Write-Verbose "applist file = $AppListFile"
-		}
-		if (!(Test-Path $AppListFile)) {
-			throw "file not found: $AppListFile"
-		} else {
-			Write-Verbose "path verified to $AppListFile"
-		}
 	
 		$reg64 = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall 
 		$reg32 = Get-ChildItem -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall

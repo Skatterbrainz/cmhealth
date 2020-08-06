@@ -4,13 +4,16 @@ function Test-CmDbSize {
 		[parameter()][string] $TestName = "Test-CmDbSize",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate CM site database file size",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int] $maxUtilization = 0.95
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int]$maxUtilization = Get-CmHealthDefaultValue -KeySet "sqlserver:DatabaseFileSizeMaxPercent" -DataSet $CmHealthConfig
+		[int]$PerDevData = Get-CmHealthDefaultValue -KeySet "sqlserver:DataSizePerCMClientMB" -DataSet $CmHealthConfig
+		$maxUtilization = $maxUtilization * 0.1
+		$devData = $PerDevData * 1MB
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$msg = "Correct configuration"
+		$msg  = "Correct configuration"
 		$query = "select distinct ResourceID,Name0 from v_R_System"
 		if ($ScriptParams.Credential) {
 			$devices = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential
@@ -18,7 +21,7 @@ function Test-CmDbSize {
 			$devices = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query
 		}
 		Write-Verbose "calculating expected space requirements"
-		$devSizeMB = (($devices.Count * 5MB) + 5GB) / 1MB
+		$devSizeMB = (($devices.Count * $devData) + $devData) / 1MB
 		$recSize = $devSizeMB * $maxUtilization
 		Write-Verbose "expected space: $devSizeMB MB (at $($devices.Count) devices)"
 		if ($ScriptParams.Credential) {
@@ -30,8 +33,8 @@ function Test-CmDbSize {
 		$pct = [math]::Round(($devSizeMB / $dbSizeMB) * 100, 1)
 		Write-Verbose "actual utilization: $pct`%"
 		if ($pct -gt $recSize) {
-			$stat = 'FAIL'
-			$msg = "Current DB size is $dbSizeMB MB ($pct percent of recommended). Recommended: $recSize MB"
+			$stat = 'WARNING'
+			$msg  = "Current DB size is $dbSizeMB MB ($pct percent of recommended). Recommended: $recSize MB"
 		}
 	}
 	catch {

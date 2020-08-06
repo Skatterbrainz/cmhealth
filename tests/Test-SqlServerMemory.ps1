@@ -4,11 +4,10 @@ function Test-SqlServerMemory {
 		[parameter()][string] $TestName = "Test-SqlServerMemory",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate maximum memory allocation of SQL instance",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][string] $ConfigKey = "sqlserver:MaxMemAllocationPercent"
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
-		[int]$MaxMemAllocation = Get-CmHealthDefaultValue -KeySet $ConfigKey -DataSet $CmHealthConfig
+		[int]$MaxMemAllocation = Get-CmHealthDefaultValue -KeySet "sqlserver:MaxMemAllocationPercent" -DataSet $CmHealthConfig
 		Write-Verbose "MaxMemAllocation = $MaxMemAllocation"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"

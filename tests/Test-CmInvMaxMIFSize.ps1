@@ -7,10 +7,10 @@ function Test-CmInvMaxMIFSize {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int]$MaxMIF = Get-CmHealthDefaultValue -KeySet "configmgr:MaxMIFSizeRegistryValue" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
-		$MaxMIF = 52428800
 		$res = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SMS\COMPONENTS\SMS_INVENTORY_DATA_LOADER" -Name "Max MIF Size" | Select-Object -ExpandProperty "Max MIF Size")
 		if ($res -lt $MaxMIF) {
 			if ($ScriptParams.Remediate -eq $True) {
@@ -18,7 +18,7 @@ function Test-CmInvMaxMIFSize {
 				$stat = "REMEDIATED"
 				$msg  = "Max MIF Size is now set to $MaxMIF"
 			} else {
-				$stat = "FAIL"
+				$stat = "WARNING"
 				$msg  = "Max MIF size is $res (hex) which should be 3200000 (hex) or $MaxMIF"
 			}
 		}
