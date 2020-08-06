@@ -7,6 +7,7 @@ function Test-Example {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		#[int]$Setting = Get-CmHealthDefaultValue -KeySet "keygroup:keyname" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
