@@ -117,6 +117,7 @@
 			"DefaultCollation": "SQL_Latin1_General_CP1_CI_AS",
 			"IndexFragThresholdPercent": "50",
 			"DatabaseFileSizeMaxPercent": "95",
+			"DataSizePerCMClientMB": "5",
 			"SiteBackupMaxDaysOld": "7",
 			"SiteBackupMaxRuntime": "300",
 			"SqlAgentJobStatusHoursBack": "24"
