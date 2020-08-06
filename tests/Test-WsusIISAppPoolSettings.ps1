@@ -4,11 +4,11 @@ function Test-WsusIisAppPoolSettings {
 		[parameter()][string] $TestName = "Test-WsusIisAppPoolSettings",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate WSUS IIS application pool settings",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int32] $QueueLength = 2000,
-		[parameter()][int32] $PrivateMemLimit = 7372800
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int32]$QueueLength = Get-CmHealthDefaultValue -KeySet "wsus:QueueLength" -DataSet $CmHealthConfig
+		[int32]$PrivateMemLimit = Get-CmHealthDefaultValue -KeySet "wsus:PrivateMemLimit" -DataSet $CmHealthConfig
 		$stat = "PASS"
 		$msg = "No issues found"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed

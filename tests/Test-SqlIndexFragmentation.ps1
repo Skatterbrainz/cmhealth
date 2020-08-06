@@ -4,10 +4,10 @@ function Test-SqlIndexFragmentation {
 		[parameter()][string] $TestName = "Test-SqlIndexFragmentation",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate SQL database index fragmentation status",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int] $MinValue = 50
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int]$MinValue = Get-CmHealthDefaultValue -KeySet "sqlserver:IndexFragThresholdPercent" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg = "No indexes were fragmented more than $MinValue percent"

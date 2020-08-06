@@ -4,10 +4,10 @@ function Test-SqlDbCollation {
 		[parameter()][string] $TestName = "Test-SqlDbCollation",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate SQL database collation configruation",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][string] $Collation = "SQL_Latin1_General_CP1_CI_AS"
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[string]$Collation = Get-CmHealthDefaultValue -KeySet "sqlserver:DefaultCollation" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
