@@ -4,11 +4,10 @@ function Test-SqlAgentJobStatus {
 		[parameter()][string] $TestName = "Test-SqlAgentJobStatus",
 		[parameter()][string] $TestGroup = "database",
 		[parameter()][string] $Description = "Validate SQL Agent Job status",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int] $ConfigKey = "sqlserver:SqlAgentJobStatusHoursBack"
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
-		[int]$HoursBack = Get-CmHealthDefaultValue -KeySet $ConfigKey -DataSet $CmHealthConfig
+		[int]$HoursBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SqlAgentJobStatusHoursBack" -DataSet $CmHealthConfig
 		Write-Verbose "hours back = $HoursBack"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
