@@ -1,0 +1,214 @@
+{
+	"applications": [
+		{
+			"ProductName": "Microsoft Deployment Toolkit (6.3.8456.1000)",
+			"Version": "6.3.8456.1000",
+			"Platform": "64"
+		},
+		{
+			"ProductName": "Microsoft SQL Server 2012 Native Client",
+			"Version": "11.3.6540.0",
+			"Platform": "64"
+		},
+		{
+			"ProductName": "Microsoft SQL Server Reporting Services",
+			"Version": "0.1.6981.38155",
+			"Platform": "64"
+		},
+		{
+			"ProductName": "Windows PE x86 x64 wims",
+			"Version": "10.1.17763.1",
+			"Platform": "32"
+		},
+		{
+			"ProductName": "Microsoft SQL Server Reporting Services",
+			"Version": "14.0.6981.38291",
+			"Platform": "32"
+		},
+		{
+			"ProductName": "Windows PE x86 x64",
+			"Version": "10.1.17763.1",
+			"Platform": "32"
+		},
+		{
+			"ProductName": "System Center Configuration Manager Console",
+			"Version": "5.1906.1021.1000",
+			"Platform": "32"
+		},
+		{
+			"ProductName": "Windows Deployment Tools",
+			"Version": "10.1.17763.1",
+			"Platform": "32"
+		},
+		{
+			"ProductName": "User State Migration Tool",
+			"Version": "10.1.17763.1",
+			"Platform": "32"
+		}
+	],
+	"Services": [
+		{
+			"Name": "SMS_EXECUTIVE",
+			"Reference": "",
+			"Privileges": "",
+			"StartMode": "auto",
+			"DelayedAutoStart": "false"
+		},
+		{
+			"Name": "SMS_SITE_COMPONENT_MANAGER",
+			"Reference": "",
+			"Privileges": "",
+			"StartMode": "auto",
+			"DelayedAutoStart": "false"
+		},
+		{
+			"Name": "SQLSERVERAGENT",
+			"Reference": "https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/configure-windows-service-accounts-and-permissions?view=sql-server-ver15#Serv_Perm",
+			"Privileges": "SeServiceLogonRight,SeAssignPrimaryTokenPrivilege,SeChangeNotifyPrivilege,SeIncreaseQuotaPrivilege",
+			"StartMode": "auto",
+			"DelayedAutoStart": "false"
+		},
+		{
+			"Name": "MSSQLSERVER",
+			"Reference": "https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/configure-windows-service-accounts-and-permissions?view=sql-server-ver15#Serv_Perm",
+			"Privileges": "SeServiceLogonRight,SeAssignPrimaryTokenPrivilege,SeChangeNotifyPrivilege,SeIncreaseQuotaPrivilege",
+			"StartMode": "auto",
+			"DelayedAutoStart": "false"
+		},
+		{
+			"Name": "SQLServerReportingServices",
+			"Reference": "", 
+			"Privileges": "SeServiceLogonRight,SeAssignPrimaryTokenPrivilege,SeChangeNotifyPrivilege,SeIncreaseQuotaPrivilege",
+			"StartMode": "auto",
+			"DelayedAutoStart": "false"
+		},
+		{
+			"Name": "WsusService",
+			"Reference": "", 
+			"Privileges": "", 
+			"StartMode": "auto",
+			"DelayedAutoStart": "false"
+		},
+		{
+			"Name": "SQLBrowser",
+			"Reference": "",
+			"Privileges": "", 
+			"StartMode": "disabled",
+			"DelayedAutoStart": "false"
+		},
+		{
+			"Name": "BITS",
+			"Reference": "",
+			"Privileges": "",
+			"StartMode": "auto",
+			"DelayedAutoStart": "true"
+		},
+		{
+			"Name": "IISADMIN",
+			"Reference": "",
+			"Privileges": "",
+			"StartMode": "auto",
+			"DelayedAutoStart": "false"
+		}
+	],
+	"sqlserver": [
+		{
+			"MaxMemAllocationPercent": "80",
+			"DefaultCollation": "SQL_Latin1_General_CP1_CI_AS",
+			"IndexFragThresholdPercent": "50",
+			"DatabaseFileSizeMaxPercent": "95",
+			"SiteBackupMaxDaysOld": "7",
+			"SiteBackupMaxRuntime": "300",
+			"SqlAgentJobStatusHoursBack": "24"
+		}
+	],
+	"configmgr": [
+		{
+			"MaxMIFSizeRegistryValue": "52428800",
+			"ClientCoverageThresholdPercent": "90"
+		}
+	],
+	"siteservers": [
+		{
+			"DiskSpaceMaxPercent": "80",
+			"DiskFormatBlockSize": "65536",
+			"SupportedOperatingSystems": [
+				"Windows Server 2016",
+				"Windows Server 2019",
+				"Windows 10 Enterprise"
+			],
+			"InstalledSoftwareThreshold": "40"
+		}
+	],
+	"iis": [
+		{
+			"LogFilesMaxDaysOld": "30",
+			"LogFilesMaxSpacePercent": "5"
+		}
+	],
+	"wsus": [
+		{
+			"MaxCachedUpdates": "88000",
+			"MaxInstalledPrerequisites": "800",
+			"QueueLength": "2000",
+			"PrivateMemLimit": "7372800"
+		}
+	],
+	"winsource": [
+		{
+			"SharedSource": "c:\\windows\\winsxs"
+		}
+	],
+	"windowsfeatures": [
+		{"Feature": "Web-Server", "Caption": "Web Server (IIS)"},
+		{"Feature": "Web-WebServer", "Caption": "Web Server"},
+		{"Feature": "Web-Common-Http", "Caption": "Common HTTP Features"},
+		{"Feature": "Web-Default-Doc", "Caption": "Default Document"},
+		{"Feature": "Web-Dir-Browsing", "Caption": "Directory Browsing"},
+		{"Feature": "Web-Http-Errors", "Caption": "HTTP Errors"},
+		{"Feature": "Web-Static-Content", "Caption": "Static Content"},
+		{"Feature": "Web-Http-Redirect", "Caption": "HTTP Redirection"},
+		{"Feature": "Web-Health", "Caption": "Health and Diagnostics"},
+		{"Feature": "Web-Http-Logging", "Caption": "HTTP Logging"},
+		{"Feature": "Web-Log-Libraries", "Caption": "Logging Tools"},
+		{"Feature": "Web-Request-Monitor", "Caption": "Request Monitor"},
+		{"Feature": "Web-Http-Tracing", "Caption": "Tracing"},
+		{"Feature": "Web-Performance", "Caption": "Performance"},
+		{"Feature": "Web-Stat-Compression", "Caption": "Static Content Compression"},
+		{"Feature": "Web-Filtering", "Caption": "Request Filtering"},
+		{"Feature": "Web-Windows-Auth", "Caption": "Windows Authentication"},
+		{"Feature": "Web-Net-Ext", "Caption": ".NET Extensibility 3.5"},
+		{"Feature": "Web-Net-Ext45", "Caption": ".NET Extensibility 4.6"},
+		{"Feature": "Web-Asp-Net45", "Caption": "ASP.NET 4.6"},
+		{"Feature": "Web-ISAPI-Ext", "Caption": "ISAPI Extensions"},
+		{"Feature": "Web-ISAPI-Filter", "Caption": "ISAPI Filters"},
+		{"Feature": "Web-Mgmt-Tools", "Caption": "Management Tools"},
+		{"Feature": "Web-Mgmt-Console", "Caption": "IIS Management Console"},
+		{"Feature": "Web-Mgmt-Compat", "Caption": "IIS 6 Management Compatibility"},
+		{"Feature": "Web-Metabase", "Caption": "IIS 6 Metabase Compatibility"},
+		{"Feature": "Web-Lgcy-Mgmt-Console", "Caption": "IIS 6 Management Console"},
+		{"Feature": "Web-Lgcy-Scripting", "Caption": "IIS 6 Scripting Tools"},
+		{"Feature": "Web-WMI", "Caption": "IIS 6 WMI Compatibility"},
+		{"Feature": "Web-Scripting-Tools", "Caption": "IIS Management Scripts and Tools"},
+		{"Feature": "Web-Mgmt-Service", "Caption": "Management Service"},
+		{"Feature": "UpdateServices-Services", "Caption": "WSUS Services"},
+		{"Feature": "UpdateServices-DB", "Caption": "SQL Server Connectivity"},
+		{"Feature": "NET-Framework-Features", "Caption": ".NET Framework 3.5 Features"},
+		{"Feature": "NET-Framework-Core", "Caption": ".NET Framework 3.5 (includes .NET 2.0 and 3.0)"},
+		{"Feature": "NET-HTTP-Activation", "Caption": "HTTP Activation"},
+		{"Feature": "NET-Framework-45-Features", "Caption": ".NET Framework 4.6 Features"},
+		{"Feature": "NET-Framework-45-Core", "Caption": ".NET Framework 4.6"},
+		{"Feature": "NET-Framework-45-ASPNET", "Caption": "ASP.NET 4.6"},
+		{"Feature": "NET-WCF-Services45", "Caption": "WCF Services"},
+		{"Feature": "NET-WCF-HTTP-Activation45", "Caption": "HTTP Activation"},
+		{"Feature": "NET-WCF-TCP-Activation45", "Caption": "TCP Activation"},
+		{"Feature": "NET-WCF-TCP-PortSharing45", "Caption": "TCP Port Sharing"},
+		{"Feature": "BITS", "Caption": "Background Intelligent Transfer Service (BITS)"},
+		{"Feature": "BITS-IIS-Ext", "Caption": "IIS Server Extension"},
+		{"Feature": "RDC", "Caption": "Remote Differential Compression"},
+		{"Feature": "WAS", "Caption": "Windows Process Activation Service"},
+		{"Feature": "WAS-Process-Model", "Caption": "Process Model"},
+		{"Feature": "WAS-NET-Environment", "Caption": ".NET Environment 3.5"},
+		{"Feature": "WAS-Config-APIs", "Caption": "Configuration APIs"}
+	]
+}
