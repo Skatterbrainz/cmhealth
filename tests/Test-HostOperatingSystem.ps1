@@ -8,6 +8,7 @@ function Test-HostOperatingSystem {
 	)
 	try {
 		$supported = @(Get-CmHealthDefaultValue -KeySet "siteservers:SupportedOperatingSystems" -DataSet $CmHealthConfig)
+		Write-Verbose "Supported OS list = $($supported -join ',')"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
@@ -28,6 +29,8 @@ function Test-HostOperatingSystem {
 			$stat = "FAIL"
 			$msg = "Unsupported operating system for site system roles: $osname $osbuild"
 			$tempdata.Add("Supported: $($supported -join ',')")
+		} else {
+			$msg = "$($osdata.Caption) $($osdata.BuildNumber)"
 		}
 	}
 	catch {
