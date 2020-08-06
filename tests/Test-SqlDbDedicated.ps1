@@ -15,18 +15,22 @@ function Test-SqlDbDedicated {
 		} else { 
 			$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance | Select-Object -ExpandProperty Name
 		}
-		$dblist = @()
+		$dblist1 = @()
+		$dblist2 = @()
 		$dbnames | ForEach-Object {
 			if (-not (($_ -match 'CM_') -or ($_ -in $supported))) {
-				$dblist += $_
+				$dblist1 += $_
+			} else {
+				$dblist2 += $_
 			}
 		}
-		if ($dblist.Count -gt 0) {
+		if ($dblist1.Count -gt 0) {
 			$stat = "FAIL"
 			$msg  = "Databases found which are not supported by MEMCM SQL licensing"
-			$tempdata.Add($dblist)
+			$tempdata.Add($dblist1)
 		} else {
 			$msg = "All databases are supported for MEMCM SQL licensing"
+			$tempdata.Add($dblist2)
 		}
 	}
 	catch {
