@@ -151,7 +151,8 @@
 			"MaxCachedUpdates": "88000",
 			"MaxInstalledPrerequisites": "800",
 			"QueueLength": "2000",
-			"PrivateMemLimit": "7372800"
+			"PrivateMemLimit": "7372800",
+			"LastSyncMaxDaysOld": "7"
 		}
 	],
 	"winsource": [
