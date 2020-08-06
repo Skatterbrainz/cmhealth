@@ -4,11 +4,11 @@ function Test-SqlDbBackupTimes {
 		[parameter()][string] $TestName = "Test-SqlDbBackupTimes",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Check for backups that took too long to finish",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int] $DaysBack = 7,
-		[parameter()][int] $MaxRunTime = 300
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int] $DaysBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SiteBackupMaxDaysOld" -DataSet $CmHealthConfig
+		[int] $MaxRunTime = Get-CmHealthDefaultValue -KeySet "wsus:SiteBackupMaxRuntime" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"

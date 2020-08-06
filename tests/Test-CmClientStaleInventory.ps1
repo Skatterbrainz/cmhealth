@@ -7,6 +7,7 @@ function Test-CmClientStaleInventory {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int] $DaysOld = Get-CmHealthDefaultValue -KeySet "configmgr:MaxClientInventoryDaysOld" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
@@ -21,7 +22,7 @@ chs.LastSW AS LastScanDate
 FROM v_FullCollectionMembership fcm
 INNER JOIN v_R_System sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_CH_ClientSummary chs ON chs.ResourceID = fcm.ResourceID AND chs.ClientActiveStatus = 0 
-WHERE fcm.CollectionID = 'SMS00001' AND chs.LastActiveTime < DATEADD(dd,-CONVERT(INT,$($ScriptParams.BackDays)),GETDATE())"
+WHERE fcm.CollectionID = 'SMS00001' AND chs.LastActiveTime < DATEADD(dd,-CONVERT(INT,$($DaysOld)),GETDATE())"
 		if ($ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
@@ -29,7 +30,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND chs.LastActiveTime < DATEADD(dd,-CONVERT
 		}
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
-			$msg  = "$($res.Count) clients inventory older than $($ScriptParams.DaysBack) days: $($res.Name -join ',')"
+			$msg  = "$($res.Count) clients inventory older than $($DaysOld) days: $($res.Name -join ',')"
 			$res | Foreach-Object {$tempdata.Add("Name=$($_.Name),LastHW=$($_.LastHWScan),SiteCode=$($_.SiteCode)")}
 		}
 	}
