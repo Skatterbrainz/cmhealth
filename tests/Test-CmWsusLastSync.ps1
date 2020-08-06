@@ -11,7 +11,7 @@ function Test-CmWsusLastSync {
 		Write-Verbose "DaysBack = $DaysBack"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
-		$msg  = "No issues found"
+		$msg  = "No sync errors within the past $DaysBack days"
 		$query = "DECLARE @starttime AS DATETIME, @endtime AS DATETIME, @id AS INT, @sitecode CHAR(3)
 SELECT @sitecode = '$($ScriptParams.SiteCode)'
 SELECT TOP 1 @starttime = smsgs.Time

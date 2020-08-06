@@ -4,10 +4,10 @@ function Test-CmLastBackup {
 		[parameter()][string] $TestName = "Test-CmLastBackup",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Validate last ConfigMgr site backup status",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int] $DaysBack = 7
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int]$DaysBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SiteBackupMaxDaysOld" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
@@ -56,6 +56,8 @@ END AS 'Comments'"
 			if ($res.Comments -notmatch "completed successfully with zero") {
 				$stat = "FAIL"
 				$msg  = "$($res.Comments)"
+			} else {
+				$msg = $res.Comments
 			}
 		}
 	}

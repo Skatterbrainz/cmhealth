@@ -4,10 +4,10 @@ function Test-SqlDbBackupHistory {
 		[parameter()][string] $TestName = "Test-SqlDbBackupHistory",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate CM SQL database backup history",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int] $DaysBack = 7
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int]$DaysBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SiteBackupMaxDaysOld" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
@@ -24,6 +24,8 @@ function Test-SqlDbBackupHistory {
 			if ($lbu.Type -ne "Full") {
 				$stat = "FAIL"
 				$msg = "Last backup was not a FULL backup"
+			} else {
+				$msg = "Last Full backup was at $($lbu.End)"
 			}
 		}
 	}

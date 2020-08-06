@@ -16,10 +16,12 @@ function Test-HostWindowsUpdates {
 			if ($ScriptParams.Remediate -eq $True) {
 				$rsx = Get-WindowsUpdate -ComputerName $ScriptParams.ComputerName -WindowsUpdate -AcceptAll -Install -RecurseCycle 3 -IgnoreReboot
 				$stat = 'REMEDIATED'
-				$msg = "$($res.Count) updates were installed"
+				$msg = "$($rsx.Count) updates were installed"
 			}
 			else {
-				$stat = 'FAIL'
+				$stat = 'WARNING'
+				$msg = "$($res.Count) Microsoft updates are waiting to be installed"
+				$res | Foreach-Object { $tempdata.Add( @{KB=$($_.KB); Title=$($_.Title)} )}
 			}
 		}
 	}

@@ -7,7 +7,6 @@ function Test-HostInstalledComponents {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
-		#$applist = Import-Csv -Path "$AppListFile"
 		$applist = Get-CmHealthDefaultValue -KeySet "applications" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"

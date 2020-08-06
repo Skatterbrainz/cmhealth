@@ -10,11 +10,13 @@ function Test-HostServices {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		if (![string]::IsNullOrEmpty($ScriptParams.ComputerName) -and $Script.Params.ComputerName -ne $env:COMPUTERNAME) {
-			$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
-			$services = @(Get-CimInstance -CimSession $cs -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
-			$cs.Close()
-			$cs = $null
+		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
+			if ($ScriptParams.Credential) {
+				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
+				$services = @(Get-CimInstance -CimSession $cs -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
+			} else {
+				$services = @(Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
+			}
 		} else {
 			$services = @(Get-CimInstance -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
 		}
