@@ -9,7 +9,7 @@ function Test-SqlDbDedicated {
 	try {
 		$stat = 'PASS'
 		$msg  = "No issues found"
-		$supported = @('master','tempdb','msdb','model','SUSDB','ReportServer','ReportServerTempDB')
+		$supported  = Get-CmHealthDefaultValue -KeySet "sqlserver:SupportedDatabases" -DataSet $CmHealthConfig
 		if ($ScriptParams.Credential) {
 			$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -SqlCredential $ScriptParams.Credential | Select-Object -ExpandProperty Name
 		} else { 
