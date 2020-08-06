@@ -11,6 +11,8 @@ function Test-CmDbSize {
 		[int]$PerDevData = Get-CmHealthDefaultValue -KeySet "sqlserver:DataSizePerCMClientMB" -DataSet $CmHealthConfig
 		$maxUtilization = $maxUtilization * 0.1
 		$devData = $PerDevData * 1MB
+		Write-Verbose "Max Utilization Percent = $maxUtilization"
+		Write-Verbose "Per Device Data MB = $PerDevData"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "Correct configuration"
