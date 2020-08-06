@@ -26,6 +26,9 @@
 .PARAMETER Credential
 	PS Credential object for authenticating under alternate context
 .EXAMPLE
+	Test-CmHealth -Initialize
+	Generates a new cmhealth.json configuration file on the user desktop. If the file exists, it will be replaced.
+.EXAMPLE
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "ALL"
 	Runs all tests
 .EXAMPLE
@@ -53,7 +56,6 @@ function Test-CmHealth {
 		[parameter()][ValidateSet('All','Host','AD','SQL','CM','WSUS','Select')][string] $TestingScope = 'All',
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $Source = "c:\windows\winsxs",
-		[parameter()][int] $DaysBack = 7,
 		[parameter()][switch] $Initialize,
 		[parameter()][pscredential] $Credential
 	)
@@ -75,7 +77,6 @@ function Test-CmHealth {
 			Database     = $Database
 			Source       = $Source
 			Remediate    = $Remediate
-			BackDays     = $DaysBack
 			Credential   = $Credential
 			Verbose      = $VerbosePreference
 		}
