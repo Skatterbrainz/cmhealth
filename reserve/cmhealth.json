@@ -129,7 +129,8 @@
 	"configmgr": [
 		{
 			"MaxMIFSizeRegistryValue": "52428800",
-			"ClientCoverageThresholdPercent": "90"
+			"ClientCoverageThresholdPercent": "90",
+			"MaxCollectionRefreshCount": "200"
 		}
 	],
 	"siteservers": [
