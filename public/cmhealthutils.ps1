@@ -30,9 +30,14 @@ function Get-CmHealthDefaultValue {
 		[parameter(Mandatory)][ValidateNotNullOrEmpty()] $DataSet
 	)
 	try {
-		$keyname = $($KeySet -split ':')[0]
-		$value = $($KeySet -split ':')[1]
-		$result = $DataSet."$keyname"."$value"
+		$keydef = $KeySet -split ':'
+		if ($keydef.Count -gt 1) {
+			$keyname = $keydef[0]
+			$value   = $keydef[1]
+			$result  = $DataSet."$keyname"."$value"
+		} else {
+			$result = $DataSet."$keydef"
+		}
 	}
 	catch {
 		Write-Error $_.Exception.Message 
