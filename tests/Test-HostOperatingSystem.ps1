@@ -7,10 +7,10 @@ function Test-HostOperatingSystem {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$supported = @(Get-CmHealthDefaultValue -KeySet "siteservers:SupportedOperatingSystems" -DataSet $CmHealthConfig)
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$supported = @('Windows Server 2016','Windows Server 2019','Windows 10 Enterprise')
 		if (![string]::IsNullOrEmpty($ScriptParams.ComputerName) -and $ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
 			if ($ScriptParams.Credential) {
 				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
@@ -27,6 +27,7 @@ function Test-HostOperatingSystem {
 		if ($matched -ne $true) {
 			$stat = "FAIL"
 			$msg = "Unsupported operating system for site system roles: $osname $osbuild"
+			$tempdata.Add("Supported: $($supported -join ',')")
 		}
 	}
 	catch {
