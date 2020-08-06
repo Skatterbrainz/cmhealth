@@ -35,6 +35,8 @@ function Test-CmDbSize {
 		if ($pct -gt $recSize) {
 			$stat = 'WARNING'
 			$msg  = "Current DB size is $dbSizeMB MB ($pct percent of recommended). Recommended: $recSize MB"
+		} else {
+			$msg  = "Current DB size is $dbSizeMB MB ($pct percent of recommended). Recommended: $recSize MB"
 		}
 	}
 	catch {
