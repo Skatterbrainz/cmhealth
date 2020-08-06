@@ -4,11 +4,14 @@ function Test-HostIISLogFiles {
 		[parameter()][string] $TestName = "Test-HostIISLogFiles",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate IIS Log File retention",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][ValidateRange(1, 366)][int] $MaxDaysOld = 30,
-		[parameter()][ValidateRange(1, 90)][int] $MaxSpacePct = 5
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int]$MaxDaysOld  = Get-CmHealthDefaultValue -KeySet "iis:LogFilesMaxDaysOld" -DataSet $CmHealthConfig
+		[int]$MaxSpacePct = Get-CmHealthDefaultValue -KeySet "iis:LogFilesMaxSpacePercent" -DataSet $CmHealthConfig
+		Write-Verbose "MaxDaysOld = $MaxDaysOld"
+		Write-Verbose "MaxSpacePct = $MaxSpacePct"
+
 		$stat = "PASS"
 		$msg  = "No issues found"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed

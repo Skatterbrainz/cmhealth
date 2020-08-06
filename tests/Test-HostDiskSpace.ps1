@@ -4,10 +4,12 @@ function Test-HostDiskSpace {
 		[parameter()][string] $TestName = "Test-HostDiskSpace",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate logical disk utilitization",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int] $MaxPctUsed = 80
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int]$MaxPctUsed = Get-CmHealthDefaultValue -KeySet "siteservers:DiskSpaceMaxPercent" -DataSet $CmHealthConfig
+		Write-Verbose "MaxPctUsed = $MaxPctUsed"
+
 		[System.Collections.Generic.List[PSObject]]$tempdata = @()
 		$stat = 'PASS'
 		$msg = "No issues found"
