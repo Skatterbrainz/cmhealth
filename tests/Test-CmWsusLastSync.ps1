@@ -4,10 +4,11 @@ function Test-CmWsusLastSync {
 		[parameter()][string] $TestName = "Test-CmWsusLastSync",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Validate last WSUS synchronization result",
-		[parameter()][hashtable] $ScriptParams,
-		[parameter()][int] $DaysBack = 7
+		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[int]$DaysBack = Get-CmHealthDefaultValue -KeySet "wsus:LastSyncMaxDaysOld" -DataSet $CmHealthConfig
+		Write-Verbose "DaysBack = $DaysBack"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
