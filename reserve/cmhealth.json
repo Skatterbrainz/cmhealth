@@ -131,7 +131,8 @@
 			"MaxMIFSizeRegistryValue": "52428800",
 			"ClientCoverageThresholdPercent": "90",
 			"MaxCollectionRefreshCount": "200",
-			"MaxClientInventoryDaysOld": "14"
+			"MaxClientInventoryDaysOld": "14",
+			"ComponentErrorsMaxDaysOld": "7"
 		}
 	],
 	"siteservers": [
