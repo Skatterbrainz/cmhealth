@@ -120,7 +120,10 @@
 			"DataSizePerCMClientMB": "5",
 			"SiteBackupMaxDaysOld": "7",
 			"SiteBackupMaxRuntime": "300",
-			"SqlAgentJobStatusHoursBack": "24"
+			"SqlAgentJobStatusHoursBack": "24",
+			"LicensedDatabases": [
+				"master","tempdb","msdb","model","SUSDB","ReportServer","ReportServerTempDB"
+			]
 		}
 	],
 	"configmgr": [
