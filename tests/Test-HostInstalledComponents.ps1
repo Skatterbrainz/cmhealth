@@ -7,6 +7,8 @@ function Test-HostInstalledComponents {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		#$applist = Import-Csv -Path "$AppListFile"
+		$applist = Get-CmHealthDefaultValue -KeySet "applications" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "All required components are installed"
@@ -21,7 +23,6 @@ function Test-HostInstalledComponents {
 		} else {
 			Write-Verbose "path verified to $AppListFile"
 		}
-		$applist = Import-Csv -Path "$AppListFile"
 	
 		$reg64 = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall 
 		$reg32 = Get-ChildItem -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall

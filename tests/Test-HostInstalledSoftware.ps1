@@ -6,7 +6,8 @@ function Test-HostInstalledSoftware {
 		[parameter()][string] $Description = "Check for excessive junk installed on site server",
 		[parameter()][hashtable] $ScriptParams
 	)
-	[int]$MaxProducts = 40
+	[int]$MaxProducts  = Get-CmHealthDefaultValue -KeySet "siteservers:InstalledSoftwareThreshold" -DataSet $CmHealthConfig
+	Write-Verbose "MaxProducts = $MaxProducts"
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this

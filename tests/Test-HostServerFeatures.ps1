@@ -24,59 +24,9 @@ function Test-HostServerFeatures {
 		if ($ScriptParams.Remediate -eq $True -and ([string]::IsNullOrEmpty($ScriptParams.Source))) {
 			throw "Source parameter is required for -Remediate but was not specified"
 		}
-		$flist = @(
-			'Web-Server',                     # Web Server (IIS)
-			'Web-WebServer',                  # Web Server
-			'Web-Common-Http',                # Common HTTP Features
-			'Web-Default-Doc',                # Default Document
-			'Web-Dir-Browsing',               # Directory Browsing
-			'Web-Http-Errors',                # HTTP Errors
-			'Web-Static-Content',             # Static Content
-			'Web-Http-Redirect',              # HTTP Redirection
-			'Web-Health',                     # Health and Diagnostics
-			'Web-Http-Logging',               # HTTP Logging
-			'Web-Log-Libraries',              # Logging Tools
-			'Web-Request-Monitor',            # Request Monitor
-			'Web-Http-Tracing',               # Tracing
-			'Web-Performance',                # Performance
-			'Web-Stat-Compression',           # Static Content Compression
-			'Web-Filtering',                  # Request Filtering
-			'Web-Windows-Auth',               # Windows Authentication
-			'Web-Net-Ext',                    # .NET Extensibility 3.5
-			'Web-Net-Ext45',                  # .NET Extensibility 4.6
-			'Web-Asp-Net45',                  # ASP.NET 4.6
-			'Web-ISAPI-Ext',                  # ISAPI Extensions
-			'Web-ISAPI-Filter',               # ISAPI Filters
-			'Web-Mgmt-Tools',                 # Management Tools
-			'Web-Mgmt-Console',               # IIS Management Console
-			'Web-Mgmt-Compat',                # IIS 6 Management Compatibility
-			'Web-Metabase',                   # IIS 6 Metabase Compatibility
-			'Web-Lgcy-Mgmt-Console',          # IIS 6 Management Console
-			'Web-Lgcy-Scripting',             # IIS 6 Scripting Tools
-			'Web-WMI',                        # IIS 6 WMI Compatibility
-			'Web-Scripting-Tools',            # IIS Management Scripts and Tools
-			'Web-Mgmt-Service',               # Management Service
-			'UpdateServices-Services',        # WSUS Services
-			'UpdateServices-DB',              # SQL Server Connectivity
-			'NET-Framework-Features',         # .NET Framework 3.5 Features
-			'NET-Framework-Core',             # .NET Framework 3.5 (includes .NET 2.0 and 3.0)
-			'NET-HTTP-Activation',            # HTTP Activation
-			'NET-Framework-45-Features',      # .NET Framework 4.6 Features
-			'NET-Framework-45-Core',          # .NET Framework 4.6
-			'NET-Framework-45-ASPNET',        # ASP.NET 4.6
-			'NET-WCF-Services45',             # WCF Services
-			'NET-WCF-HTTP-Activation45',      # HTTP Activation
-			'NET-WCF-TCP-Activation45',       # TCP Activation
-			'NET-WCF-TCP-PortSharing45',      # TCP Port Sharing
-			'BITS',                           # Background Intelligent Transfer Service (BITS)
-			'BITS-IIS-Ext',                   # IIS Server Extension
-			'RDC',                            # Remote Differential Compression
-			'WAS',                            # Windows Process Activation Service
-			'WAS-Process-Model',              # Process Model
-			'WAS-NET-Environment',            # .NET Environment 3.5
-			'WAS-Config-APIs'                 # Configuration APIs
-		)
-	
+
+		$flist = @($CmHealthConfig.windowsfeatures.Feature)
+		if ($flist.Count -lt 1) { throw "failed to read features list from cmhealth settings file" }
 		$exceptions = 0
 		[System.Collections.Generic.List[PSObject]]$missing = @()
 		foreach ($feature in $features) {
