@@ -21,6 +21,8 @@
 	Default is C:\Windows\WinSxS
 .PARAMETER DaysBack
 	Number of days to go back for checking status messages, errors, warnings, etc. Default is 7
+.PARAMETER Initialize
+	Creates or resets a default configuration file on the current user's Desktop named "cmhealth.json"
 .PARAMETER Credential
 	PS Credential object for authenticating under alternate context
 .EXAMPLE
@@ -52,40 +54,52 @@ function Test-CmHealth {
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $Source = "c:\windows\winsxs",
 		[parameter()][int] $DaysBack = 7,
+		[parameter()][switch] $Initialize,
 		[parameter()][pscredential] $Credential
 	)
-	$startTime = (Get-Date)
-	$params = [ordered]@{
-		ComputerName = $SiteServer
-		SqlInstance  = $SqlInstance
-		SiteCode     = $SiteCode
-		Database     = $Database
-		Source       = $Source
-		Remediate    = $Remediate
-		BackDays     = $DaysBack
-		Credential   = $Credential
-		Verbose      = $VerbosePreference
-	}
-	$mpath = $(Split-Path (Get-Module cmhealth).Path)
-	$tpath = "$($mpath)\tests"
-	$tests = Get-ChildItem -Path $tpath -Filter "*.ps1"
-	Write-Verbose "$($tests.Count) tests found in library"
-	switch ($TestingScope) {
-		'All' {
-			$testset = @($tests.BaseName)
+	if ($Initialize) {
+		Write-Host "generating default cmhealth settings file..." -ForegroundColor Cyan
+		$mpath = Split-Path $(Get-Module cmhealth).Path
+		$rpath = "$($mpath)\reserve"
+		$configFile = "$($rpath)\cmhealth.json"
+		$targetPath = "$($env:USERPROFILE)\Desktop"
+		Copy-Item -Path $configFile -Destination $targetPath -Force 
+		Write-Host "cmhealth settings file saved as: $($targetPath)\cmhealth.json" -ForegroundColor Cyan
+	} else {
+		$startTime = (Get-Date)
+		$Script:CmHealthConfig = Import-CmHealthSettings
+		$params = [ordered]@{
+			ComputerName = $SiteServer
+			SqlInstance  = $SqlInstance
+			SiteCode     = $SiteCode
+			Database     = $Database
+			Source       = $Source
+			Remediate    = $Remediate
+			BackDays     = $DaysBack
+			Credential   = $Credential
+			Verbose      = $VerbosePreference
 		}
-		'Select' {
-			$testset = @($tests.BaseName | Out-GridView -Title "Select Test to Execute" -OutputMode Multiple)
+		$mpath = $(Split-Path (Get-Module cmhealth).Path)
+		$tpath = "$($mpath)\tests"
+		$tests = Get-ChildItem -Path $tpath -Filter "*.ps1"
+		Write-Verbose "$($tests.Count) tests found in library"
+		switch ($TestingScope) {
+			'All' {
+				$testset = @($tests.BaseName)
+			}
+			'Select' {
+				$testset = @($tests.BaseName | Out-GridView -Title "Select Test to Execute" -OutputMode Multiple)
+			}
+			Default {
+				$testset = @($tests.BaseName | Where-Object {$_ -match "Test-$($TestingScope)"})
+			}
 		}
-		Default {
-			$testset = @($tests.BaseName | Where-Object {$_ -match "Test-$($TestingScope)"})
+		Write-Verbose "$($testset.Count) tests were selected"
+		foreach ($test in $testset) {
+			$testname = $test += ' -ScriptParams $params'
+			Invoke-Expression -Command $testname
 		}
+		$runTime = New-TimeSpan -Start $startTime -End (Get-Date)
+		Write-Host "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec"
 	}
-	Write-Verbose "$($testset.Count) tests were selected"
-	foreach ($test in $testset) {
-		$testname = $test += ' -ScriptParams $params'
-		Invoke-Expression -Command $testname
-	}
-	$runTime = New-TimeSpan -Start $startTime -End (Get-Date)
-	Write-Host "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec"
 }
