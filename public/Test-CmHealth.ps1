@@ -29,6 +29,9 @@
 	Test-CmHealth -Initialize
 	Generates a new cmhealth.json configuration file on the user desktop. If the file exists, it will be replaced.
 .EXAMPLE
+	Test-CmHealth
+	Runs all tests on the local machine using the current user credentials
+.EXAMPLE
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "ALL"
 	Runs all tests
 .EXAMPLE
@@ -40,6 +43,9 @@
 .EXAMPLE
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
 	Runs only the site server host tests and attempts to remediate identified deficiences with WinSXS source path provided
+.EXAMPLE
+	$failed = Test-CmHealth | Where-Object {$_.Status -eq "Fail"}
+	Runs all tests and only returns those which failed 
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md
 .NOTES
