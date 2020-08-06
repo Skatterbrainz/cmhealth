@@ -24,7 +24,7 @@ function Test-AdSchemaExtension {
 			$msg  = "Active Directory schema has been extended for configmgr"
 		} else {
 			$stat = 'FAIL'
-			$msg  = "Active Directory schema has not been extended for configmgr"
+			$msg  = "Active Directory schema has NOT been extended for configmgr"
 		}
 	}
 	catch {
