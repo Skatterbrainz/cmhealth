@@ -1,7 +1,7 @@
 ---
 external help file: cmhealth-help.xml
 Module Name: cmhealth
-online version: https://github.com/Skatterbrainz/cmhealth
+online version: https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md
 schema: 2.0.0
 ---
 
@@ -14,7 +14,7 @@ Validate MECM/ConfigMgr site systems and configuration.
 
 ```
 Test-CmHealth [[-SiteServer] <String>] [[-SqlInstance] <String>] [[-Database] <String>] [[-SiteCode] <String>]
- [[-TestingScope] <String>] [[-Remediate] <Boolean>] [[-Source] <String>] [[-DaysBack] <Int32>]
+ [[-TestingScope] <String>] [[-Remediate] <Boolean>] [[-Source] <String>] [-Initialize]
  [[-Credential] <PSCredential>] [<CommonParameters>]
 ```
 
@@ -25,26 +25,34 @@ Validate MECM/ConfigMgr site systems and configuration.
 
 ### EXAMPLE 1
 ```
+Test-CmHealth -Initialize
+```
+
+Generates a new cmhealth.json configuration file on the user desktop.
+If the file exists, it will be replaced.
+
+### EXAMPLE 2
+```
 Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "ALL"
 ```
 
 Runs all tests
 
-### EXAMPLE 2
+### EXAMPLE 3
 ```
 Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host"
 ```
 
 Runs only the site server host tests
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Credential $cred
 ```
 
 Runs only the site server host tests and attempts to remediate identified deficiences using alternate user credentials
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
 ```
@@ -165,18 +173,17 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -DaysBack
-Number of days to go back for checking status messages, errors, warnings, etc.
-Default is 7
+### -Initialize
+Creates or resets a default configuration file on the current user's Desktop named "cmhealth.json"
 
 ```yaml
-Type: Int32
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 8
-Default value: 7
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -190,7 +197,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 9
+Position: 8
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -208,5 +215,5 @@ Thank you!
 
 ## RELATED LINKS
 
-[https://github.com/Skatterbrainz/cmhealth](https://github.com/Skatterbrainz/cmhealth)
+[https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md](https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md)
 
