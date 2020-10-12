@@ -19,7 +19,7 @@ Test-CmHealth [[-SiteServer] <String>] [[-SqlInstance] <String>] [[-Database] <S
 ```
 
 ## DESCRIPTION
-Validate MECM/ConfigMgr site systems and configuration.
+Validate MECM/ConfigMgr site systems operational health status, and recommended configuration.
 
 ## EXAMPLES
 

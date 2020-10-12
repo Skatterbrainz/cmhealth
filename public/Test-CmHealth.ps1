@@ -2,7 +2,7 @@
 .SYNOPSIS
 	Validate MECM/ConfigMgr site systems and configuration.
 .DESCRIPTION
-	Validate MECM/ConfigMgr site systems and configuration.
+	Validate MECM/ConfigMgr site systems operational health status, and recommended configuration.
 .PARAMETER SiteServer
 	NetBIOS or FQDN of site server (primary, CAS, secondary). Default is localhost
 .PARAMETER SqlInstance
@@ -59,7 +59,7 @@ function Test-CmHealth {
 		[parameter()][ValidateNotNullOrEmpty()][string] $SqlInstance = "localhost",
 		[parameter()][ValidateNotNullOrEmpty()][string] $Database = "CM_P01",
 		[parameter()][ValidateLength(3,3)][string] $SiteCode = "",
-		[parameter()][ValidateSet('All','Host','AD','SQL','CM','WSUS','Select')][string] $TestingScope = 'All',
+		[parameter()][ValidateSet('All','AD','CM','Host','SQL','WSUS','Select')][string] $TestingScope = 'All',
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $Source = "c:\windows\winsxs",
 		[parameter()][switch] $Initialize,
