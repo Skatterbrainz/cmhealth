@@ -13,20 +13,21 @@ function Test-HostSystemLogErrors {
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
 
-		$query = '<QueryList>
+		$query = @"
+<QueryList>
   <Query Id="0" Path="System">
     <Select Path="System">*[System[(Level=2 or Level=3) and TimeCreated[timediff(@SystemTime) &lt;= 86400000]]]</Select>
   </Query>
-</QueryList>'
-
+</QueryList>
+"@
 		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
 			if ($ScriptParams.Credential) {
-				$res = @(Get-WinEvent -LogName System -FilterXPath $query -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -ErrorAction Stop)
+				$res = @(Get-WinEvent -LogName System -FilterXPath $query -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -ErrorAction SilentlyContinue)
 			} else {
-				$res = @(Get-WinEvent -LogName System -FilterXPath $query -ComputerName $ScriptParams.ComputerName -ErrorAction Stop)
+				$res = @(Get-WinEvent -LogName System -FilterXPath $query -ComputerName $ScriptParams.ComputerName -ErrorAction SilentlyContinue)
 			}
 		} else {
-			$res = @(Get-WinEvent -LogName System -FilterXPath $query -ErrorAction Stop)
+			$res = @(Get-WinEvent -LogName System -FilterXPath $query -ErrorAction SilentlyContinue)
 		}
 
 		$vwarnings = $res | Where-Object {$_.LevelDisplayName -eq 'Warning'}
