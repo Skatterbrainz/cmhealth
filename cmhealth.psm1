@@ -1,1 +1,3 @@
-Get-ChildItem -Path (Join-Path -Path $PSScriptRoot -ChildPath 'public'),(Join-Path -Path $PSScriptRoot -ChildPath 'tests') -Filter '*.ps1' | ForEach-Object { . $_.FullName }
+('public','private','tests') | Foreach-Object {
+	Get-ChildItem -Path (Join-Path $PSScriptRoot -ChildPath $_) -Filter "*.ps1" | Foreach-Object { . $_.FullName }
+}
