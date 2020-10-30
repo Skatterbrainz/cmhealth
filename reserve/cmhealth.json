@@ -123,7 +123,8 @@
 			"SqlAgentJobStatusHoursBack": "24",
 			"LicensedDatabases": [
 				"master","tempdb","msdb","model","SUSDB","ReportServer","ReportServerTempDB"
-			]
+			],
+			"RecoveryModel": "simple"
 		}
 	],
 	"configmgr": [

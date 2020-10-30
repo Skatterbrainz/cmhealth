@@ -7,6 +7,7 @@ function Test-SqlDbRecoveryModel {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		[string]$DefaultModel = Get-CmHealthDefaultValue -KeySet "sqlserver:RecoveryModel" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "Correct configuration"
@@ -15,15 +16,15 @@ function Test-SqlDbRecoveryModel {
 		} else {
 			$rm = (Get-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -ErrorAction SilentlyContinue).RecoveryModel
 		}
-		if ($rm -ne 'Simple') {
+		if ($rm -ne $DefaultModel) {
 			if ($Remediate -eq $True) {
 				if ($ScriptParams.Credential) {
-					$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel "Simple" -ErrorAction SilentlyContinue -SqlCredential $ScriptParams.Credential 
+					$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel $DefaultModel -ErrorAction SilentlyContinue -SqlCredential $ScriptParams.Credential 
 				} else {
-					$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel "Simple" -ErrorAction SilentlyContinue
+					$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel $DefaultModel -ErrorAction SilentlyContinue
 				}
 				$stat = "REMEDIATED"
-				$msg  = "Recovery model is now to SIMPLE"
+				$msg  = "Recovery model is now to $DefaultModel"
 			} else {
 				$stat = "FAIL"
 				$msg  = "Recovery model is currently set to $rm"
