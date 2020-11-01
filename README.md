@@ -5,6 +5,15 @@ test rules.  The default parameters for each rule are stored in the cmhealth.jso
 the "reserve" folder. This module is intended to be invoked on the Primary or CAS server using
 an account which has full administrator rights to the host server, ConfigMgr, and SQL environments.
 
+The purpose of this module is not to generate documentation, although you can easily send the output
+to any document type you desire (or database, REST API, Log Analytics, carrier pidgeon, or two cans 
+connected with a string). The purpose of this is to output the test results to the PowerShell pipeline
+to enable automation to be triggered. Send an email, output to a log/database/whatever, invoke an 
+automation job (Azure Automation, Azure Function, Power Automate, etc.).
+
+You can invoke this module from an Azure Automation runbook against on-prem servers using a hybrid
+worker. If you want more information on this, let me know.
+
 ## Adding Your Own Tests
 
 To add more tests, copy the "Test-Example.ps1" script to an appropriate name under the "Tests" folder.
