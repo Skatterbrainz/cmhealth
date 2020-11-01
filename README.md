@@ -1,5 +1,10 @@
 # cmhealth
 
+Test and validate various aspects of a MEM / Configuration Manager site server using packaged 
+test rules.  The default parameters for each rule are stored in the cmhealth.json file under 
+the "reserve" folder. This module is intended to be invoked on the Primary or CAS server using
+an account which has full administrator rights to the host server, ConfigMgr, and SQL environments.
+
 ## Examples
 
 ### Install Module
