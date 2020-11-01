@@ -145,7 +145,8 @@
 				"Windows Server 2019",
 				"Windows 10 Enterprise"
 			],
-			"InstalledSoftwareThreshold": "40"
+			"InstalledSoftwareThreshold": "40",
+			"TcpPorts": "443,1433,80,10123,135,445,4022,8530,8531"
 		}
 	],
 	"iis": [
