@@ -51,6 +51,7 @@ a machine which cannot access the PowerShell Gallery, you will need to manually 
 other modules as well.
 
 ### Run all tests (default options when running on the CM site server)
+(Note: default site code is assumed to be "P01", or use -SiteCode to override)
 
 ```powershell
 $result = Test-CmHealth
@@ -67,14 +68,14 @@ $result | Select-Object TestName,Status,Message
 ### Run selected tests only, from a grid-view menu
 
 ```powershell
-$result = Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Select"
+$result = Test-CmHealth -SiteCode "P01" -TestingScope "Select"
 $result | Select-Object TestName,Status,Message
 ```
 
 ### Run all tests on site server and return only failing results
 
 ```powershell
-$result = Test-CmHealth -Database "CM_P01" -SiteCode "P01" -TestingScope All | where {$_.Status -ne 'PASS'}
+$result = Test-CmHealth -SiteCode "P01" -TestingScope All | where {$_.Status -ne 'PASS'}
 $result | Select-Object TestName,Status,Message | Where-Object Status -eq 'FAIL'
 ```
 
@@ -83,6 +84,20 @@ $result | Select-Object TestName,Status,Message | Where-Object Status -eq 'FAIL'
 ```powershell
 $result = Test-CmHealth -Database "CM_P01" -SiteCode "P01" -TestingScope All | where {$_.Status -ne 'PASS'}
 $result | Select-Object TestName,Status,Message | Where-Object Status -eq 'WARNING'
+```
+
+### It's also splattable, if that's even a real word
+
+```powershell
+$params = @{
+	SiteServer = "sccm.contoso.local"
+	SiteCode   = "P01"
+	Database   = "CM_P01"
+	TestingScope = "Sql"
+	Credential = $mycredential
+	Remediate  = $False
+}
+$result = Test-CmHealth @params
 ```
 
 ## Issues, Requests, Bugs
