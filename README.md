@@ -16,14 +16,28 @@ worker. If you want more information on this, let me know.
 
 ## Adding Your Own Tests
 
-To add more tests, copy the "Test-Example.ps1" script to an appropriate name under the "Tests" folder.
-Then edit the parameters as follows:
+To add more tests, copy the "Test-Example.ps1" script from the "reserve" folder, to an appropriate name 
+under the "Tests" folder. Then edit the parameters as follows:
 
 * TestName = Same as filename (e.g. "Test-Something.ps1" enter "Test-Something")
 * TestGroup = "configuration", or "operation" (type of condition)
 * Description = whatever describes the test purpose
 
+The -ScriptParams parameter is supplied by Test-CmHealth.
+
 Follow the suggestions in the comments below that, then remove the comments if no longer needed.
+
+## Custom Test Parameters
+
+To add your own custom configuration mappings, use the cmhealth.json file, which is copied to your 
+desktop via the -Initialize parameter.  Then use the ```Get-CmHealthDefaultValue``` function to 
+retrieve it based on the group and keyname within the cmhealth.json file. Note that the variable $CmHealthConfig is defined by Test-CmHealth at runtime.
+
+Example:
+
+```powershell
+Get-CmHealthDefaultValue -KeySet "sqlserver:MaxMemAllocationPercent" -DataSet $CmHealthConfig
+```
 
 ## Examples
 
@@ -32,7 +46,9 @@ Follow the suggestions in the comments below that, then remove the comments if n
 ```powershell
 Install-Module cmhealth
 ```
-(Note: this also installs modules dbatools, adsips, and carbon)
+Note: this also installs modules dbatools, adsips, and carbon. So, if you are running this on 
+a machine which cannot access the PowerShell Gallery, you will need to manually install these
+other modules as well.
 
 ### Run all tests (default)
 
@@ -55,10 +71,18 @@ $result = Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01
 $result | Select-Object TestName,Status,Message
 ```
 
-### Run all tests on site server and return only non-passing results
+### Run all tests on site server and return only failing results
 
 ```powershell
-Test-CmHealth -Database "CM_P01" -SiteCode "P01" -TestingScope All | where {$_.Status -ne 'PASS'}
+$result = Test-CmHealth -Database "CM_P01" -SiteCode "P01" -TestingScope All | where {$_.Status -ne 'PASS'}
+$result | Select-Object TestName,Status,Message | Where-Object Status -eq 'FAIL'
+```
+
+### Run all tests on site server and return only warning results
+
+```powershell
+$result = Test-CmHealth -Database "CM_P01" -SiteCode "P01" -TestingScope All | where {$_.Status -ne 'PASS'}
+$result | Select-Object TestName,Status,Message | Where-Object Status -eq 'WARNING'
 ```
 
 ## Issues, Requests, Bugs
