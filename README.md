@@ -50,10 +50,10 @@ Note: this also installs modules dbatools, adsips, and carbon. So, if you are ru
 a machine which cannot access the PowerShell Gallery, you will need to manually install these
 other modules as well.
 
-### Run all tests (default)
+### Run all tests (default options when running on the CM site server)
 
 ```powershell
-$result = Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01"
+$result = Test-CmHealth
 $result | Select-Object TestName,Status,Message
 ```
 
