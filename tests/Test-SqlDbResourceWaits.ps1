@@ -20,7 +20,7 @@ FROM sys.dm_os_wait_stats OPTION (RECOMPILE)"
 			$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
 		if ($res.CPUWaits_Pct -gt 10 -or $res.ResourceWaits_Pct -gt 50) {
-			$stat = "FAIL"
+			$stat = "WARNING"
 			$msg = "Excessive CPU waits: CPU=$($res.CPUWaits_Pct) Resources=$($res.ResourceWaits_Pct)"
 			$res | Foreach-Object {$tempdata.Add("CPUWaits=$($_.CPUWaits_Pct),ResWaits=$($_.ResourceWaits_Pct)")}
 		}

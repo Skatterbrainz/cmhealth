@@ -11,46 +11,56 @@ function Test-CmUpdateCompliance {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
-		$query = "select 
-	vRS.NetBIOS_Name0 as 'DeviceName',
-	vSN_Status.StateDescription,
-	vCCI.CategoryInstanceName as 'UpdateClassification',
-	vUI.Title,
-	vUI.Description,
-	vUI.InfoURL,
-	vUI.ArticleID,
-	vUI.BulletinID,
-	vUI.MaxExecutionTime,
-	vUCS.LastStatusChangeTime,
-	vUCS.LastErrorCode 
-from
-	dbo.v_Update_ComplianceStatus as vUCS​
-	Left Join dbo.v_UpdateInfo as vUI​ on vUCS.CI_ID = vUI.CI_ID​
-	Left Join dbo.v_R_System as vRS​ on vUCS.ResourceID = vRS.ResourceID​
-	Left Join dbo.v_StateNames as vSN_Status​ on vSN_Status.TopicType = 500 ​and vSN_Status.StateID = vUCS.Status​
-	Left Join v_CICategoryInfo as vCCI​ on vCCI.CategoryTypeName='UpdateClassification'​ and vUCS.CI_ID = vCCI.CI_ID​
-Where ​
-	(vUI.CIType_ID = 8)
-	and
-	(vUI.IsSuperseded = 0)
-	and 
-	(vCCI.CategoryInstanceName in ('Security Updates','Critical Updates'))
-	and
-	(vSN_Status.StateDescription = 'Update is required')
-order by DeviceName, Title"
+		$query = @"
+SELECT 
+	vRS.Netbios_Name0 AS 'DeviceName', 
+	vSN_Status.StateDescription, 
+	vCCI.CategoryInstanceName AS 'UpdateClassification', 
+	vUI.Title, 
+	vUI.Description, 
+	vUI.InfoURL, 
+	vUI.ArticleID, 
+	vUI.BulletinID, 
+    vUI.MaxExecutionTime, 
+	vUCS.LastStatusChangeTime, 
+	vUCS.LastErrorCode
+FROM 
+	dbo.v_Update_ComplianceStatus AS vUCS LEFT OUTER JOIN
+    dbo.v_UpdateInfo AS vUI ON vUCS.CI_ID = vUI.CI_ID LEFT OUTER JOIN
+    dbo.v_R_System AS vRS ON vUCS.ResourceID = vRS.ResourceID LEFT OUTER JOIN
+    dbo.v_StateNames AS vSN_Status ON vUCS.Status = vSN_Status.StateID LEFT OUTER JOIN
+    dbo.v_CICategoryInfo AS vCCI ON vCCI.CI_ID = vUCS.CI_ID
+WHERE 
+	(vCCI.CategoryTypeName = 'UpdateClassification') AND 
+	(vSN_Status.TopicType = 500) AND 
+	(vUI.CIType_ID = 8) AND 
+	(vUI.IsSuperseded = 0) AND 
+	(vCCI.CategoryInstanceName IN ('Security Updates', 'Critical Updats')) AND 
+    (vSN_Status.StateDescription = 'Update is required')
+ORDER BY 
+	'DeviceName', vUI.Title
+"@
 		if ($ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
-		
 		if ($res.Count -gt 0) {
 			$stat = "WARNING" # or "FAIL"
 			$msg  = "$($res.Count) items found"
 			$res | Foreach-Object {
-				$dataset = @($_.DeviceName, $_.ArticleID, $_.Title, $_.LastErrorCode)
+				$dataset = @{
+					DeviceName = $($_.DeviceName)
+					UpdateClassification = $($_.UpdateClassification)
+					State = $($_.StateDescription)
+					Article = $($_.ArticleID)
+					Title = $($_.Title)
+					LastError = $($_.LastErrorCode)
+				}
 				$tempdata.Add($dataset)
 			}
+		} else {
+			Write-Verbose "no issues found"
 		}
 	}
 	catch {

@@ -27,8 +27,18 @@ Errors > 0"
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
 		if ($res.Count -gt 0) {
-			$stat = "FAIL"
-			$msg  = "$($res.Count) Component errors since 12:00 = $($res.ComponentName -join ',')"
+			$c1 = $($res | Where-Object Status -eq 'Critical').Count
+			$c2 = $($res | Where-Object Status -eq 'Warning').Count
+			if ($c1 -gt 0) {
+				$stat = 'FAIL'
+				$clist = $($res | Where-Object Status -eq 'Critical' | Select-Object -ExpandProperty ComponentName)
+				$tempdata.Add("Critical=$($clist -join ';')")
+			} elseif ($c2 -gt 0) {
+				$stat = 'WARNING'
+				$wlist = $($res | Where-Object Status -eq 'Warning' | Select-Object -ExpandProperty ComponentName)
+				$tempdata.Add("Warning=$($wlist -join ';')")
+			}
+			$msg = "Component status since 12:00 = $c1 critical, $c2 warning out of $($res.count) total"
 			$res | Foreach-Object {$tempdata.Add("$($_.ComponentName)=$($_.Errors)")}
 		}
 	}

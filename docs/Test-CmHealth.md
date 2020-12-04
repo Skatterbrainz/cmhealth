@@ -68,10 +68,24 @@ Runs only the site server host tests and attempts to remediate identified defici
 
 ### EXAMPLE 7
 ```
-$failed = Test-CmHealth | Where-Object {$_.Status -eq "Fail"}
+$failed = Test-CmHealth | Where-Object Status -eq 'Fail'
 ```
 
 Runs all tests and only returns those which failed
+
+### EXAMPLE 8
+```
+Test-CmHealth | Select-Object TestName,Status,Message | Where-Object Status -eq 'Fail'
+```
+
+Display summary of failed tests
+
+### EXAMPLE 9
+```
+$results = Test-CmHealth | Where-Object Status -eq 'Fail'; $results | Select TestData
+```
+
+Display test output from failed tests
 
 ## PARAMETERS
 

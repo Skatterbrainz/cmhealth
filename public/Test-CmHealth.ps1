@@ -44,8 +44,14 @@
 	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
 	Runs only the site server host tests and attempts to remediate identified deficiences with WinSXS source path provided
 .EXAMPLE
-	$failed = Test-CmHealth | Where-Object {$_.Status -eq "Fail"}
+	$failed = Test-CmHealth | Where-Object Status -eq 'Fail'
 	Runs all tests and only returns those which failed 
+.EXAMPLE
+	Test-CmHealth | Select-Object TestName,Status,Message | Where-Object Status -eq 'Fail'
+	Display summary of failed tests
+.EXAMPLE
+	$results = Test-CmHealth | Where-Object Status -eq 'Fail'; $results | Select TestData
+	Display test output from failed tests
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md
 .NOTES
@@ -75,7 +81,15 @@ function Test-CmHealth {
 		Write-Host "cmhealth settings file saved as: $($targetPath)\cmhealth.json" -ForegroundColor Cyan
 	} else {
 		$startTime = (Get-Date)
+		if (!(Test-Path "$($env:USERPROFILE)\Desktop\cmhealth.json")) {
+			Write-Warning "Default configuration has not been defined. Use 'Test-CmHealth -Initialize' first"
+			break
+		}
 		$Script:CmHealthConfig = Import-CmHealthSettings
+		if ($null -eq $CmHealthConfig) {
+			Write-Warning "configuration data could not be imported"
+			break
+		}
 		$params = [ordered]@{
 			ComputerName = $SiteServer
 			SqlInstance  = $SqlInstance
@@ -103,6 +117,7 @@ function Test-CmHealth {
 		}
 		Write-Verbose "$($testset.Count) tests were selected"
 		foreach ($test in $testset) {
+			Write-Verbose "TEST: $test"
 			$testname = $test += ' -ScriptParams $params'
 			Invoke-Expression -Command $testname
 		}

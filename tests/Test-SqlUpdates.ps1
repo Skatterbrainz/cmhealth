@@ -18,7 +18,7 @@ function Test-SqlUpdates {
 		if ($res.Compliant -ne $True) { 
 			$bcurrent = $res.BuildLevel
 			$btarget  = $res.BuildTarget
-			$stat = 'FAIL' 
+			$stat = 'WARNING' 
 			$msg = "SQL $($res.NameLevel) build level is $($bcurrent), but should be $($btarget): SP: $($res.SPTarget) CU: $($res.CULevel)"
 		}
 	}

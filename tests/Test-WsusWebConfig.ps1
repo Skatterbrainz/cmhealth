@@ -29,7 +29,7 @@ function Test-WsusWebConfig {
 				$webconfigraw = $webconfigraw -replace "<add key=`"maxCachedUpdates`" value=`"$($c1.value)`"/>", "<add key=`"maxCachedUpdates`" value=`"$MaxCachedUpdates`"/>"
 				$stat = "REMEDIATED"
 			} else {
-				$stat = "FAIL"
+				$stat = "WARNING"
 				$msg  = "MaxCachedUpdates currently $($c1.value) should be $MaxCachedUpdates"
 				$tempdata.Add("MaxCachedUpdates=$($c1.Value),Expected=$($MaxCachedUpdates)")
 			}
@@ -40,13 +40,13 @@ function Test-WsusWebConfig {
 				$msg = "Updated MaxInstalledPrerequisites $($c2.value) to $MaxInstalledPrerequisites"
 				$webconfigraw = $webconfigraw -replace "<add key=`"maxInstalledPrerequisites`" value=`"$($c2.value)`"/>", "<add key=`"maxInstalledPrerequisites`" value=`"$MaxInstalledPrerequisites`"/>"
 			} else {
-				$stat = "FAIL"
+				$stat = "WARNING"
 				$msg = "MaxInstalledPrerequisites currently $($c2.value) should be $MaxInstalledPrerequisites"
 				$tempdata.Add("MaxInstalledPrerequisites=$($c2.Value),Expected=$($MaxInstalledPrerequisites)")
 			}
 		} 
 		
-		# more voodoo witchcraft and smoking chickenbones needed here
+		# more voodoo witchcraft and smoked chickenbones needed here
 
 		# $webconfigraw
 		

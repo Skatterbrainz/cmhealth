@@ -38,7 +38,7 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 				}
 		}
 		if ($res.Count -gt 1) { 
-			$stat = 'FAIL' 
+			$stat = 'WARNING' 
 			$msg = "$($res.Count) indexes were fragmented more than $MinValue percent"
 			$res | Foreach-Object {$tempdata.Add("Table=$($_.Table),Index=$($_.Index),FragPct=$($_.AvgFragPct)") }
 		}

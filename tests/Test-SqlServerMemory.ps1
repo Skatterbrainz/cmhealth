@@ -39,7 +39,7 @@ function Test-SqlServerMemory {
 				$stat = "FAIL"
 				$msg  = "Current limit $($cmax) MB is greater than physical $($tmem) MB - possibly due to virtual dynamic memory"
 			} elseif ($cmax -gt $target) {
-				$stat = "FAIL"
+				$stat = "WARNING"
 				$msg  = "Current limit $($cmax) MB is greater than $MaxMemAllocation percent physical $($tmem) MB or $($target) MB"
 			}
 		}
