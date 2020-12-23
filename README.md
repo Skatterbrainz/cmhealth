@@ -42,9 +42,6 @@ packages or the dependencies, and install them manually.
 
 ## Usage / Examples
 
-NOTE: By default, running Test-CmHealth will return results to the console (pipeline). It is recommended
-that you capture the output in a variable to make it easier to inspect the results.
-
 ### First-Time Use
 
 ```powershell
@@ -63,7 +60,11 @@ Get-Help Test-CmHealth -Full
 ```
 
 ### Run all tests (default options when running on the CM site server)
-(Note: default site code is assumed to be "P01", or use -SiteCode to override)
+
+NOTE: By default, running Test-CmHealth will return results to the console (pipeline). It is recommended
+that you capture the output in a variable to make it easier to inspect the results.
+
+NOTE: The default site code is assumed to be "P01". Use the -SiteCode parameter to specify a different site code.
 
 ```powershell
 $result = Test-CmHealth
