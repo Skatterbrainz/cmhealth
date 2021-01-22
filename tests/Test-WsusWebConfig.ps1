@@ -44,12 +44,11 @@ function Test-WsusWebConfig {
 				$msg = "MaxInstalledPrerequisites currently $($c2.value) should be $MaxInstalledPrerequisites"
 				$tempdata.Add("MaxInstalledPrerequisites=$($c2.Value),Expected=$($MaxInstalledPrerequisites)")
 			}
-		} 
-		
-		# more voodoo witchcraft and smoked chickenbones needed here
+		}
 
+		# more voodoo witchcraft and smoked chickenbones needed here
 		# $webconfigraw
-		
+
 	}
 	catch {
 		$stat = 'ERROR'
@@ -61,7 +60,7 @@ function Test-WsusWebConfig {
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

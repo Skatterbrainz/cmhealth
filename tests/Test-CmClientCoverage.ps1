@@ -38,7 +38,6 @@ function Test-CmClientCoverage {
 			$stat = 'FAIL'
 			$msg  = "Unable to query environment data to validate this test"
 		}
-
 	}
 	catch {
 		$stat = 'ERROR'
@@ -50,7 +49,7 @@ function Test-CmClientCoverage {
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

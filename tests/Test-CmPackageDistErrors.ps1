@@ -11,12 +11,12 @@ function Test-CmPackageDistErrors {
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
 		$query = "SELECT 
-pkg.PackageID, pkg.Name, cds.NumberInstalled, cds.NumberInProgress, 
+pkg.PackageID, pkg.Name, cds.NumberInstalled, cds.NumberInProgress,
 cds.NumberErrors, pkg.Description, pkg.PkgSourcePath
 FROM dbo.v_ContDistStatSummary AS cds INNER JOIN
 dbo.v_Package AS pkg ON cds.PkgID = pkg.PackageID
 WHERE (cds.NumberErrors > 0)"
-		if ($ScriptParams.Credential) { 
+		if ($ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
@@ -37,7 +37,7 @@ WHERE (cds.NumberErrors > 0)"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

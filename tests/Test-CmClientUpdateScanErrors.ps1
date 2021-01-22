@@ -10,19 +10,19 @@ function Test-CmClientUpdateScanErrors {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
-		$query = "SELECT DISTINCT 
-rsys.Name0 as MachineName, 
-rsys.Client_Version0 as SMSClientVersion, 
-uss.LastWUAVersion as WUAVersion, 
-rsys.User_Name0 as LastLoggedOnUser, 
-uss.LastStatusMessageID & 0x0000FFFF as ErrorStatusID, 
-uss.LastErrorCode as LastErrorCode, 
+		$query = "SELECT DISTINCT
+rsys.Name0 as MachineName,
+rsys.Client_Version0 as SMSClientVersion,
+uss.LastWUAVersion as WUAVersion,
+rsys.User_Name0 as LastLoggedOnUser,
+uss.LastStatusMessageID & 0x0000FFFF as ErrorStatusID,
+uss.LastErrorCode as LastErrorCode,
 LastScanTime,
 fcm.SiteCode
-from v_UpdateScanStatus uss with (NOLOCK) 
-join v_ClientCollectionMembers ccm with (NOLOCK) on uss.ResourceID = ccm.ResourceID 
-join v_SoftwareUpdateSource sus with (NOLOCK) on sus.UpdateSource_ID = uss.UpdateSource_ID 
-join v_R_System rsys with (NOLOCK) on rsys.ResourceID = uss.ResourceID 
+from v_UpdateScanStatus uss with (NOLOCK)
+join v_ClientCollectionMembers ccm with (NOLOCK) on uss.ResourceID = ccm.ResourceID
+join v_SoftwareUpdateSource sus with (NOLOCK) on sus.UpdateSource_ID = uss.UpdateSource_ID
+join v_R_System rsys with (NOLOCK) on rsys.ResourceID = uss.ResourceID
 join v_FullCollectionMembership_Valid fcm with (NOLOCK) on uss.ResourceID = fcm.ResourceID
 where uss.LastStatusMessageID <> 0 and fcm.CollectionID = 'SMS00001' "
 		if ($ScriptParams.Credential) {
@@ -46,7 +46,7 @@ where uss.LastStatusMessageID <> 0 and fcm.CollectionID = 'SMS00001' "
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

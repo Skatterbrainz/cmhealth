@@ -21,13 +21,13 @@ function Test-CmMpResponse {
 		$WEBObject2.Timeout = 7000
 		try {
 			$WEBResponse1 = $WEBObject1.GetResponse()
-			$MpcertStatus = $WEBResponse1.StatusCode            
-			$MpcertStatusCode = ($WEBResponse1.Statuscode -as [int])  
+			$MpcertStatus = $WEBResponse1.StatusCode
+			$MpcertStatusCode = ($WEBResponse1.Statuscode -as [int])
 			$WEBResponse1.Close()
 			$WEBResponse2 = $WEBObject2.GetResponse()
-			$MplistStatus = $WEBResponse2.StatusCode            
-			$MplistStatusCode = ($WEBResponse2.Statuscode -as [int])  
-			$WEBResponse2.Close()        
+			$MplistStatus = $WEBResponse2.StatusCode
+			$MplistStatusCode = ($WEBResponse2.Statuscode -as [int])
+			$WEBResponse2.Close()
 			if (($MpcertStatusCode -ne "200") -or ($MplistStatusCode -ne "200")) {
 				$stat = "FAIL"
 				$msg = "Invalid web response"
@@ -52,7 +52,7 @@ function Test-CmMpResponse {
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

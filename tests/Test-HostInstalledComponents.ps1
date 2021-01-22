@@ -11,10 +11,10 @@ function Test-HostInstalledComponents {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "All required components are installed"
-	
+
 		$reg64 = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall 
 		$reg32 = Get-ChildItem -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
-	
+
 		$reg64 | ForEach-Object {
 			if ($_.Property -contains 'DisplayName') {
 				$pn = $_.GetValue('DisplayName')

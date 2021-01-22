@@ -10,17 +10,17 @@ function Test-CmUpdateErrorSolutions {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
-		$query = "SELECT DISTINCT 
+		$query = "SELECT DISTINCT
 assc.LastEnforcementErrorCode as ErrorCode,
 assc.LastEnforcementMessageID as Message
-FROM v_CIAssignment cia WITH (NOLOCK) 
+FROM v_CIAssignment cia WITH (NOLOCK)
 JOIN v_UpdateAssignmentStatus_Live assc WITH (NOLOCK) on assc.AssignmentID = cia.AssignmentID 
-JOIN v_R_System sys WITH (NOLOCK) on assc.ResourceID=sys.ResourceID AND ISNULL(sys.Obsolete0,0) <> 1 
+JOIN v_R_System sys WITH (NOLOCK) on assc.ResourceID=sys.ResourceID AND ISNULL(sys.Obsolete0,0) <> 1
 JOIN v_FullCollectionMembership_Valid fcm WITH (NOLOCK) on assc.ResourceID = fcm.ResourceID
-WHERE 
-assc.LastEnforcementErrorID <> 0 
-AND assc.LastEnforcementMessageID in (6,9) 
-AND assc.IsCompliant=0 
+WHERE
+assc.LastEnforcementErrorID <> 0
+AND assc.LastEnforcementMessageID in (6,9)
+AND assc.IsCompliant=0
 AND fcm.CollectionID = 'SMS00001'"
 		if ($ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
@@ -43,7 +43,7 @@ AND fcm.CollectionID = 'SMS00001'"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

@@ -18,13 +18,13 @@ function Test-CmCollectionRefresh {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$query = "Select 
-(case 
+		$query = "Select
+(case
 when RefreshType = 1 then 'Manual'
 when RefreshType = 2 then 'Scheduled'
 when RefreshType = 4 then 'Incremental'
 when RefreshType = 6 then 'Scheduled and Incremental'
-else 'Unknown' end) as RefreshType, 
+else 'Unknown' end) as RefreshType,
 SiteID, CollectionName
 from v_Collections"
 		if ($ScriptParams.Credential) {
@@ -52,7 +52,7 @@ from v_Collections"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

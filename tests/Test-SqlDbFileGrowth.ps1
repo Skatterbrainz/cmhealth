@@ -27,14 +27,14 @@ function Test-SqlDbFileGrowth {
 				$files = $dbfiles | Where-Object {$_.TypeDescription -eq 'Rows'}
 				$test1 = $files | Where-Object {$_.GrowthType -eq 'Percent' -and $_.Growth -ge 10}
 				$test2 = $files | Where-Object {$_.GrowthType -eq '' -and $_.Growth -ge 256}
-				
+
 				# more work needed here!
 			}
 			'Log' {
 				# more work needed here!
 			}
 		} # switch
-		
+
 	}
 	catch {
 		$stat = 'ERROR'
@@ -46,7 +46,7 @@ function Test-SqlDbFileGrowth {
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

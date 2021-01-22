@@ -10,14 +10,14 @@ function Test-CmCompStatus {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$query = "SELECT 
+		$query = "SELECT
 ComponentName, Errors, Infos, Warnings,
 CASE WHEN Status = 0 THEN 'OK'
 	WHEN Status = 1 THEN 'Warning'
 	WHEN Status = 2 THEN 'Critical'
 END AS Status
-FROM v_ComponentSummarizer 
-WHERE 
+FROM v_ComponentSummarizer
+WHERE
 TallyInterval='0001128000100008' AND
 SiteCode = '$($ScriptParams.SiteCode)' AND
 Errors > 0"
@@ -52,7 +52,7 @@ Errors > 0"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

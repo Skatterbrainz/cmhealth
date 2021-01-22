@@ -10,7 +10,7 @@ function Test-CmUpdateScanErrors {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
-		$query = "SELECT DISTINCT 
+		$query = "SELECT DISTINCT
 uss.ResourceID, uss.ScanTime, uss.LastScanState, uss.LastErrorCode, uss.LastWUAVersion, cdr.Name
 FROM v_UpdateScanStatus AS uss INNER JOIN
 v_CombinedDeviceResources AS cdr ON uss.ResourceID = cdr.MachineID
@@ -37,7 +37,7 @@ ORDER BY cdr.Name"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

@@ -10,13 +10,13 @@ function Test-CmClientErrors {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
-		$query = "SELECT DISTINCT 
-stat.MachineName, 
+		$query = "SELECT DISTINCT
+stat.MachineName,
 fcm.SiteCode,
-stat.Component 
-FROM v_StatusMessage stat 
+stat.Component
+FROM v_StatusMessage stat
 INNER JOIN v_FullCollectionMembership_Valid fcm ON fcm.Name = stat.MachineName
-WHERE stat.Time > DATEADD(dd,-CONVERT(INT,7),GETDATE())  and 
+WHERE stat.Time > DATEADD(dd,-CONVERT(INT,7),GETDATE()) and
 stat.Severity=0xC0000000 AND stat.PerClient!=0 AND fcm.CollectionID = 'SMS00001'"
 		if ($ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
@@ -39,7 +39,7 @@ stat.Severity=0xC0000000 AND stat.PerClient!=0 AND fcm.CollectionID = 'SMS00001'
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

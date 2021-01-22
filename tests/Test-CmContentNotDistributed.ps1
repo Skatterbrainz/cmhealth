@@ -10,7 +10,7 @@ function Test-CmContentNotDistributed {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
-		$query = "SELECT  
+		$query = "SELECT
 SourceSite,
 SoftwareName,
 CASE ObjectType
@@ -41,7 +41,7 @@ WHERE Targeted = 0"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

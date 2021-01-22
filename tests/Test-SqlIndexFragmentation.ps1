@@ -31,7 +31,7 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 		$res = $res | ForEach-Object {
 				[pscustomobject]@{
 					Schema = $_.Schema
-					Table  = $_.Table 
+					Table  = $_.Table
 					Index  = $_.Index
 					AvgFragPct = [math]::Round($_.avg_fragmentation_in_percent,2)
 					PageCount  = $_.PageCount
@@ -53,7 +53,7 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

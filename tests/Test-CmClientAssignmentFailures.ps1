@@ -10,16 +10,16 @@ function Test-CmClientAssignmentFailures {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
-		$query = "SELECT 
-FQDN AS MachineNameFQDN, 
-NetBiosName AS MachineName, 
+		$query = "SELECT
+FQDN AS MachineNameFQDN,
+NetBiosName AS MachineName,
 ClientVersion AS ClientVersion,
 AssignedSiteCode AS SiteCode,
-AssignmentBeginTime AS AssignmentStartTime, 
-StateDescription AS FailureDescription, 
+AssignmentBeginTime AS AssignmentStartTime,
+StateDescription AS FailureDescription,
 LastMessageParam AS DescriptionParam,
 LastMessageStateID
-FROM v_ClientDeploymentState 
+FROM v_ClientDeploymentState
 WHERE LastMessageStateID > 500 AND LastMessageStateID < 700"
 		if ($ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
@@ -41,7 +41,7 @@ WHERE LastMessageStateID > 500 AND LastMessageStateID < 700"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

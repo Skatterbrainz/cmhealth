@@ -15,29 +15,29 @@ function Test-CmWsusLastSync {
 		$query = "DECLARE @starttime AS DATETIME, @endtime AS DATETIME, @id AS INT, @sitecode CHAR(3)
 SELECT @sitecode = '$($ScriptParams.SiteCode)'
 SELECT TOP 1 @starttime = smsgs.Time
-FROM v_StatusMessage smsgs 
+FROM v_StatusMessage smsgs
 WHERE
-	smsgs.Time >= DATEADD(dd,-CONVERT(INT,$($DaysBack)),GETDATE()) AND 
-	smsgs.MessageID = 6701 AND 
+	smsgs.Time >= DATEADD(dd,-CONVERT(INT,$($DaysBack)),GETDATE()) AND
+	smsgs.MessageID = 6701 AND
 	smsgs.sitecode = @sitecode
 ORDER BY smsgs.Time DESC
 
 SELECT TOP 1 @endtime = smsgs.Time, @id = smsgs.MessageID
-FROM v_StatusMessage smsgs 
+FROM v_StatusMessage smsgs
 WHERE
-	smsgs.Time >= DATEADD(dd,-CONVERT(INT,$($DaysBack)),GETDATE()) AND 
-	smsgs.MessageID IN (6702, 6703) AND 
+	smsgs.Time >= DATEADD(dd,-CONVERT(INT,$($DaysBack)),GETDATE()) AND
+	smsgs.MessageID IN (6702, 6703) AND
 	smsgs.sitecode = @sitecode
 ORDER BY smsgs.Time DESC
 
 IF (@starttime IS NOT NULL) AND (@endtime IS NOT NULL)
 SELECT @starttime as StartTime,
-CASE 
+CASE
 	WHEN (@starttime > @endtime) THEN NULL
 	ELSE @endtime
-END AS EndTime, 
-CASE 
-	WHEN (@starttime > @endtime) THEN 'Last WSYS Sync did not finish'
+END AS EndTime,
+CASE
+	WHEN (@starttime > @endtime) THEN 'Last WSUS Sync did not finish'
 	WHEN (@id = 6702) THEN 'Success'
 	WHEN (@id = 6703) THEN 'Error'
 END AS 'Comments'"
@@ -65,7 +65,7 @@ END AS 'Comments'"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

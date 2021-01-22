@@ -16,7 +16,7 @@ function Import-CmHealthSettings {
 		}
 	}
 	catch {
-		Write-Error $_.Exception.Message 
+		Write-Error $_.Exception.Message
 	}
 	finally {
 		Write-Output $result
@@ -40,9 +40,9 @@ function Get-CmHealthDefaultValue {
 		}
 	}
 	catch {
-		Write-Error $_.Exception.Message 
+		Write-Error $_.Exception.Message
 	}
 	finally {
-		Write-Output $result 
+		Write-Output $result
 	}
 }

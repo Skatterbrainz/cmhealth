@@ -10,15 +10,15 @@ function Test-CmInactiveClients {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
-		$query = "SELECT DISTINCT 
+		$query = "SELECT DISTINCT
 fcm.ResourceID,
 fcm.Name,
-CASE WHEN fcm.IsObsolete = 1 THEN '*' ELSE '' END AS Obsolete, 
+CASE WHEN fcm.IsObsolete = 1 THEN '*' ELSE '' END AS Obsolete,
 CASE WHEN fcm.IsBlocked = 1 THEN '*' ELSE '' END AS Blocked,
 chs.LastActiveTime as LastContactTime,
 fcm.SiteCode
 FROM v_FullCollectionMembership fcm
-INNER JOIN v_CH_ClientSummary chs ON chs.ResourceID = fcm.ResourceID AND chs.ClientActiveStatus = 0 
+INNER JOIN v_CH_ClientSummary chs ON chs.ResourceID = fcm.ResourceID AND chs.ClientActiveStatus = 0
 WHERE fcm.CollectionID = 'SMS00001'"
 		if ($ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
@@ -41,7 +41,7 @@ WHERE fcm.CollectionID = 'SMS00001'"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

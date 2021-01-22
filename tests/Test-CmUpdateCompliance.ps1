@@ -13,31 +13,31 @@ function Test-CmUpdateCompliance {
 		$msg  = "No issues found" # do not change this either
 		$query = @"
 SELECT 
-	vRS.Netbios_Name0 AS 'DeviceName', 
-	vSN_Status.StateDescription, 
-	vCCI.CategoryInstanceName AS 'UpdateClassification', 
-	vUI.Title, 
-	vUI.Description, 
-	vUI.InfoURL, 
-	vUI.ArticleID, 
-	vUI.BulletinID, 
-    vUI.MaxExecutionTime, 
-	vUCS.LastStatusChangeTime, 
+	vRS.Netbios_Name0 AS 'DeviceName',
+	vSN_Status.StateDescription,
+	vCCI.CategoryInstanceName AS 'UpdateClassification',
+	vUI.Title,
+	vUI.Description,
+	vUI.InfoURL,
+	vUI.ArticleID,
+	vUI.BulletinID,
+    vUI.MaxExecutionTime,
+	vUCS.LastStatusChangeTime,
 	vUCS.LastErrorCode
-FROM 
+FROM
 	dbo.v_Update_ComplianceStatus AS vUCS LEFT OUTER JOIN
     dbo.v_UpdateInfo AS vUI ON vUCS.CI_ID = vUI.CI_ID LEFT OUTER JOIN
     dbo.v_R_System AS vRS ON vUCS.ResourceID = vRS.ResourceID LEFT OUTER JOIN
     dbo.v_StateNames AS vSN_Status ON vUCS.Status = vSN_Status.StateID LEFT OUTER JOIN
     dbo.v_CICategoryInfo AS vCCI ON vCCI.CI_ID = vUCS.CI_ID
-WHERE 
-	(vCCI.CategoryTypeName = 'UpdateClassification') AND 
-	(vSN_Status.TopicType = 500) AND 
-	(vUI.CIType_ID = 8) AND 
-	(vUI.IsSuperseded = 0) AND 
-	(vCCI.CategoryInstanceName IN ('Security Updates', 'Critical Updats')) AND 
+WHERE
+	(vCCI.CategoryTypeName = 'UpdateClassification') AND
+	(vSN_Status.TopicType = 500) AND
+	(vUI.CIType_ID = 8) AND
+	(vUI.IsSuperseded = 0) AND
+	(vCCI.CategoryInstanceName IN ('Security Updates', 'Critical Updats')) AND
     (vSN_Status.StateDescription = 'Update is required')
-ORDER BY 
+ORDER BY
 	'DeviceName', vUI.Title
 "@
 		if ($ScriptParams.Credential) {
@@ -73,7 +73,7 @@ ORDER BY
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

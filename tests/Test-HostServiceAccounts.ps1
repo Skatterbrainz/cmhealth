@@ -21,15 +21,15 @@ function Test-HostServiceAccounts {
 			$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Authentication Negotiate -Credential $ScriptParams.Credential -ErrorAction Stop
 		}
 		$jdata.Services | ForEach-Object {
-			$svcName = $_.Name 
-			$svcRef  = $_.Reference 
+			$svcName = $_.Name
+			$svcRef  = $_.Reference
 			$privs   = $_.Privileges
 			$startup = $_.StartMode
 			$delayed = if ($_.DelayedAutoStart -eq 'true') { $True } else { $False }
 			Write-Verbose "service name: $svcName"
 			try {
 				if ($ScriptParams.Credential) {
-					$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -CimSession $cs 
+					$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -CimSession $cs
 				} else {
 					$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -ComputerName $ScriptParams.ComputerName
 				}
@@ -42,27 +42,27 @@ function Test-HostServiceAccounts {
 				}
 				else {
 					$cprivs = Get-CPrivilege -Identity $svcAcct
-					$privs -split ',' | Foreach-Object { 
+					$privs -split ',' | Foreach-Object {
 						$priv = $_
-						if ($priv -notin $cprivs) { 
+						if ($priv -notin $cprivs) {
 							$res  = 'FAIL'
-							$stat = 'FAIL' 
+							$stat = 'FAIL'
 							$msgx = 'Insufficient privileges'
 						} else {
 							$res  = 'PASS'
 							$msgx = 'Correct configuration'
 						}
 						Write-Verbose "service account privileges: $res"
-						if ($svcStart -ne $startup) { 
+						if ($svcStart -ne $startup) {
 							$res  = 'FAIL'
-							$stat = 'FAIL' 
+							$stat = 'FAIL'
 							$msgx = 'Startup type'
 						} else {
 							$res  = 'PASS'
 							$msgx = 'Correct configuration'
 						}
 						Write-Verbose "startup mode = $res"
-						if ($svcDelay -ne $delayed) { 
+						if ($svcDelay -ne $delayed) {
 							$res  = 'FAIL'
 							$stat = 'FAIL'
 							$msgx = 'Delayed start'
@@ -100,7 +100,7 @@ function Test-HostServiceAccounts {
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

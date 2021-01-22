@@ -14,12 +14,12 @@ function Test-CmUpdateDeploymentErrors {
 fcm.ResourceID,
 ISNULL(assc.LastEnforcementErrorCode,0) AS ErrorCode,
 ISNULL(assc.LastEnforcementErrorCode,0) AS Message
-FROM v_CIAssignment cia WITH (NOLOCK) 
-JOIN v_UpdateAssignmentStatus_Live assc WITH (NOLOCK) ON assc.AssignmentID = cia.AssignmentID 
-JOIN v_R_System sys WITH (NOLOCK) ON assc.ResourceID=sys.ResourceID AND ISNULL(sys.Obsolete0,0) <> 1 
+FROM v_CIAssignment cia WITH (NOLOCK)
+JOIN v_UpdateAssignmentStatus_Live assc WITH (NOLOCK) ON assc.AssignmentID = cia.AssignmentID
+JOIN v_R_System sys WITH (NOLOCK) ON assc.ResourceID=sys.ResourceID AND ISNULL(sys.Obsolete0,0) <> 1
 JOIN v_FullCollectionMembership_Valid fcm WITH (NOLOCK) ON assc.ResourceID = fcm.ResourceID
-WHERE assc.LastEnforcementErrorID & 0x0000FFFF <> 0 AND 
-assc.LastEnforcementMessageID in (6,9) AND 
+WHERE assc.LastEnforcementErrorID & 0x0000FFFF <> 0 AND
+assc.LastEnforcementMessageID in (6,9) AND
 assc.IsCompliant=0 AND fcm.CollectionID = 'SMS00001'"
 		if ($ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
@@ -42,10 +42,9 @@ assc.IsCompliant=0 AND fcm.CollectionID = 'SMS00001'"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
 }
-	

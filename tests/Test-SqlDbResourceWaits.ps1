@@ -12,7 +12,7 @@ function Test-SqlDbResourceWaits {
 		$msg  = "No issues found"
 		$query = "SELECT 
 CAST(100.0 * SUM(signal_wait_time_ms) / SUM (wait_time_ms) AS NUMERIC(20,2)) AS [CPUWaits_Pct],
-CAST(100.0 * SUM(wait_time_ms - signal_wait_time_ms) / SUM (wait_time_ms) AS NUMERIC(20,2)) AS [ResourceWaits_Pct] 
+CAST(100.0 * SUM(wait_time_ms - signal_wait_time_ms) / SUM (wait_time_ms) AS NUMERIC(20,2)) AS [ResourceWaits_Pct]
 FROM sys.dm_os_wait_stats OPTION (RECOMPILE)"
 		if ($ScriptParams.Credential) {
 			$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
@@ -35,7 +35,7 @@ FROM sys.dm_os_wait_stats OPTION (RECOMPILE)"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

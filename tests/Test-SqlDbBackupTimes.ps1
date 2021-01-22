@@ -25,8 +25,8 @@ DATEDIFF(second, s.backup_start_date, s.backup_finish_date) Seconds,
 s.backup_start_date AS StartDate
 FROM msdb.dbo.backupset s
 INNER JOIN msdb.dbo.backupmediafamily m ON s.media_set_id = m.media_set_id
-WHERE 
-s.backup_start_date >= DATEADD(dd,-CONVERT(INT, $DaysBack),GETDATE()) 
+WHERE
+s.backup_start_date >= DATEADD(dd,-CONVERT(INT, $DaysBack),GETDATE())
 ) T1
 WHERE T1.Seconds > $MaxRunTime
 ORDER BY T1.Seconds DESC"
@@ -51,7 +51,7 @@ ORDER BY T1.Seconds DESC"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

@@ -43,7 +43,6 @@ function Test-HostSystemLogErrors {
 			}
 		}
 		$tempdata.Add( "Errors=$($verrors.Count), Warnings=$($vwarnings.Count)")
-
 	}
 	catch {
 		$stat = 'ERROR'
@@ -55,7 +54,7 @@ function Test-HostSystemLogErrors {
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

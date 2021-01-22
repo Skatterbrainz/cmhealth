@@ -18,7 +18,7 @@ sys.User_Name0,
 fcm.SiteCode,
 chs.LastActiveTime AS AgentTime,
 chs.LastHW AS LastHWScan,
-chs.LastSW AS LastScanDate   
+chs.LastSW AS LastScanDate
 FROM v_FullCollectionMembership fcm
 INNER JOIN v_R_System sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_CH_ClientSummary chs ON chs.ResourceID = fcm.ResourceID AND chs.ClientActiveStatus = 0 
@@ -44,7 +44,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND chs.LastActiveTime < DATEADD(dd,-CONVERT
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

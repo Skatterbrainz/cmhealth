@@ -22,11 +22,11 @@ function Test-SqlAgentJobStatus {
 			$params = @{
 				SqlInstance = $ScriptParams.SqlInstance 
 				StartDate   = (Get-Date).AddHours(-$HoursBack)
-			}	
+			}
 		}
 		$res = @(Get-DbaAgentJobHistory @params | Where-Object {$_.Status -ne "Succeeded"})
-		if ($res.Count -gt 0) { 
-			$stat = 'FAIL' 
+		if ($res.Count -gt 0) {
+			$stat = 'FAIL'
 			$msg  = "$($res.Count) sql agent jobs failed within the past $HoursBack hours"
 		}
 	}
@@ -40,7 +40,7 @@ function Test-SqlAgentJobStatus {
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

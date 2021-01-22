@@ -11,12 +11,12 @@ function Test-CmComponentErrorSolutions {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
-		$query = "SELECT DISTINCT 
+		$query = "SELECT DISTINCT
 stat.Component, stat.MessageID, stat.MessageID AS Value
 FROM vStatusMessages AS stat where
 stat.Severity IN (-1073741824, -2147483648)
-AND stat.Component NOT IN ('Advanced Client', 'Windows Installer SourceList Update Agent', 
-'Desired Configuration Management', 'Software Updates Scan Agent', 'File Collection Agent', 
+AND stat.Component NOT IN ('Advanced Client', 'Windows Installer SourceList Update Agent',
+'Desired Configuration Management', 'Software Updates Scan Agent', 'File Collection Agent',
 'Hardware Inventory Agent', 'Software Distribution', 'Software Inventory Agent')
 AND stat.Time >= DATEADD(dd,-CONVERT(INT,$($DaysBack)),GETDATE())"
 		if ($ScriptParams.Credential) {
@@ -40,7 +40,7 @@ AND stat.Time >= DATEADD(dd,-CONVERT(INT,$($DaysBack)),GETDATE())"
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})

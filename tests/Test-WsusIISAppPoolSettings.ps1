@@ -57,7 +57,7 @@ function Test-WsusIisAppPoolSettings {
 				if ($cpm -ne $PrivateMemLimit) {
 					if ($ScriptParams.Remediate -eq $True) {
 						Set-WebConfiguration "$appPoolPath/recycling/periodicRestart/@privateMemory" -Value $PrivateMemLimit
-						$newpm = Get-WebConfiguration "$appPoolPath/recycling/periodicRestart/@privateMemory" 
+						$newpm = Get-WebConfiguration "$appPoolPath/recycling/periodicRestart/@privateMemory"
 						$tempdata.Add([pscustomobject]@{
 							Test    = "PrivateMemLimit"
 							Status  = "REMEDIATED"
@@ -97,7 +97,7 @@ function Test-WsusIisAppPoolSettings {
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
