@@ -11,7 +11,7 @@ function Test-CmContentDistErrors {
 		$stat = "PASS"
 		$msg  = "No issues found"
 		$query = "SELECT
-SELECT cds.PkgID, pkg.Name, pkg.Version, cds.TargeteddDPCount, cds.NumberInstalled, cds.NumberInProgress, cds.NumberErrors, pkg.PackageType
+SELECT cds.PkgID as PackageID, pkg.Name, pkg.Version, cds.TargeteddDPCount, cds.NumberInstalled, cds.NumberInProgress, cds.NumberErrors, pkg.PackageType
 FROM dbo.v_ContDistStatSummary AS cds INNER JOIN
 dbo.v_Package AS pkg ON cds.PkgID = pkg.PackageID
 WHERE (cds.NumberErrors > 0)"
