@@ -45,7 +45,7 @@
 	Runs only the site server host tests and attempts to remediate identified deficiences with WinSXS source path provided
 .EXAMPLE
 	$failed = Test-CmHealth | Where-Object Status -eq 'Fail'
-	Runs all tests and only returns those which failed 
+	Runs all tests and only returns those which failed
 .EXAMPLE
 	Test-CmHealth | Select-Object TestName,Status,Message | Where-Object Status -eq 'Fail'
 	Display summary of failed tests
