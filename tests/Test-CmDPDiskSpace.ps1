@@ -13,16 +13,20 @@ function Test-CMDPDiskSpace {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
 		$msg  = "No issues found" # do not change this either
+		$issues = 0
 		Write-Verbose "requesting list of DP servers"
-		$query = "select ServerName from v_DistributionPointInfo order by ServerName"
-		[array]$dplist = Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query $query
+		$query = "select ServerName from dbo.v_DistributionPointInfo order by ServerName"
+		[array]$dplist = Invoke-DbaQuery -SqlInstance $SqlInstance -Database $Database -Query $query | Select-Object -ExpandProperty ServerName
 		Write-Verbose "$($dplist.Count) DP server names returned"
+		[string]$myFQDN=(Get-CimInstance Win32_ComputerSystem).DNSHostName+"."+(Get-CimInstance Win32_ComputerSystem).Domain
 		foreach ($dp in $dplist) {
-			if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
+			if ($dp -ne $myFQDN) {
+				Write-Verbose "connecting to remote DP: $dp"
 				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $dp
 				$res = @(Get-CimInstance -CimSession $cs -ClassName Win32_LogicalDisk -Filter "DriveType = 3")
 			} else {
-				$res = @(Get-CimInstance -CimSession $cs -ClassName Win32_LogicalDisk -Filter "DriveType = 3")
+				Write-Verbose "connecting to local DP: $dp"
+				$res = @(Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType = 3")
 			}
 			if ($res.Count -gt 0) {
 				foreach ($disk in $res) {
@@ -31,13 +35,14 @@ function Test-CMDPDiskSpace {
 					$used = $size - $free
 					$pct  = $([math]::Round($used / $size, 1)) * 100
 					if ($pct -gt $MaxPctUsed) {
-						$tempData.Add([pscustomobject]@{Computer=$(dp);Drive=$($disk.DeviceID);Size=$($size);Used=$pct})
+						$tempData.Add([pscustomobject]@{Computer=$($dp);Drive=$($disk.DeviceID);Size=$($size);Used=$pct})
 						$stat = "WARNING"
+						$issues++
 					} else {
-						$tempData.Add([pscustomobject]@{Computer=$(dp);Drive=$($disk.DeviceID);Size=$($size);Used=$pct})
+						$tempData.Add([pscustomobject]@{Computer=$($dp);Drive=$($disk.DeviceID);Size=$($size);Used=$pct})
 					}
 				} # foreach
-				$msg = "$($tempData.Count) issues were found"
+				if ($issues -gt 0) { $msg = "$issues issues were found" }
 			}
 		} # foreach
 	}
