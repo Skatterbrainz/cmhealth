@@ -20,12 +20,12 @@ function Test-HostDiskSpace {
 			$disks = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
 		}
 		$disks | Foreach-Object {
-			$drv  = $_.DeviceID 
-			$size = $_.Size 
+			$drv  = $_.DeviceID
+			$size = $_.Size
 			$free = $_.FreeSpace
 			$used = $size - $free
 			$pct  = $([math]::Round($used / $size, 1)) * 100
-			if ($pct -gt 80) {
+			if ($pct -gt $MaxPctUsed) {
 				$tempdata.Add([pscustomobject]@{
 					Test    = $TestName
 					Status  = "FAIL"
