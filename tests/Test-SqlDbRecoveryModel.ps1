@@ -7,11 +7,13 @@ function Test-SqlDbRecoveryModel {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[string]$DefaultModel = Get-CmHealthDefaultValue -KeySet "sqlserver:RecoveryModel" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg  = "Correct configuration"
-		if ($ScriptParams.Credential) {
+		$stat   = "PASS"
+		$except = "FAIL"
+		$msg    = "Correct configuration"
+		if ($null -ne $ScriptParams.Credential) {
 			$rm = (Get-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -ErrorAction SilentlyContinue -SqlCredential $ScriptParams.Credential).RecoveryModel
 		} else {
 			$rm = (Get-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -ErrorAction SilentlyContinue).RecoveryModel
@@ -26,7 +28,7 @@ function Test-SqlDbRecoveryModel {
 				$stat = "REMEDIATED"
 				$msg  = "Recovery model is now to $DefaultModel"
 			} else {
-				$stat = "FAIL"
+				$stat = $except
 				$msg  = "Recovery model is currently set to $rm"
 			}
 		}
@@ -36,6 +38,9 @@ function Test-SqlDbRecoveryModel {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -43,6 +48,7 @@ function Test-SqlDbRecoveryModel {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

@@ -7,18 +7,20 @@ function Test-SqlUpdates {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg = "No issues found"
-		if ($ScriptParams.Credential) {
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "No issues found"
+		if ($null -ne $ScriptParams.Credential) {
 			$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update -SqlCredential $ScriptParams.Credential 
 		} else {
 			$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update
 		}
-		if ($res.Compliant -ne $True) { 
+		if ($res.Compliant -ne $True) {
 			$bcurrent = $res.BuildLevel
 			$btarget  = $res.BuildTarget
-			$stat = 'WARNING' 
+			$stat = $except
 			$msg = "SQL $($res.NameLevel) build level is $($bcurrent), but should be $($btarget): SP: $($res.SPTarget) CU: $($res.CULevel)"
 		}
 	}
@@ -27,6 +29,9 @@ function Test-SqlUpdates {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -34,6 +39,7 @@ function Test-SqlUpdates {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

@@ -7,10 +7,12 @@ function Test-SqlIndexFragmentation {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[int]$MinValue = Get-CmHealthDefaultValue -KeySet "sqlserver:IndexFragThresholdPercent" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg = "No indexes were fragmented more than $MinValue percent"
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "No indexes were fragmented more than $MinValue percent"
 		$query = "SELECT dbschemas.[name] as 'Schema',
 dbtables.[name] as 'Table',
 dbindexes.[name] as 'Index',
@@ -23,7 +25,7 @@ INNER JOIN sys.indexes AS dbindexes ON dbindexes.[object_id] = indexstats.[objec
 AND indexstats.index_id = dbindexes.index_id
 WHERE indexstats.database_id = DB_ID() and indexstats.avg_fragmentation_in_percent > $($MinValue)
 ORDER BY indexstats.avg_fragmentation_in_percent desc"
-		if ($ScriptParams.Credential) {
+		if ($null -ne $ScriptParams.Credential) {
 			$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$res = (Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
@@ -37,8 +39,8 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 					PageCount  = $_.PageCount
 				}
 		}
-		if ($res.Count -gt 1) { 
-			$stat = 'WARNING' 
+		if ($res.Count -gt 1) {
+			$stat = $except
 			$msg = "$($res.Count) indexes were fragmented more than $MinValue percent"
 			$res | Foreach-Object {$tempdata.Add("Table=$($_.Table),Index=$($_.Index),FragPct=$($_.AvgFragPct)") }
 		}
@@ -48,6 +50,9 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -55,6 +60,7 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

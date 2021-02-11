@@ -7,9 +7,11 @@ function Test-CmMissingContent {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg  = "No issues found"
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "No issues found"
 		$query = "SELECT
 SourceSite,
 SoftwareName,
@@ -30,13 +32,13 @@ CASE ObjectType
 END AS ObjectTypeName
 FROM fn_ListObjectContentExtraInfo(1033) AS SMS_ObjectContentExtraInfo
 WHERE Targeted > 0 AND NumberInstalled <> Targeted"
-		if ($ScriptParams.Credential) {
+		if ($null -ne $ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
 		if ($null -ne $res -and $res.Count -gt 0) {
-			$stat = "WARNING"
+			$stat = $except
 			$msg  = "$($res.Count) items missing content: $($res.SoftwareName -join ',')"
 			$res | Foreach-Object {$tempdata.Add("Name=$($_.SoftwareName),Type=$($_.ObjectTypeName),Errors=$($_.NumberErrors)")}
 		}
@@ -46,6 +48,9 @@ WHERE Targeted > 0 AND NumberInstalled <> Targeted"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -53,6 +58,7 @@ WHERE Targeted > 0 AND NumberInstalled <> Targeted"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

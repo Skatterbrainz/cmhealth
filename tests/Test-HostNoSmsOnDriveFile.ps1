@@ -7,8 +7,9 @@ function Test-HostNoSmsOnDriveFile {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
-		$stat = "PASS"
-		$msg  = "All non-CM disks are excluded"
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "All non-CM disks are excluded"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		if ($ScriptParams.Credential) {
 			$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName -ErrorAction Stop
@@ -39,7 +40,7 @@ function Test-HostNoSmsOnDriveFile {
 						} else {
 							$tempdata.Add([pscustomobject]@{
 								Test    = $TestName
-								Status  = "FAIL"
+								Status  = $except
 								Message = "$($_.DeviceID) is not excluded from ConfigMgr content storage"
 							})
 						}
@@ -67,7 +68,7 @@ function Test-HostNoSmsOnDriveFile {
 					} else {
 						$tempdata.Add([pscustomobject]@{
 							Test    = $TestName
-							Status  = "FAIL"
+							Status  = $except
 							Message = "$($disk) is not excluded from ConfigMgr content storage"
 						})
 					}
@@ -81,6 +82,9 @@ function Test-HostNoSmsOnDriveFile {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -88,6 +92,7 @@ function Test-HostNoSmsOnDriveFile {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

@@ -6,6 +6,9 @@ function Test-AdSysMgtContainer {
 		[parameter()][string] $Description = "Verify System Management container has been created with delegated permissions",
 		[parameter()][hashtable] $ScriptParams
 	)
+	$startTime = (Get-Date)
+	$stat = "PASS"
+	$except = "FAIL"
 	try {
 		Write-Verbose "Searching for AD container: System Management"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
@@ -43,7 +46,7 @@ function Test-AdSysMgtContainer {
 				$stat = "REMEDIATED"
 				$msg  = "System Management container has been created"
 			} else {
-				$stat = "FAIL"
+				$stat = $except
 				$msg  = "System Management container was not found"
 			}
 		}
@@ -53,6 +56,9 @@ function Test-AdSysMgtContainer {
 		$msg  = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -60,6 +66,7 @@ function Test-AdSysMgtContainer {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

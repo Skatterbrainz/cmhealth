@@ -7,45 +7,48 @@ function Test-HostDiskSpace {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[int]$MaxPctUsed = Get-CmHealthDefaultValue -KeySet "siteservers:DiskSpaceMaxPercent" -DataSet $CmHealthConfig
 		Write-Verbose "MaxPctUsed = $MaxPctUsed"
 
 		[System.Collections.Generic.List[PSObject]]$tempdata = @()
-		$stat = 'PASS'
-		$msg = "No issues found"
+		$stat   = "PASS"
+		$except = "FAIL"
+		$msg    = "No issues found"
 		if ([string]::IsNullOrEmpty($ScriptParams.ComputerName)) {
 			$disks = Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_LogicalDisk -Credential $ScriptParams.Credential | Where-Object { $_.DriveType -eq 3 }
 		}
 		else {
 			$disks = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
 		}
-		$disks | Foreach-Object {
-			$drv  = $_.DeviceID
-			$size = $_.Size
-			$free = $_.FreeSpace
+		foreach ($disk in $disks) {
+			$drv  = $disk.DeviceID
+			$size = $disk.Size
+			$free = $disk.FreeSpace
 			$used = $size - $free
 			$pct  = $([math]::Round($used / $size, 1)) * 100
 			if ($pct -gt $MaxPctUsed) {
-				$tempdata.Add([pscustomobject]@{
-					Test    = $TestName
-					Status  = "FAIL"
-					Message = "logical disk $drv is $pct`% full ($used of $size bytes)"
-				})
+				$stat = $except
+				$msg  = "One or more disks are low on free space"
 			}
-			else {
-				$tempdata.Add([pscustomobject]@{
-					Test    = $TestName
-					Status  = "PASS"
-					Message = "logical disk $drv is $pct`% full ($used of $size bytes)"
-				})
-			}
-		}
+			$tempdata.Add(
+				[pscustomobject]@{
+					Drive   = $drv
+					Size    = $size
+					Used    = $used
+					PctUsed = $pct
+				}
+			)
+		} # foreach
 	}
 	catch {
 		$stat = 'ERROR'
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -53,6 +56,7 @@ function Test-HostDiskSpace {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

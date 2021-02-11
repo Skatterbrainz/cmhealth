@@ -7,11 +7,13 @@ function Test-Example {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		#[int]$Setting = Get-CmHealthDefaultValue -KeySet "keygroup:keyname" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS" # do not change this
+		$except = "WARNING" # or "FAIL"
 		$msg  = "No issues found" # do not change this either
-		<# 
+		<#
 		=======================================================
 		|	COMMENT: DELETE THIS BLOCK WHEN FINISHED:
 		|
@@ -34,12 +36,12 @@ function Test-Example {
 		} else {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
-		
+
 		if ($res.Count -gt 0) {
-			$stat = "WARNING" # or "FAIL"
+			$stat = $except
 			$msg  = "$($res.Count) items found"
 			#$res | Foreach-Object {$tempdata.Add($_.Name)}
-		} 
+		}
 		#>
 
 		<#
@@ -58,7 +60,7 @@ function Test-Example {
 			$services = @(Get-CimInstance -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
 		}
 		if ($services.Count -gt 0) {
-			$stat = "WARNING" # or "FAIL"
+			$stat = $except
 			$services | Foreach-Object {$tempdata.Add($_.Name)}
 			$msg = "$($services.Count) stopped services were found"
 			$services | Foreach-Object {$tempdata.Add($_.Name)}
@@ -71,13 +73,17 @@ function Test-Example {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

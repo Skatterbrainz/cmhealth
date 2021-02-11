@@ -7,9 +7,13 @@ function Test-HostMemory {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
+		[int]$MinMemory = Get-CmHealthDefaultValue -KeySet "siteservers:MinimumMemoryGB" -DataSet $CmHealthConfig
+		$MinMem = $($MinMemory * 1GB)
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg  = "No issues found"
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "No issues found"
 		if ($ScriptParams.Credential) {
 			$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Authentication Negotiate -Credential $ScriptParams.Credential
 			$SystemInfo = Get-CimInstance -CimSession $cs -ClassName Win32_OperatingSystem -ErrorAction SilentlyContinue | Select-Object Name, TotalVisibleMemorySize, FreePhysicalMemory
@@ -25,12 +29,12 @@ function Test-HostMemory {
 		$FreeRAM  = [Math]::Round($FreeRAM, 2)
 		$UsedRAM  = [Math]::Round($UsedRAM, 2)
 		$RAMPercentFree = [Math]::Round($RAMPercentFree, 2)
-		if ($TotalRAM -lt 24GB) {
-			$stat = "FAIL"
-			$msg  = "$($TotalRam) GB is below the minimum recommended 24 GB"
-			$res | Foreach-Object {$tempdata.Add("Total=$($TotalRam),Expected=24")}
+		if ($TotalRAM -lt $MinMem) {
+			$stat = $except
+			$msg  = "$($TotalRam) GB is below the minimum recommended $MinMemory GB"
+			$res | Foreach-Object {$tempdata.Add("Total=$($TotalRam),Expected=$($MinMemory)")}
 		} elseif ($RAMPercentFree -lt 10) {
-			$stat = "FAIL"
+			$stat = $except
 			$msg  = "Less than 10 percent memory is available"
 			$res | Foreach-Object {$tempdata.Add("PctFree=$($RAMPercentFree),Expected=10")}
 		}
@@ -40,6 +44,9 @@ function Test-HostMemory {
 		$msg  = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

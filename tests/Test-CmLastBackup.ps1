@@ -7,7 +7,9 @@ function Test-CmLastBackup {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[int]$DaysBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SiteBackupMaxDaysOld" -DataSet $CmHealthConfig
+		Write-Verbose "threshold (days back) = $DaysBack"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat = "PASS"
 		$msg  = "No issues found"
@@ -16,8 +18,7 @@ function Test-CmLastBackup {
 SET @sitecode = '$($ScriptParams.SiteCode)'
 SET @numberofdays = $($DaysBack)
 SELECT TOP 1 @starttime = smsgs.Time
-FROM
-	v_StatusMessage smsg
+FROM v_StatusMessage smsgs
 WHERE
 	smsgs.Time >= DATEADD(dd,-CONVERT(INT,@NumberofDays),GETDATE()) AND
 	smsgs.MessageID = 5055 AND
@@ -25,8 +26,7 @@ WHERE
 ORDER BY smsgs.Time DESC
 
 SELECT TOP 1 @endtime = smsgs.Time, @id = smsgs.MessageID
-FROM
-	v_StatusMessage smsgs
+FROM v_StatusMessage smsgs
 WHERE
 	smsgs.Time >= DATEADD(dd,-CONVERT(INT,@NumberofDays),GETDATE()) and
 	smsgs.MessageID IN (5035, 5000, 5002, 5004, 5006, 5008, 5017, 5018, 5019, 5022, 5024, 5025, 5026, 5027, 5032, 5033, 5043, 5044, 5045, 5046, 5047, 5048, 5049, 5050, 5051, 5052, 5053) AND
@@ -45,7 +45,9 @@ CASE
 	WHEN (@id = 5035) THEN 'SMS Site Backup completed successfully with zero errors but still there could be some warnings'
 	WHEN (@id != 5035) THEN 'SMS Site Backup failed to completed successfully'
 END AS 'Comments'"
-		if ($ScriptParams.Credential) {
+		Write-Verbose "submitting the following query to the SQL instance:"
+		Write-Verbose $query
+		if ($null -ne $ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
@@ -66,6 +68,9 @@ END AS 'Comments'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -73,6 +78,7 @@ END AS 'Comments'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

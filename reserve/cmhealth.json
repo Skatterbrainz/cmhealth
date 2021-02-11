@@ -138,8 +138,9 @@
 	],
 	"siteservers": [
 		{
-			"DiskSpaceMaxPercent": "80",
+			"DiskSpaceMaxPercent": "90",
 			"DiskFormatBlockSize": "65536",
+			"MinimumMemoryGB": "24",
 			"SupportedOperatingSystems": [
 				"Windows Server 2016",
 				"Windows Server 2019",

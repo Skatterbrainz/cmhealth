@@ -6,12 +6,14 @@ function Test-HostInstalledSoftware {
 		[parameter()][string] $Description = "Check for excessive junk installed on site server",
 		[parameter()][hashtable] $ScriptParams
 	)
+	$startTime = (Get-Date)
 	[int]$MaxProducts  = Get-CmHealthDefaultValue -KeySet "siteservers:InstalledSoftwareThreshold" -DataSet $CmHealthConfig
 	Write-Verbose "MaxProducts = $MaxProducts"
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS" # do not change this
-		$msg  = "No issues found" # do not change this either
+		$stat   = "PASS" # do not change this
+		$except = "WARNING"
+		$msg    = "No issues found" # do not change this either
 		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
 			if ($ScriptParams.Credential) {
 				$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -Authentication Negotiate -ErrorAction Stop
@@ -23,9 +25,9 @@ function Test-HostInstalledSoftware {
 			$res = @(Get-CimInstance -ClassName Win32_Product -ErrorAction Stop | Select-Object Name,Version,Vendor,ProductCode)
 		}
 		if ($res.Count -gt $MaxProducts) {
-			$stat = "WARNING" # or "FAIL"
+			$stat = $except
 			$msg  = "$($res.Count) items found. See TestData for item details"
-			$res | Foreach-Object {$tempdata.Add(@($_.Name,$_.Version,$_.Vendor,$_.ProductCode))}
+			$res | Foreach-Object {$tempdata.Add([pscustomobject]@($_.Name,$_.Version,$_.Vendor,$_.ProductCode))}
 		}
 	}
 	catch {
@@ -34,6 +36,9 @@ function Test-HostInstalledSoftware {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -41,6 +46,7 @@ function Test-HostInstalledSoftware {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

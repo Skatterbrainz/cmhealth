@@ -9,23 +9,25 @@ function Test-HostServiceAccounts {
 	$privs = ('SeServiceLogonRight','SeAssignPrimaryTokenPrivilege','SeChangeNotifyPrivilege','SeIncreaseQuotaPrivilege')
 	$builtin = ('LocalSystem','NT AUTHORITY\NetworkService','NT AUTHORITY\LocalService')
 	try {
+		$startTime = (Get-Date)
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg = "No issues found"
-		$mpath = Split-Path (Get-Module CMhealth).Path -Parent
-		$jfile = "$mpath\tests\services.json"
+		$stat   = "PASS"
+		$except = "FAIL"
+		$msg    = "No issues found"
+		$mpath  = Split-Path (Get-Module CMhealth).Path -Parent
+		$jfile  = "$mpath\tests\services.json"
 		if (!(Test-Path $jfile)) { throw "file not found: $jfile" }
 		Write-Verbose "loading configuration file: $jfile"
 		$jdata = Get-Content $jfile | ConvertFrom-Json
 		if ($ScriptParams.Credential) {
 			$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Authentication Negotiate -Credential $ScriptParams.Credential -ErrorAction Stop
 		}
-		$jdata.Services | ForEach-Object {
-			$svcName = $_.Name
-			$svcRef  = $_.Reference
-			$privs   = $_.Privileges
-			$startup = $_.StartMode
-			$delayed = if ($_.DelayedAutoStart -eq 'true') { $True } else { $False }
+		foreach ($service in $jdata.Services) {
+			$svcName = $service.Name
+			$svcRef  = $service.Reference
+			$privs   = $service.Privileges
+			$startup = $service.StartMode
+			$delayed = if ($service.DelayedAutoStart -eq 'true') { $True } else { $False }
 			Write-Verbose "service name: $svcName"
 			try {
 				if ($ScriptParams.Credential) {
@@ -45,8 +47,8 @@ function Test-HostServiceAccounts {
 					$privs -split ',' | Foreach-Object {
 						$priv = $_
 						if ($priv -notin $cprivs) {
-							$res  = 'FAIL'
-							$stat = 'FAIL'
+							$res  = $except
+							$stat = $except
 							$msgx = 'Insufficient privileges'
 						} else {
 							$res  = 'PASS'
@@ -54,8 +56,8 @@ function Test-HostServiceAccounts {
 						}
 						Write-Verbose "service account privileges: $res"
 						if ($svcStart -ne $startup) {
-							$res  = 'FAIL'
-							$stat = 'FAIL'
+							$res  = $except
+							$stat = $except
 							$msgx = 'Startup type'
 						} else {
 							$res  = 'PASS'
@@ -63,8 +65,8 @@ function Test-HostServiceAccounts {
 						}
 						Write-Verbose "startup mode = $res"
 						if ($svcDelay -ne $delayed) {
-							$res  = 'FAIL'
-							$stat = 'FAIL'
+							$res  = $except
+							$stat = $except
 							$msgx = 'Delayed start'
 						} else {
 							$res  = 'PASS'
@@ -95,6 +97,9 @@ function Test-HostServiceAccounts {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -102,6 +107,7 @@ function Test-HostServiceAccounts {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

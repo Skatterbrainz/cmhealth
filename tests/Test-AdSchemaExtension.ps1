@@ -6,6 +6,9 @@ function Test-AdSchemaExtension {
 		[parameter()][string] $Description = "Verify AD schema extensions have been installed",
 		[parameter()][hashtable] $ScriptParams
 	)
+	$startTime = (Get-Date)
+	$stat = "PASS"
+	$except = "FAIL"
 	try {
 		$tempdata = $null
 		Write-Verbose "Verifying for AD Schema extension"
@@ -20,10 +23,9 @@ function Test-AdSchemaExtension {
 		foreach ($i in $colProplist){$objSearcher.PropertiesToLoad.Add($i) | Out-Null}
 		$colResults = $objSearcher.FindAll()
 		if ($colResults.Count -gt 0) {
-			$stat = 'PASS'
 			$msg  = "Active Directory schema has been extended for configmgr"
 		} else {
-			$stat = 'FAIL'
+			$stat = $except
 			$msg  = "Active Directory schema has NOT been extended for configmgr"
 		}
 	}
@@ -32,6 +34,9 @@ function Test-AdSchemaExtension {
 		$msg  = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -39,6 +44,7 @@ function Test-AdSchemaExtension {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

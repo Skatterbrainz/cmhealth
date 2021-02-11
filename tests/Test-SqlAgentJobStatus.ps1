@@ -7,12 +7,14 @@ function Test-SqlAgentJobStatus {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[int]$HoursBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SqlAgentJobStatusHoursBack" -DataSet $CmHealthConfig
 		Write-Verbose "hours back = $HoursBack"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
+		$stat   = "PASS"
+		$except = "FAIL"
 		$msg = "No errors in the past $($HoursBack) hours"
-		if ($ScriptParams.Credential) {
+		if ($null -ne $ScriptParams.Credential) {
 			$params = @{
 				SqlInstance   = $ScriptParams.SqlInstance 
 				StartDate     = (Get-Date).AddHours(-$HoursBack)
@@ -26,7 +28,7 @@ function Test-SqlAgentJobStatus {
 		}
 		$res = @(Get-DbaAgentJobHistory @params | Where-Object {$_.Status -ne "Succeeded"})
 		if ($res.Count -gt 0) {
-			$stat = 'FAIL'
+			$stat = $except
 			$msg  = "$($res.Count) sql agent jobs failed within the past $HoursBack hours"
 		}
 	}
@@ -35,6 +37,9 @@ function Test-SqlAgentJobStatus {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -42,6 +47,7 @@ function Test-SqlAgentJobStatus {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

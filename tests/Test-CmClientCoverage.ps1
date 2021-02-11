@@ -7,17 +7,19 @@ function Test-CmClientCoverage {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[int]$Coverage = Get-CmHealthDefaultValue -KeySet "configmgr:ClientCoverageThresholdPercent" -DataSet $CmHealthConfig
 		$Threshold = $Coverage * 0.1
 		Write-Verbose "coverage threshold = $Coverage percent"
-		$stat = "PASS"
-		$msg  = "Coverage meets stated threshold of $Coverage percent"
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "Coverage meets stated threshold of $Coverage percent"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$adcomps = @(Get-AdsiComputer | Select-Object -ExpandProperty Name)
 		$adcount = $adcomps.Count
 		Write-Verbose "AD computers = $adcount"
 		$query = "select distinct name, clientversion, lasthardwarescan from dbo.v_CombinedDeviceResources where (name not like '%unknown%')"
-		if ($ScriptParams.Credential) {
+		if ($null -ne $ScriptParams.Credential) {
 			$cmcomps = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$cmcomps = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
@@ -28,9 +30,9 @@ function Test-CmClientCoverage {
 			$actual = $($cmcount / $adcount) * 100
 			Write-Verbose "actual = $actual"
 			if ($actual -lt $Coverage) {
-				$stat  = 'WARNING'
+				$stat  = $except
 				$msg   = "$actual percent coverage is below the minimum threshold of $Coverage percent"
-				$tempdata.Add( @{AD_Count = $adcount; CM_Count = $cmcount} )
+				$tempdata.Add( [pscustomobject]@{AD_Count = $adcount; CM_Count = $cmcount} )
 			} else {
 				$msg = "$actual percent coverage is above the minimum threshold of $Coverage percent"
 			}
@@ -44,6 +46,9 @@ function Test-CmClientCoverage {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -51,6 +56,7 @@ function Test-CmClientCoverage {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

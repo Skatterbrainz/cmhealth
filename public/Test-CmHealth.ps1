@@ -52,6 +52,9 @@
 .EXAMPLE
 	$results = Test-CmHealth | Where-Object Status -eq 'Fail'; $results | Select TestData
 	Display test output from failed tests
+.EXAMPLE
+	$results = Test-CmHealth -TestScope Previous
+	Display test output from failed tests
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md
 .NOTES
@@ -65,7 +68,7 @@ function Test-CmHealth {
 		[parameter()][ValidateNotNullOrEmpty()][string] $SqlInstance = "localhost",
 		[parameter()][ValidateNotNullOrEmpty()][string] $Database = "CM_P01",
 		[parameter()][ValidateLength(3,3)][string] $SiteCode = "",
-		[parameter()][ValidateSet('All','AD','CM','Host','SQL','WSUS','Select')][string] $TestingScope = 'All',
+		[parameter()][ValidateSet('All','AD','CM','Host','SQL','WSUS','Select','Previous')][string] $TestingScope = 'All',
 		[parameter()][bool] $Remediate = $False,
 		[parameter()][string] $Source = "c:\windows\winsxs",
 		[parameter()][switch] $Initialize,
@@ -77,7 +80,7 @@ function Test-CmHealth {
 		$rpath = "$($mpath)\reserve"
 		$configFile = "$($rpath)\cmhealth.json"
 		$targetPath = "$($env:USERPROFILE)\Desktop"
-		Copy-Item -Path $configFile -Destination $targetPath -Force 
+		Copy-Item -Path $configFile -Destination $targetPath -Force
 		Write-Host "cmhealth settings file saved as: $($targetPath)\cmhealth.json" -ForegroundColor Cyan
 	} else {
 		$startTime = (Get-Date)
@@ -111,11 +114,17 @@ function Test-CmHealth {
 			'Select' {
 				$testset = @($tests.BaseName | Out-GridView -Title "Select Test to Execute" -OutputMode Multiple)
 			}
+			'Previous' {
+				$testset = @(Get-CmHealthLastTestSet)
+			}
 			Default {
 				$testset = @($tests.BaseName | Where-Object {$_ -match "Test-$($TestingScope)"})
 			}
 		}
 		Write-Verbose "$($testset.Count) tests were selected"
+		if ($null -ne $testset) {
+			Set-CmHealthLastTestSet -TestNames $testset | Out-Null
+		}
 		foreach ($test in $testset) {
 			Write-Verbose "TEST: $test"
 			$testname = $test += ' -ScriptParams $params'

@@ -7,10 +7,12 @@ function Test-HostInstalledComponents {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		$applist = Get-CmHealthDefaultValue -KeySet "applications" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg  = "All required components are installed"
+		$stat   = "PASS"
+		$except = "FAIL"
+		$msg    = "All required components are installed"
 
 		$reg64 = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall 
 		$reg32 = Get-ChildItem -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
@@ -22,7 +24,7 @@ function Test-HostInstalledComponents {
 				if ($pn -in $applist.ProductName) {
 					$app = $applist | Where-Object {$_.ProductName -eq $pn}
 					if ($app.Version -ne $pv) {
-						$compliant = 'FAIL'
+						$compliant = $except
 					}
 					$tempdata.Add([pscustomobject]@{
 						ProductName = $pn
@@ -62,13 +64,17 @@ function Test-HostInstalledComponents {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status      = $stat 
+			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

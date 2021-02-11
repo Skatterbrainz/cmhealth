@@ -7,16 +7,19 @@ function Test-HostIISLogFiles {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[int]$MaxDaysOld  = Get-CmHealthDefaultValue -KeySet "iis:LogFilesMaxDaysOld" -DataSet $CmHealthConfig
 		[int]$MaxSpacePct = Get-CmHealthDefaultValue -KeySet "iis:LogFilesMaxSpacePercent" -DataSet $CmHealthConfig
 		Write-Verbose "MaxDaysOld = $MaxDaysOld"
 		Write-Verbose "MaxSpacePct = $MaxSpacePct"
 
-		$stat = "PASS"
-		$msg  = "No issues found"
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "No issues found"
+
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		if (!(Get-Module WebAdministration -ListAvailable)) { throw "WebAdministration module not installed. Please install RSAT" }
-		Import-Module WebAdministration 
+		Import-Module WebAdministration
 		$LogsBase = $(Get-Item 'IIS:\Sites\Default Web Site').logfile.directory -replace '%SystemDrive%', "$($env:SYSTEMDRIVE)"
 		#$LogsBase = $(Get-ItemProperty -Path 'IIS:\Sites\Default Web Site').logFile.directory -replace '%SystemDrive%', 'C:'
 		$IISLogsPath = Join-Path $LogsBase -ChildPath "W3SVC1"
@@ -34,12 +37,9 @@ function Test-HostIISLogFiles {
 				$stat = "REMEDIATED"
 				$msg  = "deleted $($OldLogs.Count) of $numlogs IIS logs older than $MaxDaysOld days old"
 			} else {
-				$stat = "FAIL"
+				$stat = $except
 				$msg  = "$($OldLogs.Count) of $numlogs IIS logs older than $MaxDaysOld days old"
 			}
-		} else {
-			$stat = "PASS"
-			$msg  = "there are no IIS logs older than $MaxDaysOld days old"
 		}
 		$tempdata.Add([pscustomobject]@{
 			Status = $stat
@@ -48,16 +48,18 @@ function Test-HostIISLogFiles {
 		$totalDiskSize = $(Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID = 'C:'" | Select-Object -ExpandProperty Size) / 1MB
 		$logSpaceUsed = [math]::Round($TotalSpaceMB / $totalDiskSize, 4)
 		if (($logSpaceUsed * 100) -gt $MaxSpacePct) {
-			$stat = "FAIL"
+			$stat = $except
 			$msg  = "IIS logs are using $TotalSpaceMB MB or $($logSpaceUsed * 100)`% of total capacity"
 		} else {
-			$stat = "PASS"
-			$msg  = "IIS logs are using $TotalSpaceMB MB or $($logSpaceUsed * 100)`% of total capacity"
+			Write-Verbose "IIS logs are using $TotalSpaceMB MB or $($logSpaceUsed * 100)`% of total capacity"
 		}
 		$tempdata.Add([pscustomobject]@{
-			Status = $stat
+			Status  = $stat
 			Message = $msg
 		})
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		$result = [pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -65,10 +67,14 @@ function Test-HostIISLogFiles {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		}
 	}
 	catch {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		$result = [pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -77,6 +83,7 @@ function Test-HostIISLogFiles {
 			Status   = 'ERROR'
 			Activity = $($_.CategoryInfo.Activity -join(";"))
 			Message  = $($_.Exception.Message -join(";"))
+			RunTime  = $rt
 			Trace    = $($_.ScriptStackTrace -join(";"))
 			RunAs    = $($env:USERNAME)
 			RunOn    = $($env:COMPUTERNAME)

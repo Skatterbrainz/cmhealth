@@ -7,14 +7,16 @@ function Test-SqlDbDedicated {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
-		$stat = 'PASS'
-		$msg  = "No issues found"
+		$startTime = (Get-Date)
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "No issues found"
 		$supported  = Get-CmHealthDefaultValue -KeySet "sqlserver:LicensedDatabases" -DataSet $CmHealthConfig
 		Write-Verbose "Supported Names: $($supported -join ',')"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		if ($ScriptParams.Credential) {
+		if ($null -ne $ScriptParams.Credential) {
 			$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -SqlCredential $ScriptParams.Credential | Select-Object -ExpandProperty Name
-		} else { 
+		} else {
 			$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance | Select-Object -ExpandProperty Name
 		}
 		$dblist1 = @()
@@ -29,7 +31,7 @@ function Test-SqlDbDedicated {
 		}
 		if ($dblist1.Count -gt 0) {
 			Write-Verbose "unsupported names were found"
-			$stat = "WARNING"
+			$stat = $except
 			$msg  = "Databases found which are not supported by MEMCM SQL licensing"
 			$tempdata.Add("$($dblist1 -join ',')")
 		} else {
@@ -47,6 +49,9 @@ function Test-SqlDbDedicated {
 		$stat = "ERROR"
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -54,6 +59,7 @@ function Test-SqlDbDedicated {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

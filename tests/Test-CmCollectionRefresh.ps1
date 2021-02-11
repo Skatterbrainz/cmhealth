@@ -13,11 +13,13 @@ function Test-CmCollectionRefresh {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[int]$maxcolls  = Get-CmHealthDefaultValue -KeySet "configmgr:MaxCollectionRefreshCount" -DataSet $CmHealthConfig
 		Write-Verbose "max collections = $maxcolls"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg  = "No issues found"
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "No issues found"
 		$query = "Select
 (case
 when RefreshType = 1 then 'Manual'
@@ -27,17 +29,15 @@ when RefreshType = 6 then 'Scheduled and Incremental'
 else 'Unknown' end) as RefreshType,
 SiteID, CollectionName
 from v_Collections"
-		if ($ScriptParams.Credential) {
+		if ($null -ne $ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
-		$c1 = ($res | Where-Object {$_.RefreshType -eq 'Incremental'})
-		$c2 = ($res | Where-Object {$_.RefreshType -eq 'Scheduled'})
-		[int]$c3 = $c1.Count + $c2.Count
-		if ($c3 -gt $maxcolls) {
-			$stat = "WARNING"
-			$msg  = "Found $c3 collections are set to incremental or scheduled refresh"
+		$cc = ($res | Where-Object {$_.RefreshType -in ('Incremental','Scheduled','Scheduled and Incremental')})
+		if ($cc.Count -gt $maxcolls) {
+			$stat = $except
+			$msg  = "Found $($cc.Count) collections are set to incremental or scheduled refresh"
 			$c1 | Foreach-Object {$tempdata.Add( "ID=$($_.SiteID), Name=$($_.CollectionName), RefreshType=$($_.RefreshType)")}
 			$c2 | Foreach-Object {$tempdata.Add( "ID=$($_.SiteID), Name=$($_.CollectionName), RefreshType=$($_.RefreshType)")}
 		}
@@ -47,6 +47,9 @@ from v_Collections"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -54,6 +57,7 @@ from v_Collections"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

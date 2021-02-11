@@ -7,12 +7,13 @@ function Test-HostSystemLogErrors {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
-		[int] $MaxHours = 24 
+		$startTime = (Get-Date)
+		[int] $MaxHours = 24
 		#[int]$Setting = Get-CmHealthDefaultValue -KeySet "keygroup:keyname" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS" # do not change this
-		$msg  = "No issues found" # do not change this either
-
+		$stat   = "PASS" # do not change this
+		$except = "WARNING"
+		$msg    = "No issues found" # do not change this either
 		$query = @"
 <QueryList>
   <Query Id="0" Path="System">
@@ -29,16 +30,14 @@ function Test-HostSystemLogErrors {
 		} else {
 			$res = @(Get-WinEvent -LogName System -FilterXPath $query -ErrorAction SilentlyContinue)
 		}
-
 		$vwarnings = $res | Where-Object {$_.LevelDisplayName -eq 'Warning'}
 		$verrors   = $res | Where-Object {$_.LevelDisplayName -eq 'Error'}
-
 		if ($verrors.Count -gt 0) {
-			$stat = 'WARNING'
+			$stat = $except
 			$msg  = "$($verrors.Count) errors have occurred in the System log in the past $MaxHours hours"
 		} else {
 			if ($vwarnings.Count -gt 0) {
-				$stat = 'WARNING'
+				$stat = $except
 				$msg  = "$($vwarnings.Count) warnings have occurred in the System log in the past $MaxHours hours"
 			}
 		}
@@ -49,6 +48,9 @@ function Test-HostSystemLogErrors {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -56,6 +58,7 @@ function Test-HostSystemLogErrors {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

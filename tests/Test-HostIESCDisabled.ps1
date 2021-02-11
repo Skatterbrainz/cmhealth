@@ -7,6 +7,10 @@ function Test-HostIESCDisabled {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
+		$stat   = "PASS"
+		$except = "FAIL"
+		$msg    = "IE Enhanced Security Configuration (IESC) is already disabled"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$AdminKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
 		$UserKey  = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
@@ -19,12 +23,9 @@ function Test-HostIESCDisabled {
 				$stat = "REMEDIATED"
 				$msg  = "IE Enhanced Security Configuration (ESC) has been disabled."
 			} else {
-				$stat = "FAIL"
+				$stat = $except
 				$msg  = "IE Enhanced Security Configuration (IESC) is currently enabled"
 			}
-		} else {
-			$stat = "PASS"
-			$msg  = "IE Enhanced Security Configuration (ESC) is already disabled."
 		}
 	}
 	catch {
@@ -32,6 +33,9 @@ function Test-HostIESCDisabled {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -39,6 +43,7 @@ function Test-HostIESCDisabled {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

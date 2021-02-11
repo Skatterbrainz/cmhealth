@@ -7,13 +7,15 @@ function Test-SqlDbBackupTimes {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[int] $DaysBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SiteBackupMaxDaysOld" -DataSet $CmHealthConfig
 		[int] $MaxRunTime = Get-CmHealthDefaultValue -KeySet "wsus:SiteBackupMaxRuntime" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg  = "No issues found"
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "No issues found"
 		$query = "Select * From (
-SELECT 
+SELECT
 s.database_name AS [Database],
 CASE s.[type]
 WHEN 'D' THEN 'Full'
@@ -30,13 +32,13 @@ s.backup_start_date >= DATEADD(dd,-CONVERT(INT, $DaysBack),GETDATE())
 ) T1
 WHERE T1.Seconds > $MaxRunTime
 ORDER BY T1.Seconds DESC"
-		if ($ScriptParams.Credential) {
+		if ($null -ne $ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
 		if ($res.Count -gt 0) {
-			$stat = "WARNING"
+			$stat = $except
 			$msg = "$($res.Count) backups took longer than $MaxRunTime seconds"
 			$res | Foreach-Object {$tempdata.Add( "$($_.Database)=$($_.Seconds) sec") }
 		}
@@ -46,6 +48,9 @@ ORDER BY T1.Seconds DESC"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -53,6 +58,7 @@ ORDER BY T1.Seconds DESC"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

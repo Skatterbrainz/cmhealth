@@ -9,8 +9,9 @@ function Test-CmClientOldUpdateAgent {
 	# reference: https://support.microsoft.com/en-us/help/949104/how-to-update-the-windows-update-agent-to-the-latest-version#:~:text=9600.16422.-,The%20latest%20version%20of%20the%20Windows%20Update%20Agent%20for%20Windows,7600.256.
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS" # do not change this
-		$msg  = "No issues found" # do not change this either
+		$stat   = "PASS" # do not change this
+		$except = "WARNING"
+		$msg    = "No issues found" # do not change this either
 		$query = "SELECT DISTINCT
 	rsys.Netbios_Name0 AS MachineName,
 	rsys.Client_Version0,
@@ -53,13 +54,13 @@ JOIN v_R_System_Valid rsys WITH (NOLOCK) ON rsys.ResourceID = uss.ResourceID
 JOIN v_FullCollectionMembership_VaLID fcm WITH (NOLOCK) ON uss.ResourceID = fcm.ResourceID AND fcm.CollectionID = 'SMS00001'
 INNER JOIN v_GS_OPERATING_SYSTEM ops ON rsys.ResourceID = ops.ResourceID
 WHERE ops.Version0 > '6.2' AND uss.LastWUAVersion < '7.9.9600.16422'"
-		if ($ScriptParams.Credential) {
+		if ($null -ne $ScriptParams.Credential) {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
 		} else {
 			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		}
 		if ($null -ne $res -and $res.Count -gt 0) {
-			$stat = "WARNING" # or "FAIL"
+			$stat = $except
 			$msg  = "$($res.Count) items found: $($res.MachineName -join ',')"
 			$res | Foreach-Object {$tempdata.Add(@($_.MachineName, $_.LastWUAVersion))}
 		}
@@ -69,6 +70,9 @@ WHERE ops.Version0 > '6.2' AND uss.LastWUAVersion < '7.9.9600.16422'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -76,6 +80,7 @@ WHERE ops.Version0 > '6.2' AND uss.LastWUAVersion < '7.9.9600.16422'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

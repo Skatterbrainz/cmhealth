@@ -7,9 +7,11 @@ function Test-CmMpResponse {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg  = "No issues found"
+		$stat   = "PASS"
+		$except = "FAIL"
+		$msg    = "No issues found"
 		$Server = $($env:COMPUTERNAME).ToUpper()
 		$URL1 = "http://$Server/sms_mp/.sms_aut?mpcert"
 		$URL2 = "http://$Server/sms_mp/.sms_aut?mplist"
@@ -29,7 +31,7 @@ function Test-CmMpResponse {
 			$MplistStatusCode = ($WEBResponse2.Statuscode -as [int])
 			$WEBResponse2.Close()
 			if (($MpcertStatusCode -ne "200") -or ($MplistStatusCode -ne "200")) {
-				$stat = "FAIL"
+				$stat = $except
 				$msg = "Invalid web response"
 			}
 		}
@@ -47,6 +49,9 @@ function Test-CmMpResponse {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -54,6 +59,7 @@ function Test-CmMpResponse {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

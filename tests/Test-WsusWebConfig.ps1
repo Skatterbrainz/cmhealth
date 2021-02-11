@@ -7,13 +7,15 @@ function Test-WsusWebConfig {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		[int32] $MaxCachedUpdates = Get-CmHealthDefaultValue -KeySet "wsus:MaxCachedUpdates" -DataSet $CmHealthConfig
 		[int32] $MaxInstalledPrerequisites = Get-CmHealthDefaultValue -KeySet "wsus:MaxInstalledPrerequisites" -DataSet $CmHealthConfig
 		[string] $ConfigFile = "$($env:PROGRAMFILES)\Update Services\WebServices\ClientWebService\Web.config"
 
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg = "No issues found"
+		$stat   = "PASS"
+		$except = "WARNING"
+		$msg    = "No issues found"
 		if (!(Test-Path $ConfigFile)) {	throw "config file not found: $ConfigFile" }
 		# read file contents into XML DOM instance
 		[xml]$webconfig = Get-Content $ConfigFile
@@ -29,7 +31,7 @@ function Test-WsusWebConfig {
 				$webconfigraw = $webconfigraw -replace "<add key=`"maxCachedUpdates`" value=`"$($c1.value)`"/>", "<add key=`"maxCachedUpdates`" value=`"$MaxCachedUpdates`"/>"
 				$stat = "REMEDIATED"
 			} else {
-				$stat = "WARNING"
+				$stat = $except
 				$msg  = "MaxCachedUpdates currently $($c1.value) should be $MaxCachedUpdates"
 				$tempdata.Add("MaxCachedUpdates=$($c1.Value),Expected=$($MaxCachedUpdates)")
 			}
@@ -40,13 +42,14 @@ function Test-WsusWebConfig {
 				$msg = "Updated MaxInstalledPrerequisites $($c2.value) to $MaxInstalledPrerequisites"
 				$webconfigraw = $webconfigraw -replace "<add key=`"maxInstalledPrerequisites`" value=`"$($c2.value)`"/>", "<add key=`"maxInstalledPrerequisites`" value=`"$MaxInstalledPrerequisites`"/>"
 			} else {
-				$stat = "WARNING"
+				$stat = $except
 				$msg = "MaxInstalledPrerequisites currently $($c2.value) should be $MaxInstalledPrerequisites"
 				$tempdata.Add("MaxInstalledPrerequisites=$($c2.Value),Expected=$($MaxInstalledPrerequisites)")
 			}
 		}
 
-		# more voodoo witchcraft and smoked chickenbones needed here
+		Write-Warning "$TestName - THIS TEST IS NOT YET COMPLETE - PLEASE CONSIDER CONTRIBUTING?"
+		# more voodoo witchcraft and smoked chicken bones needed here
 		# $webconfigraw
 
 	}
@@ -55,6 +58,9 @@ function Test-WsusWebConfig {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
+		$endTime = (Get-Date)
+		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
+		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -62,6 +68,7 @@ function Test-WsusWebConfig {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
+			RunTime     = $rt
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
