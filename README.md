@@ -61,42 +61,49 @@ Get-Help Test-CmHealth -Full
 
 ### Run all tests (default options when running on the CM site server)
 
-NOTE: By default, running Test-CmHealth will return results to the console (pipeline). It is recommended
-that you capture the output in a variable to make it easier to inspect the results.
+#### Important Notes 
 
-NOTE: The default site code is assumed to be "P01". Use the -SiteCode parameter to specify a different site code.
+* Test-CmHealth will return results to the console (pipeline).
+* It is recommended that you capture the output in a variable to make it easier to inspect the results.
+* The default site code is assumed to be "P01". Use the -SiteCode parameter to specify a different site code.
+* The default SiteServer and SqlInstance parameter values are "localhost", which assumes running directly on a site system.
+* The -Database and -SiteCode parameters are intentionally separate to allow for cases where the database is not using the default pattern "CM_$SiteCode".
+
+### Specifying a Remote or Alternate Site System
 
 ```powershell
-$result = Test-CmHealth
-$result | Select-Object TestName,Status,Message
+$result = Test-CmHealth -SiteServer "cmserver01.contoso.local" -SqlInstance "db1.contoso.local" -Database "CM_ABC" -SiteCode "ABC"
 ```
 
 ### Run only site server host tests
 
 ```powershell
-$result = Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host"
-$result | Select-Object TestName,Status,Message
+Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "ABC" -TestingScope Host
 ```
+Note: The default -TestingScope is "ALL".
 
 ### Run selected tests only, from a grid-view menu
 
 ```powershell
-$result = Test-CmHealth -SiteCode "P01" -TestingScope "Select"
-$result | Select-Object TestName,Status,Message
+Test-CmHealth -TestingScope Select
+```
+
+Seeing more details by using verbose output...
+
+```powershell
+Test-CmHealth -TestingScope Select -Verbose
 ```
 
 ### Run all tests on site server and return only failing results
 
 ```powershell
-$result = Test-CmHealth -SiteCode "P01" -TestingScope All | where {$_.Status -ne 'PASS'}
-$result | Select-Object TestName,Status,Message | Where-Object Status -eq 'FAIL'
+Test-CmHealth | where {$_.Status -ne 'PASS'}
 ```
 
 ### Run all tests on site server and return only warning results
 
 ```powershell
-$result = Test-CmHealth -Database "CM_P01" -SiteCode "P01" -TestingScope All | where {$_.Status -ne 'PASS'}
-$result | Select-Object TestName,Status,Message | Where-Object Status -eq 'WARNING'
+Test-CmHealth -TestingScope All | where {$_.Status -eq 'WARNING'}
 ```
 
 ### It's also splattable, if that's even a real word
