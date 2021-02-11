@@ -87,6 +87,13 @@ $results = Test-CmHealth | Where-Object Status -eq 'Fail'; $results | Select Tes
 
 Display test output from failed tests
 
+### EXAMPLE 10
+```
+$results = Test-CmHealth -TestScope Previous
+```
+
+Run the same set of tests as the previous session (each run saves list of test names)
+
 ## PARAMETERS
 
 ### -SiteServer
