@@ -11,7 +11,7 @@ function Test-HostServerFeatures {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "FAIL"
-		$msg   = "No issues found"
+		$msg    = "No issues found"
 		Import-Module ServerManager
 		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
 			if ($ScriptParams.Credential) {
@@ -89,9 +89,7 @@ function Test-HostServerFeatures {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

@@ -15,21 +15,17 @@ function Test-CmDbSize {
 		Write-Verbose "Max Utilization Percent = $maxUtilization"
 		Write-Verbose "Per Device Data MB = $PerDevData"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
+		$stat   = "PASS"
 		$except = "WARNING"
-		$msg  = "Correct configuration"
-		$query = "select distinct ResourceID,Name0 from v_R_System"
-		if ($ScriptParams.Credential) {
-			$devices = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential
-		} else {
-			$devices = Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query
-		}
+		$msg    = "Correct configuration"
+		$query  = "select distinct ResourceID,Name0 from v_R_System"
+		$devices = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		Write-Verbose "calculating expected space requirements"
 		$devSizeMB = (($devices.Count * $devData) + $devData) / 1MB
 		$recSize = $devSizeMB * $maxUtilization
 		Write-Verbose "expected space: $devSizeMB MB (at $($devices.Count) devices)"
 		if ($null -ne $ScriptParams.Credential) {
-			$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -SqlCredential $ScriptParams.Credential).SizeMB 	
+			$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -SqlCredential $ScriptParams.Credential).SizeMB
 		} else {
 			$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database).SizeMB
 		}
@@ -48,9 +44,7 @@ function Test-CmDbSize {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

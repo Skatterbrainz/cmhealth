@@ -21,11 +21,7 @@ FROM v_FullCollectionMembership_Valid fcm
 INNER JOIN v_R_System_Valid sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_Site st ON st.SiteCode = fcm.SiteCode
 WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
-		if ($null -ne $ScriptParams.Credential) {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
+		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
@@ -37,9 +33,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

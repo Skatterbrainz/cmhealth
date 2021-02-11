@@ -9,21 +9,12 @@ function Test-HostDriveBlockSize {
 	try {
 		$startTime = (Get-Date)
 		[int]$bsize = Get-CmHealthDefaultValue -KeySet "siteservers:DiskFormatBlockSize" -DataSet $CmHealthConfig
-		Write-Verbose "bsize = $bsize"
+		Write-Verbose "block size required = $bsize"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "FAIL"
 		$msg    = "Success"
-		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			if ($null -ne $ScriptParams.Credential) {
-				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
-				$vols = Get-CimInstance "Win32_Volume" -CimSession $cs -Filter "DriveType = 3" | Where-Object {![string]::IsNullOrEmpty($_.DriveLetter)}
-			} else {
-				$vols = Get-CimInstance "Win32_Volume" -ComputerName $ScriptParams.ComputerName -Filter "DriveType = 3" | Where-Object {![string]::IsNullOrEmpty($_.DriveLetter)}
-			}
-		} else {
-			$vols = Get-CimInstance "Win32_Volume" -Filter "DriveType = 3" | Where-Object {![string]::IsNullOrEmpty($_.DriveLetter)}
-		}
+		$vols = Get-WmiQueryResult -ClassName "Win32_Volume" -Query "DriveType = 3" -Params $ScriptParams
 		foreach ($vol in $vols) {
 			if ($vol.BlockSize -ne $bsize) {
 				$res  = "FAIL"
@@ -36,6 +27,7 @@ function Test-HostDriveBlockSize {
 				Computer  = $ScriptParams.ComputerName
 				Drive     = $vol.DriveLetter
 				BlockSize = $vol.BlockSize
+				Required  = $bsize
 				Result    = $res
 			})
 		} # foreach
@@ -46,9 +38,7 @@ function Test-HostDriveBlockSize {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

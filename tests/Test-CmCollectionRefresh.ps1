@@ -29,11 +29,7 @@ when RefreshType = 6 then 'Scheduled and Incremental'
 else 'Unknown' end) as RefreshType,
 SiteID, CollectionName
 from v_Collections"
-		if ($null -ne $ScriptParams.Credential) {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
+		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		$cc = ($res | Where-Object {$_.RefreshType -in ('Incremental','Scheduled','Scheduled and Incremental')})
 		if ($cc.Count -gt $maxcolls) {
 			$stat = $except
@@ -47,9 +43,7 @@ from v_Collections"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

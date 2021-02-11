@@ -19,11 +19,6 @@ INNER JOIN dbo.Collection_Rules c2 ON c1.CollectionID = c2.CollectionID
 INNER JOIN v_Collections c3 ON c1.CollectionID = c3.CollectionID
 where c3.SiteID not like 'SMS%'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-#		if ($ScriptParams.Credential) {
-#			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-#		} else {
-#			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-#		}
 		foreach ($row in $res) {
 			if ($row.SQL -match 'like \''%\w\w+.|%''') {
 				$stat = $except
@@ -57,9 +52,7 @@ where c3.SiteID not like 'SMS%'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

@@ -54,7 +54,7 @@
 	Display test output from failed tests
 .EXAMPLE
 	$results = Test-CmHealth -TestScope Previous
-	Display test output from failed tests
+	Run the same set of tests as the previous session (each run saves list of test names)
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md
 .NOTES
@@ -122,7 +122,7 @@ function Test-CmHealth {
 			}
 		}
 		Write-Verbose "$($testset.Count) tests were selected"
-		if ($null -ne $testset) {
+		if ($testset.Count -gt 0) {
 			Set-CmHealthLastTestSet -TestNames $testset | Out-Null
 		}
 		foreach ($test in $testset) {

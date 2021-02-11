@@ -32,11 +32,7 @@ CASE ObjectType
 END AS ObjectTypeName
 FROM fn_ListObjectContentExtraInfo(1033) AS SMS_ObjectContentExtraInfo
 WHERE Targeted > 0 AND NumberInstalled <> Targeted"
-		if ($null -ne $ScriptParams.Credential) {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
+		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items missing content: $($res.SoftwareName -join ',')"
@@ -48,9 +44,7 @@ WHERE Targeted > 0 AND NumberInstalled <> Targeted"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

@@ -21,11 +21,7 @@ AND stat.Component NOT IN ('Advanced Client', 'Windows Installer SourceList Upda
 'Desired Configuration Management', 'Software Updates Scan Agent', 'File Collection Agent',
 'Hardware Inventory Agent', 'Software Distribution', 'Software Inventory Agent')
 AND stat.Time >= DATEADD(dd,-CONVERT(INT,$($DaysBack)),GETDATE())"
-		if ($null -ne $ScriptParams.Credential) {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
+		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found within the last $DaysBack days"
@@ -37,9 +33,7 @@ AND stat.Time >= DATEADD(dd,-CONVERT(INT,$($DaysBack)),GETDATE())"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

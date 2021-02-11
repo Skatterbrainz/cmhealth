@@ -14,13 +14,7 @@ function Test-HostMemory {
 		$stat   = "PASS"
 		$except = "WARNING"
 		$msg    = "No issues found"
-		if ($ScriptParams.Credential) {
-			$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Authentication Negotiate -Credential $ScriptParams.Credential
-			$SystemInfo = Get-CimInstance -CimSession $cs -ClassName Win32_OperatingSystem -ErrorAction SilentlyContinue | Select-Object Name, TotalVisibleMemorySize, FreePhysicalMemory
-			$cs.Close()
-		} else {
-			$SystemInfo = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName -ErrorAction SilentlyContinue | Select-Object Name, TotalVisibleMemorySize, FreePhysicalMemory
-		}
+		$SystemInfo = Get-WmiQueryResult -ClassName "Win32_OperatingSystem" -Params $ScriptParams
 		$TotalRAM = $SystemInfo.TotalVisibleMemorySize/1MB
 		$FreeRAM  = $SystemInfo.FreePhysicalMemory/1MB
 		$UsedRAM  = $TotalRAM - $FreeRAM
@@ -29,6 +23,8 @@ function Test-HostMemory {
 		$FreeRAM  = [Math]::Round($FreeRAM, 2)
 		$UsedRAM  = [Math]::Round($UsedRAM, 2)
 		$RAMPercentFree = [Math]::Round($RAMPercentFree, 2)
+		Write-Verbose "total memory = $TotalRAM"
+		Write-Verbose "minimum allowed memory = $MinMemory"
 		if ($TotalRAM -lt $MinMem) {
 			$stat = $except
 			$msg  = "$($TotalRam) GB is below the minimum recommended $MinMemory GB"
@@ -44,9 +40,7 @@ function Test-HostMemory {
 		$msg  = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

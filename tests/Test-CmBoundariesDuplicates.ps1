@@ -12,11 +12,7 @@ function Test-CmBoundariesDuplicates {
 		$except = "FAIL"
 		$msg   = "No issues found"
 		$query = "select * from vSMS_Boundary"
-		if ($ScriptParams.Credential) {
-			$boundaries = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$boundaries = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
+		$boundaries = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		$dupes = @($boundaries | Group-Object -Property BoundaryType,Value | Select-Object Count,Name)
 		if (($dupes | Where-Object {$_.Count -gt 1}) -gt 0) {
 			$stat = $except
@@ -30,9 +26,7 @@ function Test-CmBoundariesDuplicates {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

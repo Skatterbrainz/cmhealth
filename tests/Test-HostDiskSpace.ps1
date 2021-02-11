@@ -15,12 +15,7 @@ function Test-HostDiskSpace {
 		$stat   = "PASS"
 		$except = "FAIL"
 		$msg    = "No issues found"
-		if ([string]::IsNullOrEmpty($ScriptParams.ComputerName)) {
-			$disks = Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_LogicalDisk -Credential $ScriptParams.Credential | Where-Object { $_.DriveType -eq 3 }
-		}
-		else {
-			$disks = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DriveType -eq 3 }
-		}
+		$disks  = Get-WmiQueryResult -ClassName "Win32_LogicalDisk" -Query "DriveType = 3" -Params $ScriptParams
 		foreach ($disk in $disks) {
 			$drv  = $disk.DeviceID
 			$size = $disk.Size
@@ -37,6 +32,7 @@ function Test-HostDiskSpace {
 					Size    = $size
 					Used    = $used
 					PctUsed = $pct
+					MaxPct  = $MaxPctUsed
 				}
 			)
 		} # foreach
@@ -46,9 +42,7 @@ function Test-HostDiskSpace {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

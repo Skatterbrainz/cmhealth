@@ -12,16 +12,7 @@ function Test-HostServices {
 		$stat   = "PASS"
 		$except = "WARNING"
 		$msg    = "No issues found"
-		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			if ($ScriptParams.Credential) {
-				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
-				$services = @(Get-CimInstance -CimSession $cs -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
-			} else {
-				$services = @(Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
-			}
-		} else {
-			$services = @(Get-CimInstance -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
-		}
+		$services = Get-WmiQueryResult -ClassName "Win32_Service" -Query "startmode = 'auto' and state != 'running'" -Params $ScriptParams
 		if ($services.Count -gt 0) {
 			$stat = $except
 			$services | Foreach-Object {$tempdata.Add($_.Name)}
@@ -34,9 +25,7 @@ function Test-HostServices {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

@@ -14,7 +14,7 @@ function Test-CmUpdateCompliance {
 		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
 		$query = @"
-SELECT 
+SELECT
 	vRS.Netbios_Name0 AS 'DeviceName',
 	vSN_Status.StateDescription,
 	vCCI.CategoryInstanceName AS 'UpdateClassification',
@@ -42,11 +42,7 @@ WHERE
 ORDER BY
 	'DeviceName', vUI.Title
 "@
-		if ($null -ne $ScriptParams.Credential) {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
+		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found"
@@ -70,9 +66,7 @@ ORDER BY
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

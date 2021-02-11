@@ -14,7 +14,7 @@ function Test-HostIESCDisabled {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$AdminKey = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A7-37EF-4b3f-8CFC-4F3A74704073}"
 		$UserKey  = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
-		if ((Get-ItemProperty -Path $AdminKey -Name "IsInstalled" | Select-Object -ExpandProperty IsInstalled) -ne 0) {
+		if ((Get-ItemProperty -Path $AdminKey -Name "IsInstalled" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty IsInstalled) -ne 0) {
 			Write-Verbose "configuration is not compliant (is not disabled)"
 			if ($Remediate -eq $True) {
 				Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 -Force
@@ -26,6 +26,8 @@ function Test-HostIESCDisabled {
 				$stat = $except
 				$msg  = "IE Enhanced Security Configuration (IESC) is currently enabled"
 			}
+		} else {
+			Write-Verbose "registry key was not found"
 		}
 	}
 	catch {
@@ -33,9 +35,7 @@ function Test-HostIESCDisabled {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

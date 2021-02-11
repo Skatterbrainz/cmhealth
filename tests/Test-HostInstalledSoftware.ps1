@@ -14,20 +14,21 @@ function Test-HostInstalledSoftware {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
-		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			if ($ScriptParams.Credential) {
-				$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -Authentication Negotiate -ErrorAction Stop
-				$res = @(Get-CimInstance -ClassName Win32_Product -CimSession $cs -ErrorAction Stop | Select-Object Name,Version,Vendor,ProductCode)
-			} else {
-				$res = @(Get-CimInstance -ClassName Win32_Product -ComputerName $ScriptParams.ComputerName -ErrorAction Stop | Select-Object Name,Version,Vendor,ProductCode)
-			}
-		} else {
-			$res = @(Get-CimInstance -ClassName Win32_Product -ErrorAction Stop | Select-Object Name,Version,Vendor,ProductCode)
-		}
+		[array]$res = Get-WmiQueryResult -ClassName "Win32_Product" -Params $ScriptParams
+		Write-Verbose "$($res.Count) products were returned"
 		if ($res.Count -gt $MaxProducts) {
 			$stat = $except
 			$msg  = "$($res.Count) items found. See TestData for item details"
-			$res | Foreach-Object {$tempdata.Add([pscustomobject]@($_.Name,$_.Version,$_.Vendor,$_.ProductCode))}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						ProductName = $_.Name
+						Version     = $_.Version
+						Vendor      = $_.Vendor
+						ProductCode = $_.ProductCode
+					}
+				)
+			}
 		}
 	}
 	catch {
@@ -36,9 +37,7 @@ function Test-HostInstalledSoftware {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

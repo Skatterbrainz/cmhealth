@@ -84,3 +84,41 @@ function Get-CmSqlQueryResult {
 	}
 	$result
 }
+
+function Get-WmiQueryResult {
+	[CmdletBinding()]
+	param (
+		[parameter(Mandatory=$True)][string] $ClassName,
+		[parameter(Mandatory=$False)][string] $Query = "",
+		[parameter(Mandatory=$False)][string] $NameSpace = "root\cimv2",
+		[parameter(Mandatory=$True)] $Params
+	)
+	if (![string]::IsNullOrEmpty($Params.Credential)) {
+		Write-Verbose "submitting query with explicit credentials"
+		$cs1 = New-CimSession -Credential $Params.Credential -Authentication Negotiate -ComputerName $Params.ComputerName -ErrorAction Stop
+		if ([string]::IsNullOrEmpty($Query)) {
+			$result = @(Get-CimInstance -CimSession $cs1 -ClassName $ClassName -Namespace $Namespace -ErrorAction Stop)
+		} else {
+			$result = @(Get-CimInstance -CimSession $cs1 -ClassName $ClassName -Namespace $Namespace -Filter $Query -ErrorAction Stop)
+		}
+		$cs1 | Remove-CimSession
+	} else {
+		Write-Verbose "submitting query with implicit credentials"
+		if ([string]::IsNullOrEmpty($Query)) {
+			Write-Verbose "no query. classname = $ClassName. namespace = $Namespace"
+			[array]$result = Get-CimInstance -ClassName $ClassName -Namespace $Namespace -ErrorAction Stop
+		} else {
+			[array]$result = Get-CimInstance -ClassName $ClassName -Namespace $Namespace -Filter $Query -ErrorAction Stop
+		}
+	}
+	$result
+}
+function Get-RunTime {
+	param (
+		[parameter(Mandatory=$True)][datetime] $BaseTime
+	)
+	$NowTime = (Get-Date)
+	$runTime = $(New-TimeSpan -Start $BaseTime -End $NowTime)
+	$ret = $("{0}h:{1}m:{2}s:{3}ms" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds,$_.Milliseconds}))
+	Write-Output $ret
+}

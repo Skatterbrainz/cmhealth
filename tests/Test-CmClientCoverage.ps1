@@ -19,11 +19,7 @@ function Test-CmClientCoverage {
 		$adcount = $adcomps.Count
 		Write-Verbose "AD computers = $adcount"
 		$query = "select distinct name, clientversion, lasthardwarescan from dbo.v_CombinedDeviceResources where (name not like '%unknown%')"
-		if ($null -ne $ScriptParams.Credential) {
-			$cmcomps = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$cmcomps = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
+		$cmcomps = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		$cmcount = $cmcomps.Count
 		Write-Verbose "CM computers = $cmcount"
 		if (($adcount -gt 0) -and ($cmcount -gt 0)) {
@@ -37,7 +33,7 @@ function Test-CmClientCoverage {
 				$msg = "$actual percent coverage is above the minimum threshold of $Coverage percent"
 			}
 		} else {
-			$stat = 'FAIL'
+			$stat = $except
 			$msg  = "Unable to query environment data to validate this test"
 		}
 	}
@@ -46,9 +42,7 @@ function Test-CmClientCoverage {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

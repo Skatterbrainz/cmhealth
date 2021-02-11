@@ -11,20 +11,11 @@ function Test-HostOperatingSystem {
 		$supported = @(Get-CmHealthDefaultValue -KeySet "siteservers:SupportedOperatingSystems" -DataSet $CmHealthConfig)
 		Write-Verbose "Supported OS list = $($supported -join ',')"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat   = "PASS"
-		$except = "FAIL"
-		$msg    = "No issues found"
-		if (![string]::IsNullOrEmpty($ScriptParams.ComputerName) -and $ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			if ($ScriptParams.Credential) {
-				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
-				$osdata = Get-CimInstance -ClassName Win32_OperatingSystem -CimSession $cs | Select-Object Caption,Version,BuildNumber
-			} else {
-				$osdata = Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $ScriptParams.ComputerName | Select-Object Caption,Version,BuildNumber
-			}
-		} else {
-			$osdata = Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object Caption,Version,BuildNumber
-		}
-		$osname = $osdata.Caption
+		$stat    = "PASS"
+		$except  = "FAIL"
+		$msg     = "No issues found"
+		$osdata  = Get-WmiQueryResult -ClassName "Win32_Product" -Params $ScriptParams
+		$osname  = $osdata.Caption
 		$osbuild = $osdata.BuildNumber
 		$matched = (($supported | Foreach-Object {$osname -match $_}) -eq $True)
 		if ($matched -ne $true) {
@@ -41,9 +32,7 @@ function Test-HostOperatingSystem {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

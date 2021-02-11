@@ -14,31 +14,27 @@ function Test-CmAppDeploymentExceptions {
 		$except = "WARNING"
 		$msg  = "No issues found" # do not change this either
 		$query = "select
-	ads.Descript AS DeploymentName,
-	ads.TargetCollectionID,
-	coll.Name AS CollectionName,
-	ads.AssignmentID,
-	ads.DeploymentTime,
-	case
-		when ads.OfferTypeID = 0 then 'Required'
-		else 'Available' END AS OfferType,
-	ads.AlreadyPresent,
-	(ads.Success + ads.Error + ads.InProgress + ads.Unknown + ads.RequirementsNotMet) as Total,
-	ads.Success,
-	ads.InProgress,
-	ads.Unknown,
-	ads.Error,
-	ads.RequirementsNotMet
+ads.Descript AS DeploymentName,
+ads.TargetCollectionID,
+coll.Name AS CollectionName,
+ads.AssignmentID,
+ads.DeploymentTime,
+case
+	when ads.OfferTypeID = 0 then 'Required'
+	else 'Available' END AS OfferType,
+ads.AlreadyPresent,
+(ads.Success + ads.Error + ads.InProgress + ads.Unknown + ads.RequirementsNotMet) as Total,
+ads.Success,
+ads.InProgress,
+ads.Unknown,
+ads.Error,
+ads.RequirementsNotMet
 from
 	v_AppDeploymentSummary as ads inner join
 	v_Collection as coll on ads.TargetCollectionID = coll.CollectionID
 where (ads.Error > 0)
 order by DeploymentName"
-		if ($ScriptParams.Credential) {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
+		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found"
@@ -50,9 +46,7 @@ order by DeploymentName"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

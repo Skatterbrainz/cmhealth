@@ -45,7 +45,8 @@ function Test-HostIISLogFiles {
 			Status = $stat
 			Message = $msg
 		})
-		$totalDiskSize = $(Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID = 'C:'" | Select-Object -ExpandProperty Size) / 1MB
+		#$totalDiskSize = $(Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID = 'C:'" | Select-Object -ExpandProperty Size) / 1MB
+		$totalDiskSize = $(Get-WmiQueryResult -ClassName "Win32_LogicalDisk" -Query "DeviceID = 'C:'" -Params $ScriptParams | Select-Object -Expand Size) / 1MB
 		$logSpaceUsed = [math]::Round($TotalSpaceMB / $totalDiskSize, 4)
 		if (($logSpaceUsed * 100) -gt $MaxSpacePct) {
 			$stat = $except
@@ -57,9 +58,7 @@ function Test-HostIISLogFiles {
 			Status  = $stat
 			Message = $msg
 		})
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		$result = [pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -72,9 +71,7 @@ function Test-HostIISLogFiles {
 		}
 	}
 	catch {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		$result = [pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

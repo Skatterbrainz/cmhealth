@@ -13,20 +13,11 @@ function Test-HostAntiVirus {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
-		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			if ($null -ne $ScriptParams.Credential) {
-				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
-				$apps = @(Get-CimInstance -CimSession $cs -ClassName "Win32_Product" -Namespace "root\cimv2" -Filter "Name like '%antivirus%'")
-			} else {
-				$apps = @(Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName "Win32_Product" -Namespace "root\cimv2" -Filter "Name like '%antivirus%'")
-			}
-		} else {
-			$apps = @(Get-CimInstance -ClassName "Win32_Product" -Namespace "root\cimv2" -Filter "Name like '%antivirus%'" )
-		}
+		$apps = Get-WmiQueryResult -ClassName "Win32_Product" -Query "Name like '%antivirus%'" -Params $ScriptParams
 		$apps | Foreach-Object {
 			$tempdata.Add(
 				[pscustomobject]@{
-					Name        = $_.Name
+					ProductName = $_.Name
 					Vendor      = $_.Vendor
 					Version     = $_.Version
 					DisplayName = $_.Caption
@@ -39,16 +30,13 @@ function Test-HostAntiVirus {
 			$msg = "Third-party antivirus products were found"
 			$services | Foreach-Object {$tempdata.Add($_.Name)}
 		}
-
 	}
 	catch {
 		$stat = 'ERROR'
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup

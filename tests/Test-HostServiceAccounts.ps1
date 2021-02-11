@@ -30,11 +30,7 @@ function Test-HostServiceAccounts {
 			$delayed = if ($service.DelayedAutoStart -eq 'true') { $True } else { $False }
 			Write-Verbose "service name: $svcName"
 			try {
-				if ($ScriptParams.Credential) {
-					$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -CimSession $cs
-				} else {
-					$svc = Get-CimInstance -ClassName Win32_Service -Filter "Name = '$svcName'" -ComputerName $ScriptParams.ComputerName
-				}
+				$svc = Get-WmiQueryResult -ClassName "Win32_Service" -Query "Name = '$svcName'" -Params $ScriptParams
 				$svcAcct  = $svc.StartName
 				$svcStart = $svc.StartMode
 				$svcDelay = $svc.DelayedAutoStart
@@ -97,9 +93,7 @@ function Test-HostServiceAccounts {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		$endTime = (Get-Date)
-		$runTime = $(New-TimeSpan -Start $startTime -End $endTime)
-		$rt = "{0}h:{1}m:{2}s" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds})
+		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
