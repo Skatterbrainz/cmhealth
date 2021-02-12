@@ -15,7 +15,7 @@ function Test-SqlRoleMembers {
 		if ($null -ne $ScriptParams.Credential) {
 			$rmembers = @(Get-DbaDbRole -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Role "db_owner" -SqlCredential $ScriptParams.Credential | Get-DbaDbRoleMember )
 		} else {
-			$rmembers = @(Get-DbaDbRole -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Role "db_owner" | Get-DbaDbRoleMember )	
+			$rmembers = @(Get-DbaDbRole -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Role "db_owner" | Get-DbaDbRoleMember )
 		}
 		if ($rmembers.Count -lt 1) {
 			$stat = $except

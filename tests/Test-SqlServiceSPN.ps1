@@ -21,13 +21,24 @@ function Test-SqlServiceSPN {
 			foreach ($spn in $spns) {
 				if ($spn.IsSet -ne $True) {
 					if ($ScriptParams.Remediate -eq $True) {
-						Set-DbaSpn -SPN $spn.RequiredSPN -ServiceAccount $spn.InstanceServiceAccount -WhatIf
+						Set-DbaSpn -SPN $spn.RequiredSPN -ServiceAccount $spn.InstanceServiceAccount
 					} else {
 						$stat = $except
 						$msg  = "Missing SPN for $($spn.RequiredSPN)"
+						$tempdata.Add(
+							[pscustomobject]@{
+								Required = $spn.RequiredSPN
+								Status   = "Missing"
+							}
+						)
 					}
 				} else {
-					$tempdata.Add($spn.RequiredSPN)
+					$tempdata.Add(
+						[pscustomobject]@{
+							Required = $($spn.RequiredSPN)
+							Status = "Valid"
+						}
+					)
 				}
 			}
 		} else {
