@@ -14,76 +14,37 @@ function Test-CmInstallAccountRoles {
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
 		[array]$localAdmins = Get-LocalGroupMember -Group "Administrators" -ErrorAction Stop
+		[array]$sysadmins = Get-DbaServerRoleMember -SqlInstance $server -ServerRole "sysadmin" -ErrorAction Stop
+
 		$query = "SELECT TOP (1) LogonName FROM dbo.vRBAC_Permissions WHERE CategoryID = 'SMS00ALL'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($null -ne $res) {
 			$username = $res.LogonName
+			$basename = $($username -split '\\')[1]
 			if ($localAdmins.Name -contains $username) {
 				Write-Verbose "install account is a direct member of local administrators group"
+				$isLocalAdmin = $True
 			}
-			try {$user = Get-ADUser -Identity $res.LogonName -Filter * -ErrorAction SilentlyContinue} catch {}
-			if ($null -ne $user) {
-				# got the AD account
-			} else {
-				Write-Warning "site installation account not found in the directory!"
+			if ($sysadmins -contains $username) {
+				Write-Verbose "install account is a direct member of SQL sysadmins group"
+				$isSysAdmin = $True
 			}
+			$dagroup = Get-ADSIGroupMember -Identity "Domain Admins" | Select-Object -expand name
+			if ($dagroup -contains $basename) {
+				Write-Verbose "install account is a direct member of Domain Admins group"
+				$isDomainAdmin = $True
+				$stat = $except
+				$msg = "install account has more permissions than it may require"
+			}
+			$tempdata.Add([pscustomobject]@{
+				InstallAccount = $username
+				IsLocalAdmin   = $isLocalAdmin
+				IsDomainAdmin  = $isDomainAdmin
+				IsSqlSysAdmin  = $isSysAdmin
+			})
 		} else {
 			Write-Warning "unable to query site installation account from database"
 		}
-		<#
-		=======================================================
-		|	COMMENT: DELETE THIS BLOCK WHEN FINISHED:
-		|
-		|	perform test and return result as an object...
-		|		$stat = "FAIL" or "WARNING" (no need to set "PASS" since it's the default)
-		|		$msg = (details of failure or warning)
-		|		add supporting data to $tempdata array if it helps output
-		|		loop output into $tempdata.Add() array to return as TestData param in output
-		=======================================================
-		#>
-
-		<#
-		=======================================================
-		COMMENT: EXAMPLE FOR SQL QUERY RELATED TESTS... DELETE THIS BLOCK IF NOT USED
-		=======================================================
-
-		$query = ""
-		if ($ScriptParams.Credential) {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
-
-		if ($res.Count -gt 0) {
-			$stat = $except
-			$msg  = "$($res.Count) items found"
-			#$res | Foreach-Object {$tempdata.Add($_.Name)}
-		}
-		#>
-
-		<#
-		=======================================================
-		COMMENT: EXAMPLE FOR WMI/CIM QUERY RELATED TESTS... DELETE THIS BLOCK IF NOT USED
-		=======================================================
-
-		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			if ($ScriptParams.Credential) {
-				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
-				$services = @(Get-CimInstance -CimSession $cs -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
-			} else {
-				$services = @(Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
-			}
-		} else {
-			$services = @(Get-CimInstance -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
-		}
-		if ($services.Count -gt 0) {
-			$stat = $except
-			$services | Foreach-Object {$tempdata.Add($_.Name)}
-			$msg = "$($services.Count) stopped services were found"
-			$services | Foreach-Object {$tempdata.Add($_.Name)}
-		}
-
-		#>
 	}
 	catch {
 		$stat = 'ERROR'
