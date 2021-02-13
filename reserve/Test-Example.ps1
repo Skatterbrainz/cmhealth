@@ -10,9 +10,9 @@ function Test-Example {
 		$startTime = (Get-Date)
 		#[int]$Setting = Get-CmHealthDefaultValue -KeySet "keygroup:keyname" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS" # do not change this
+		$stat   = "PASS" # do not change this
 		$except = "WARNING" # or "FAIL"
-		$msg  = "No issues found" # do not change this either
+		$msg    = "No issues found" # do not change this either
 		<#
 		=======================================================
 		|	COMMENT: DELETE THIS BLOCK WHEN FINISHED:
