@@ -44,14 +44,10 @@ packages or the dependencies, and install them manually.
 
 ### First-Time Use
 
-```powershell
-Test-CmHealth -Initialize
-```
-
-This will create a file on your Desktop named "cmhealth.json".  This file contains the default values for
-all of the tests to use for comparing with nominal or "best practices" settings. If you forget to do this 
-the FIRST time, it will cause an error if you try to use any of the following examples below. You can copy 
-an existing cmhealth.json from one machine or user desktop to another to save time.
+The first time you invoke Test-CmHealth, it will create a file on your Desktop named "cmhealth.json".
+This file contains the default values for all of the tests to use for comparing with nominal or "best practices" 
+settings. If you forget to do this the FIRST time, it will cause an error if you try to use any of the following 
+examples below. You can copy an existing cmhealth.json from one machine or user desktop to another to save time.
 
 ### Show Detailed Help and Examples
 
@@ -72,38 +68,38 @@ Get-Help Test-CmHealth -Full
 ### Specifying a Remote or Alternate Site System
 
 ```powershell
-$result = Test-CmHealth -SiteServer "cmserver01.contoso.local" -SqlInstance "db1.contoso.local" -Database "CM_ABC" -SiteCode "ABC"
+$result = Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -SiteServer "cmserver01.contoso.local" -SqlInstance "db1.contoso.local"
 ```
 
 ### Run only site server host tests
 
 ```powershell
-Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "ABC" -TestingScope Host
+Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope Host
 ```
 Note: The default -TestingScope is "ALL".
 
 ### Run selected tests only, from a grid-view menu
 
 ```powershell
-Test-CmHealth -TestingScope Select
+Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -TestingScope Select
 ```
 
 Seeing more details by using verbose output...
 
 ```powershell
-Test-CmHealth -TestingScope Select -Verbose
+Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -TestingScope Select -Verbose
 ```
 
 ### Run all tests on site server and return only failing results
 
 ```powershell
-Test-CmHealth | where {$_.Status -ne 'PASS'}
+Test-CmHealth -SiteCode "ABC" -Database "CM_P01" | where {$_.Status -ne 'PASS'}
 ```
 
 ### Run all tests on site server and return only warning results
 
 ```powershell
-Test-CmHealth -TestingScope All | where {$_.Status -eq 'WARNING'}
+Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -TestingScope All | where {$_.Status -eq 'WARNING'}
 ```
 
 ### It's also splattable, if that's even a real word
