@@ -3,14 +3,14 @@
 	Validate MECM/ConfigMgr site systems and configuration.
 .DESCRIPTION
 	Validate MECM/ConfigMgr site systems operational health status, and recommended configuration.
+.PARAMETER SiteCode
+	ConfigMgr 3-character alphanumeric site code.
+.PARAMETER Database
+	Name of site SQL database.
 .PARAMETER SiteServer
 	NetBIOS or FQDN of site server (primary, CAS, secondary). Default is localhost
 .PARAMETER SqlInstance
 	NetBIOS or FQDN of site database SQL instance. Default is localhost
-.PARAMETER Database
-	Name of site database. Default is "CM_P01"
-.PARAMETER SiteCode
-	ConfigMgr site code. Default is "P01"
 .PARAMETER TestingScope
 	Scope of tests to execute: All (default), Host, AD, SQL, CM, WSUS, Select
 	The Select option displays a gridview to select the individual tests to perform
@@ -21,39 +21,34 @@
 	Default is C:\Windows\WinSxS
 .PARAMETER DaysBack
 	Number of days to go back for checking status messages, errors, warnings, etc. Default is 7
-.PARAMETER Initialize
-	Creates or resets a default configuration file on the current user's Desktop named "cmhealth.json"
 .PARAMETER Credential
 	PS Credential object for authenticating under alternate context
 .EXAMPLE
-	Test-CmHealth -Initialize
-	Generates a new cmhealth.json configuration file on the user desktop. If the file exists, it will be replaced.
-.EXAMPLE
-	Test-CmHealth
+	Test-CmHealth -SiteCode "P01" -Database "CM_P01"
 	Runs all tests on the local machine using the current user credentials
 .EXAMPLE
-	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "ALL"
+	Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "ALL"
 	Runs all tests
 .EXAMPLE
-	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host"
+	Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "Host"
 	Runs only the site server host tests
 .EXAMPLE
-	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Credential $cred
+	Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "Host" -Remediate -Credential $cred
 	Runs only the site server host tests and attempts to remediate identified deficiences using alternate user credentials
 .EXAMPLE
-	Test-CmHealth -SiteServer "CM01" -SqlInstance "CM01" -Database "CM_P01" -SiteCode "P01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
+	Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
 	Runs only the site server host tests and attempts to remediate identified deficiences with WinSXS source path provided
 .EXAMPLE
-	$failed = Test-CmHealth | Where-Object Status -eq 'Fail'
+	$failed = Test-CmHealth -SiteCode "P01" -Database "CM_P01" | Where-Object Status -eq 'Fail'
 	Runs all tests and only returns those which failed
 .EXAMPLE
-	Test-CmHealth | Select-Object TestName,Status,Message | Where-Object Status -eq 'Fail'
+	Test-CmHealth -SiteCode "P01" -Database "CM_P01" | Select-Object TestName,Status,Message | Where-Object Status -eq 'Fail'
 	Display summary of failed tests
 .EXAMPLE
-	$results = Test-CmHealth | Where-Object Status -eq 'Fail'; $results | Select TestData
+	$results = Test-CmHealth -SiteCode "P01" -Database "CM_P01" | Where-Object Status -eq 'Fail'; $results | Select TestData
 	Display test output from failed tests
 .EXAMPLE
-	$results = Test-CmHealth -TestScope Previous
+	$results = Test-CmHealth -SiteCode "P01" -Database "CM_P01" -TestScope Previous
 	Run the same set of tests as the previous session (each run saves list of test names)
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md
@@ -64,26 +59,20 @@
 function Test-CmHealth {
 	[CmdletBinding()]
 	param (
-		[parameter()][ValidateNotNullOrEmpty()][string] $SiteServer = "localhost",
-		[parameter()][ValidateNotNullOrEmpty()][string] $SqlInstance = "localhost",
-		[parameter()][ValidateNotNullOrEmpty()][string] $Database = "CM_P01",
-		[parameter()][ValidateLength(3,3)][string] $SiteCode = "",
-		[parameter()][ValidateSet('All','AD','CM','Host','SQL','WSUS','Select','Previous')][string] $TestingScope = 'All',
-		[parameter()][bool] $Remediate = $False,
-		[parameter()][string] $Source = "c:\windows\winsxs",
-		[parameter()][switch] $Initialize,
-		[parameter()][pscredential] $Credential
+		[parameter(Mandatory=$True)][ValidateLength(3,3)][string] $SiteCode,
+		[parameter(Mandatory=$True)][ValidateNotNullOrEmpty()][string] $Database,
+		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SiteServer = "localhost",
+		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SqlInstance = "localhost",
+		[parameter(Mandatory=$False)][ValidateSet('All','AD','CM','Host','SQL','WSUS','Select','Previous')][string] $TestingScope = 'All',
+		[parameter(Mandatory=$False)][boolean] $Remediate = $False,
+		[parameter(Mandatory=$False)][string] $Source = "c:\windows\winsxs",
+		[parameter(Mandatory=$False)][pscredential] $Credential
 	)
-	if ($Initialize) {
-		Write-Host "generating default cmhealth settings file..." -ForegroundColor Cyan
-		$mpath = Split-Path $(Get-Module cmhealth).Path
-		$rpath = "$($mpath)\reserve"
-		$configFile = "$($rpath)\cmhealth.json"
-		$targetPath = "$($env:USERPROFILE)\Desktop"
-		Copy-Item -Path $configFile -Destination $targetPath -Force
-		Write-Host "cmhealth settings file saved as: $($targetPath)\cmhealth.json" -ForegroundColor Cyan
+	[string]$cfgfile = "$($env:USERPROFILE)\Desktop\cmhealth.json"
+	if (-not(Test-Path $cfgfile)) {
+		New-CmHealthConfig
 	} else {
-		$startTime = (Get-Date)
+		$startTime1 = (Get-Date)
 		if (!(Test-Path "$($env:USERPROFILE)\Desktop\cmhealth.json")) {
 			Write-Warning "Default configuration has not been defined. Use 'Test-CmHealth -Initialize' first"
 			break
@@ -130,7 +119,7 @@ function Test-CmHealth {
 			$testname = $test += ' -ScriptParams $params'
 			Invoke-Expression -Command $testname
 		}
-		$runTime = New-TimeSpan -Start $startTime -End (Get-Date)
+		$runTime = New-TimeSpan -Start $startTime1 -End (Get-Date)
 		Write-Host "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec"
 	}
 }
