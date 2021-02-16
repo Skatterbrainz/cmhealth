@@ -7,6 +7,7 @@ function Test-HostNoSmsOnDriveFile {
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
+		$startTime = (Get-Date)
 		$stat   = "PASS"
 		$except = "WARNING"
 		$msg    = "All non-CM disks are excluded"

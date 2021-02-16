@@ -23,7 +23,14 @@ function Test-HostWindowsUpdates {
 			else {
 				$stat = $except
 				$msg  = "$($res.Count) Microsoft updates are waiting to be installed"
-				$res | Foreach-Object { $tempdata.Add( @{KB=$($_.KB); Title=$($_.Title)} )}
+				$res | Foreach-Object {
+					$tempdata.Add( 
+						[pscustomobject]@{
+							KB=$($_.KB)
+							Title=$($_.Title)
+						}
+					)
+				}
 			}
 		}
 	}

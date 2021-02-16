@@ -10,19 +10,20 @@ function Test-HostServiceAccounts {
 	$builtin = ('LocalSystem','NT AUTHORITY\NetworkService','NT AUTHORITY\LocalService')
 	try {
 		$startTime = (Get-Date)
+		$svcConfig = @(Get-CmHealthDefaultValue -KeySet "services" -DataSet $CmHealthConfig)
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "FAIL"
 		$msg    = "No issues found"
-		$mpath  = Split-Path (Get-Module CMhealth).Path -Parent
-		$jfile  = "$mpath\tests\services.json"
-		if (!(Test-Path $jfile)) { throw "file not found: $jfile" }
-		Write-Verbose "loading configuration file: $jfile"
-		$jdata = Get-Content $jfile | ConvertFrom-Json
-		if ($ScriptParams.Credential) {
-			$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Authentication Negotiate -Credential $ScriptParams.Credential -ErrorAction Stop
-		}
-		foreach ($service in $jdata.Services) {
+		#$mpath  = Split-Path (Get-Module CMhealth).Path -Parent
+		#$jfile  = "$mpath\tests\services.json"
+		#if (!(Test-Path $jfile)) { throw "file not found: $jfile" }
+		#Write-Verbose "loading configuration file: $jfile"
+		#$jdata = Get-Content $jfile | ConvertFrom-Json
+		#if ($ScriptParams.Credential) {
+		#	$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Authentication Negotiate -Credential $ScriptParams.Credential -ErrorAction Stop
+		#}
+		foreach ($service in $svcConfig.Services) {
 			$svcName = $service.Name
 			$svcRef  = $service.Reference
 			$privs   = $service.Privileges
@@ -31,6 +32,7 @@ function Test-HostServiceAccounts {
 			Write-Verbose "service name: $svcName"
 			try {
 				$svc = Get-WmiQueryResult -ClassName "Win32_Service" -Query "Name = '$svcName'" -Params $ScriptParams
+				#$svc = Get-WmiQueryResult -ClassName "Win32_Service" -Query "Name = '$svcName'" -Params $ScriptParams
 				$svcAcct  = $svc.StartName
 				$svcStart = $svc.StartMode
 				$svcDelay = $svc.DelayedAutoStart
