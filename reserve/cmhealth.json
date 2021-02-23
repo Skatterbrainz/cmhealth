@@ -133,7 +133,8 @@
 			"ClientCoverageThresholdPercent": "90",
 			"MaxCollectionRefreshCount": "200",
 			"MaxClientInventoryDaysOld": "14",
-			"ComponentErrorsMaxDaysOld": "7"
+			"ComponentErrorsMaxDaysOld": "7",
+			"MaxAdministratorsCount": "5"
 		}
 	],
 	"siteservers": [
