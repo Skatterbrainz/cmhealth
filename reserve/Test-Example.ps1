@@ -18,8 +18,8 @@ function Test-Example {
 		|	COMMENT: DELETE THIS BLOCK WHEN FINISHED:
 		|
 		|	perform test and return result as an object...
-		|		$stat = "FAIL" or "WARNING" (no need to set "PASS" since it's the default)
-		|		$msg = (details of failure or warning)
+		|		$stat = $except (no need to set "PASS" since it's the default)
+		|		$msg = "custom message that N issues were found"
 		|		add supporting data to $tempdata array if it helps output
 		|		loop output into $tempdata.Add() array to return as TestData param in output
 		=======================================================
@@ -31,17 +31,13 @@ function Test-Example {
 		=======================================================
 
 		$query = ""
-		if ($ScriptParams.Credential) {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential)
-		} else {
-			$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
-		}
-
-		if ($res.Count -gt 0) {
+		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
+		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found"
-			#$res | Foreach-Object {$tempdata.Add($_.Name)}
+			#$res | Foreach-Object {$tempdata.Add( [pscustomobject]@{Name=$_.Name} )}
 		}
+		=======================================================
 		#>
 
 		<#
@@ -49,23 +45,28 @@ function Test-Example {
 		COMMENT: EXAMPLE FOR WMI/CIM QUERY RELATED TESTS... DELETE THIS BLOCK IF NOT USED
 		=======================================================
 
-		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			if ($ScriptParams.Credential) {
-				$cs = New-CimSession -Credential $ScriptParams.Credential -Authentication Negotiate -ComputerName $ScriptParams.ComputerName
-				$services = @(Get-CimInstance -CimSession $cs -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
-			} else {
-				$services = @(Get-CimInstance -ComputerName $ScriptParams.ComputerName -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
+		$disks  = Get-WmiQueryResult -ClassName "Win32_LogicalDisk" -Query "DriveType = 3" -Params $ScriptParams
+		foreach ($disk in $disks) {
+			$drv  = $disk.DeviceID
+			$size = $disk.Size
+			$free = $disk.FreeSpace
+			$used = $size - $free
+			$pct  = $([math]::Round($used / $size, 1)) * 100
+			if ($pct -gt $MaxPctUsed) {
+				$stat = $except
+				$msg  = "One or more disks are low on free space"
 			}
-		} else {
-			$services = @(Get-CimInstance -ClassName Win32_Service | Where-Object {$_.StartMode -match 'auto' -and $_.State -ne 'Running'})
-		}
-		if ($services.Count -gt 0) {
-			$stat = $except
-			$services | Foreach-Object {$tempdata.Add($_.Name)}
-			$msg = "$($services.Count) stopped services were found"
-			$services | Foreach-Object {$tempdata.Add($_.Name)}
-		}
-
+			$tempdata.Add(
+				[pscustomobject]@{
+					Drive   = $drv
+					Size    = $size
+					Used    = $used
+					PctUsed = $pct
+					MaxPct  = $MaxPctUsed
+				}
+			)
+		} # foreach
+		=======================================================
 		#>
 	}
 	catch {
