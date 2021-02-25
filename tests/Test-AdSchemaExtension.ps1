@@ -1,7 +1,7 @@
 function Test-AdSchemaExtension {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-AdSchemaExtension",
+		[parameter()][string] $TestName = "Active Directory Schema Extended",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify AD schema extensions have been installed",
 		[parameter()][hashtable] $ScriptParams

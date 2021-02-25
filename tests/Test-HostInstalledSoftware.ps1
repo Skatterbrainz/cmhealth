@@ -1,7 +1,7 @@
 function Test-HostInstalledSoftware {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostInstalledSoftware",
+		[parameter()][string] $TestName = "Installed Software Applications",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Check for excessive junk installed on site server",
 		[parameter()][hashtable] $ScriptParams

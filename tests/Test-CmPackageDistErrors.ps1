@@ -1,7 +1,7 @@
 function Test-CmPackageDistErrors {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmPackageDistErrors",
+		[parameter()][string] $TestName = "Package Distribution Errors",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for Packages with content distribution errors",
 		[parameter()][hashtable] $ScriptParams
@@ -22,7 +22,16 @@ WHERE (cds.NumberErrors > 0)"
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
-			$res | Foreach-Object {$tempdata.Add("ID=$($_.PackageID),Name=$($_.Name),Errors=$($_.NumberErrors),SourcePath=$($_.PkgSourcePath)")}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						ID = $($_.PackageID)
+						Name = $($_.Name)
+						Errors = $($_.NumberErrors)
+						SourcePath = $($_.PkgSourcePath)
+					}
+				)
+			}
 		}
 	}
 	catch {

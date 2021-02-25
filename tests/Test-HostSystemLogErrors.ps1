@@ -1,8 +1,8 @@
 function Test-HostSystemLogErrors {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostSystemLogErrors",
-		[parameter()][string] $TestGroup = "operational",
+		[parameter()][string] $TestName = "System Event Log Errors",
+		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for recent System log errors and warnings",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -41,7 +41,12 @@ function Test-HostSystemLogErrors {
 				$msg  = "$($vwarnings.Count) warnings have occurred in the System log in the past $MaxHours hours"
 			}
 		}
-		$tempdata.Add( "Errors=$($verrors.Count), Warnings=$($vwarnings.Count)")
+		$tempdata.Add(
+			[pscustomobject]@{
+				Errors = $($verrors.Count)
+				Warnings = $($vwarnings.Count)
+			}
+		)
 	}
 	catch {
 		$stat = 'ERROR'

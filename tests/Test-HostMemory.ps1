@@ -1,7 +1,7 @@
 function Test-HostMemory {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostMemory",
+		[parameter()][string] $TestName = "Server Memory Allocation",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify site system has at least minimum required memory",
 		[parameter()][hashtable] $ScriptParams
@@ -28,11 +28,25 @@ function Test-HostMemory {
 		if ($TotalRAM -lt $MinMem) {
 			$stat = $except
 			$msg  = "$($TotalRam) GB is below the minimum recommended $MinMemory GB"
-			$res | Foreach-Object {$tempdata.Add("Total=$($TotalRam),Expected=$($MinMemory)")}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Total = $($TotalRam)
+						Expected = $($MinMemory)
+					}
+				)
+			}
 		} elseif ($RAMPercentFree -lt 10) {
 			$stat = $except
 			$msg  = "Less than 10 percent memory is available"
-			$res | Foreach-Object {$tempdata.Add("PctFree=$($RAMPercentFree),Expected=10")}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						PctFree = $($RAMPercentFree)
+						Expected = 10
+					}
+				)
+			}
 		}
 	}
 	catch {

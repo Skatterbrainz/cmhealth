@@ -1,9 +1,9 @@
 function Test-SqlDbResourceWaits {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlDbResourceWaits",
-		[parameter()][string] $TestGroup = "database",
-		[parameter()][string] $Description = "Description of this test",
+		[parameter()][string] $TestName = "SQL Database Resource Wait Times",
+		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $Description = "Check for excessive resource wait times",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -20,7 +20,14 @@ FROM sys.dm_os_wait_stats OPTION (RECOMPILE)"
 		if ($res.CPUWaits_Pct -gt 10 -or $res.ResourceWaits_Pct -gt 50) {
 			$stat = $except
 			$msg = "Excessive CPU waits: CPU=$($res.CPUWaits_Pct) Resources=$($res.ResourceWaits_Pct)"
-			$res | Foreach-Object {$tempdata.Add("CPUWaits=$($_.CPUWaits_Pct),ResWaits=$($_.ResourceWaits_Pct)")}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						CPUWaits = $($_.CPUWaits_Pct)
+						ResWaits = $($_.ResourceWaits_Pct)
+					}
+				)
+			}
 		}
 	}
 	catch {

@@ -1,7 +1,7 @@
 function Test-CmUpdateErrorSolutions {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmUpdateErrorSolutions",
+		[parameter()][string] $TestName = "Software Update Error Solutions",
 		[parameter()][string] $TestGroup = "operations",
 		[parameter()][string] $Description = "Update Error Solution Details",
 		[parameter()][hashtable] $ScriptParams
@@ -28,7 +28,14 @@ AND fcm.CollectionID = 'SMS00001'"
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found: $($res.ErrorCode -join ',')"
-			$res | Foreach-Object {$tempdata.Add([pscustomobject]@{Error=$($_.ErrorCode);Message=$($_.Message)})}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Error = $($_.ErrorCode)
+						Message = $($_.Message)
+					}
+				)
+			}
 		}
 	}
 	catch {

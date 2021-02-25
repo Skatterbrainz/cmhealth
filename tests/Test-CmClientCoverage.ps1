@@ -1,7 +1,7 @@
 function Test-CmClientCoverage {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmClientCoverage",
+		[parameter()][string] $TestName = "Device Client Coverage Status",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Confirm AD computers managed by CM",
 		[parameter()][hashtable] $ScriptParams

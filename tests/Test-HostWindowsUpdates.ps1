@@ -1,9 +1,9 @@
 function Test-HostWindowsUpdates {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostWindowsUpdates",
+		[parameter()][string] $TestName = "Windows Update Compliance",
 		[parameter()][string] $TestGroup = "operation",
-		[parameter()][string] $Description = "Description of this test",
+		[parameter()][string] $Description = "Check if server is up to date on patches",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -26,8 +26,8 @@ function Test-HostWindowsUpdates {
 				$res | Foreach-Object {
 					$tempdata.Add( 
 						[pscustomobject]@{
-							KB=$($_.KB)
-							Title=$($_.Title)
+							KB = $($_.KB)
+							Title = $($_.Title)
 						}
 					)
 				}

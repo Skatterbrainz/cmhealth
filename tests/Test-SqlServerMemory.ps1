@@ -1,8 +1,8 @@
 function Test-SqlServerMemory {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlServerMemory",
-		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $TestName = "SQL Server Memory Allocation",
+		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate maximum memory allocation of SQL instance",
 		[parameter()][hashtable] $ScriptParams
 	)

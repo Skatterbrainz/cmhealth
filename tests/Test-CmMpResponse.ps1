@@ -1,7 +1,7 @@
 function Test-CmMpResponse {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmMpResponse",
+		[parameter()][string] $TestName = "Management Point Response",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate MP web service reponse",
 		[parameter()][hashtable] $ScriptParams

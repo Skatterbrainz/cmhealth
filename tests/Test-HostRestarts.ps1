@@ -1,7 +1,7 @@
 function Test-HostRestarts {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostRestarts",
+		[parameter()][string] $TestName = "Unplanned Server Restarts",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for unplanned system restarts",
 		[parameter()][hashtable] $ScriptParams
@@ -35,7 +35,7 @@ function Test-HostRestarts {
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found"
-			$winevent = @{TimeCreated = $_.TimeCreated; Computer = $_.MachineName; Message = $_.Message}
+			$winevent = [pscustomobject]@{TimeCreated = $_.TimeCreated; Computer = $_.MachineName; Message = $_.Message}
 			$res | Foreach-Object {$tempdata.Add($winevent)}
 		}
 	}

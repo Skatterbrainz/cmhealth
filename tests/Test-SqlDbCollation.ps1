@@ -1,9 +1,9 @@
 function Test-SqlDbCollation {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlDbCollation",
-		[parameter()][string] $TestGroup = "database",
-		[parameter()][string] $Description = "Validate SQL database collation configruation",
+		[parameter()][string] $TestName = "SQL Database Collation",
+		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $Description = "Validate SQL database collation configuration",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {

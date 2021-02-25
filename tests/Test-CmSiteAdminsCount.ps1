@@ -1,7 +1,7 @@
 function Test-CmSiteAdminsCount {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmSiteAdminsCount",
+		[parameter()][string] $TestName = "Site Admins Membership Count",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Check if more users are full admins than should be",
 		[parameter()][hashtable] $ScriptParams

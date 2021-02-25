@@ -1,7 +1,7 @@
 function Test-CmDpNoGroups {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmDpNoGroups",
+		[parameter()][string] $TestName = "DP Servers Not in a DP Group",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Check for DPs which are not in a DP group",
 		[parameter()][hashtable] $ScriptParams

@@ -1,7 +1,7 @@
 function Test-CmClientUpdateScanErrors {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmClientUpdateScanErrors",
+		[parameter()][string] $TestName = "Client Update Scan Errors",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for clients with software update scan errors",
 		[parameter()][hashtable] $ScriptParams

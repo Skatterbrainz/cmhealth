@@ -1,7 +1,7 @@
 function Test-WsusWebConfig {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-WsusWebConfig",
+		[parameter()][string] $TestName = "WSUS Application Web Config Settings",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate WSUS web configuration file parameters",
 		[parameter()][hashtable] $ScriptParams
@@ -33,7 +33,12 @@ function Test-WsusWebConfig {
 			} else {
 				$stat = $except
 				$msg  = "MaxCachedUpdates currently $($c1.value) should be $MaxCachedUpdates"
-				$tempdata.Add("MaxCachedUpdates=$($c1.Value),Expected=$($MaxCachedUpdates)")
+				$tempdata.Add(
+					[pscustomobject]@{
+						MaxCachedUpdates = $($c1.Value)
+						Expected = $($MaxCachedUpdates)
+					}
+				)
 			}
 		}
 
@@ -44,7 +49,12 @@ function Test-WsusWebConfig {
 			} else {
 				$stat = $except
 				$msg = "MaxInstalledPrerequisites currently $($c2.value) should be $MaxInstalledPrerequisites"
-				$tempdata.Add("MaxInstalledPrerequisites=$($c2.Value),Expected=$($MaxInstalledPrerequisites)")
+				$tempdata.Add(
+					[pscustomobject]@{
+						MaxInstalledPrerequisites = $($c2.Value)
+						Expected = $($MaxInstalledPrerequisites)
+					}
+				)
 			}
 		}
 

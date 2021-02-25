@@ -1,7 +1,7 @@
 function Test-CmBoundariesOrphaned {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmBoundariesOrphaned",
+		[parameter()][string] $TestName = "Orphaned Site Boundaries",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate Site Boundaries are in Boundary Groups",
 		[parameter()][hashtable] $ScriptParams

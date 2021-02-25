@@ -1,7 +1,7 @@
 function Test-CmContentDistErrors {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmContentDistErrors",
+		[parameter()][string] $TestName = "Content Distribution Errors",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for content with distribution errors",
 		[parameter()][hashtable] $ScriptParams

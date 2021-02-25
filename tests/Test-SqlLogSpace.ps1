@@ -1,30 +1,34 @@
-function Test-CmClientErrors {
+function Test-Example {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Clients with Errors",
+		[parameter()][string] $TestName = "SQL Log Space Usage",
 		[parameter()][string] $TestGroup = "operation",
-		[parameter()][string] $Description = "Check for clients reporting errors",
+		[parameter()][string] $Description = "Check for SQL logs with excessive space used",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		$startTime = (Get-Date)
+		#[int]$Setting = Get-CmHealthDefaultValue -KeySet "keygroup:keyname" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS" # do not change this
-		$except = "WARNING"
+		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
-		$query  = "SELECT DISTINCT
-stat.MachineName,
-fcm.SiteCode,
-stat.Component
-FROM v_StatusMessage stat
-INNER JOIN v_FullCollectionMembership_Valid fcm ON fcm.Name = stat.MachineName
-WHERE stat.Time > DATEADD(dd,-CONVERT(INT,7),GETDATE()) and
-stat.Severity=0xC0000000 AND stat.PerClient!=0 AND fcm.CollectionID = 'SMS00001'"
-		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
-			$stat = $except
-			$msg  = "$($res.Count) items found: $($res.MachineName -join ',')"
-			$res | Foreach-Object {$tempdata.Add(@($_.MachineName, $_.Component))}
+		$logs   = Get-DbaDbLogSpace -SqlInstance $ScriptParams.SqlInstance
+		foreach ($log in $logs) {
+			if ($log.LogSpaceUsedPercent -gt 50) {
+				Write-Verbose "log space warning: $($log.Database)"
+				$msg = "Log space warning (greater than 50 percent used)"
+				$stat = $except
+				$tempdata.Add(
+					[pscustomobject]@{
+						Instance = $log.SqlInstance
+						Database = $log.Database
+						LogSize = $log.LogSize
+						PercentUsed = $log.LogSpaceUsedPercent
+						LogSpaceUsed = $log.LogSpaceUsed
+					}
+				)
+			}
 		}
 	}
 	catch {

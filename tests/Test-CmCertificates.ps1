@@ -1,9 +1,9 @@
-function Test-CmAppDeploymentExceptions {
+function Test-CmCertificates {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Application Deployment Exceptions",
+		[parameter()][string] $TestName = "Site Certificates",
 		[parameter()][string] $TestGroup = "operation",
-		[parameter()][string] $Description = "Summary of application deployment failures",
+		[parameter()][string] $Description = "Check for certificate expirations",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -11,34 +11,30 @@ function Test-CmAppDeploymentExceptions {
 		#[int]$Setting = Get-CmHealthDefaultValue -KeySet "keygroup:keyname" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS" # do not change this
-		$except = "WARNING"
-		$msg  = "No issues found" # do not change this either
-		$query = "select
-ads.Descript AS DeploymentName,
-ads.TargetCollectionID,
-coll.Name AS CollectionName,
-ads.AssignmentID,
-ads.DeploymentTime,
-case
-	when ads.OfferTypeID = 0 then 'Required'
-	else 'Available' END AS OfferType,
-ads.AlreadyPresent,
-(ads.Success + ads.Error + ads.InProgress + ads.Unknown + ads.RequirementsNotMet) as Total,
-ads.Success,
-ads.InProgress,
-ads.Unknown,
-ads.Error,
-ads.RequirementsNotMet
-from
-	v_AppDeploymentSummary as ads inner join
-	v_Collection as coll on ads.TargetCollectionID = coll.CollectionID
-where (ads.Error > 0)
-order by DeploymentName"
+		$except = "WARNING" # or "FAIL"
+		$msg    = "No issues found" # do not change this either
+		$query = "SELECT SiteCode,RoleID,RoleName,State,Configuration,MessageID,LastEvaluatingTime,Param1
+  			FROM dbo.vCM_SiteConfiguration where RoleName like '%Certificate'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($res.Count -gt 0) {
+		foreach ($row in $res) {
+			[datetime]$exp = $(($row -split 'Expires:')[1]).Trim()
+			if ((New-TimeSpan -Start (Get-Date) -End $exp).Days -lt 30) {
+				$stat = $except
+				$msg = "Certificate about to expire or has expired"
+				$tempdata.Add(
+					[pscustomobject]@{
+						RoleName = $row.RoleName
+						Details = $msg
+						Configuration = $row.Configuration
+						Expiration = (Get-Date $exp -f 'MM/dd/yyyy')
+					}
+				)
+			}
+		}
+		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found"
-			$res | Foreach-Object {$tempdata.Add($_.DeploymentName)}
+			#$res | Foreach-Object {$tempdata.Add( [pscustomobject]@{Name=$_.Name} )}
 		}
 	}
 	catch {

@@ -1,7 +1,7 @@
 function Test-CmInactiveClients {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmInactiveClients",
+		[parameter()][string] $TestName = "Inactve Clients",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for inactive clients",
 		[parameter()][hashtable] $ScriptParams
@@ -23,10 +23,18 @@ FROM v_FullCollectionMembership fcm
 INNER JOIN v_CH_ClientSummary chs ON chs.ResourceID = fcm.ResourceID AND chs.ClientActiveStatus = 0
 WHERE fcm.CollectionID = 'SMS00001'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
-			$res | Foreach-Object { $tempdata.Add($_.Name) }
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name = $_.Name
+						ResourceID = $_.ResourceID
+						LastContact = $_.LastContactTime
+					}
+				)
+			}
 		}
 	}
 	catch {

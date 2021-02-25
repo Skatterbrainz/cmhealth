@@ -1,7 +1,7 @@
 function Test-CmInvMaxMIFSize {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmInvMaxMIFSize",
+		[parameter()][string] $TestName = "Invalid Max MIF File Size Impact",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate inventory loader maximum MIF file size setting",
 		[parameter()][hashtable] $ScriptParams

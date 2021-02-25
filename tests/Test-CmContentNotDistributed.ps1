@@ -1,7 +1,7 @@
 function Test-CmContentNotDistributed {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmContentNotDistributed",
+		[parameter()][string] $TestName = "Content Not Distributed",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for content not distributed",
 		[parameter()][hashtable] $ScriptParams

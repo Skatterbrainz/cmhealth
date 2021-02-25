@@ -1,7 +1,7 @@
 function Test-CmClientStaleInventory {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmClientStaleInventory",
+		[parameter()][string] $TestName = "Stale Client Inventory Data",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Clients with outdated or missing inventory data",
 		[parameter()][hashtable] $ScriptParams

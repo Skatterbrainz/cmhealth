@@ -1,7 +1,7 @@
 function Test-CmMissingContent {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmMissingContent",
+		[parameter()][string] $TestName = "Packages Missing Content",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for items missing content for distribution",
 		[parameter()][hashtable] $ScriptParams
@@ -36,7 +36,15 @@ WHERE Targeted > 0 AND NumberInstalled <> Targeted"
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items missing content: $($res.SoftwareName -join ',')"
-			$res | Foreach-Object {$tempdata.Add("Name=$($_.SoftwareName),Type=$($_.ObjectTypeName),Errors=$($_.NumberErrors)")}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name = $($_.SoftwareName)
+						Type = $($_.ObjectTypeName)
+						Errors = $($_.NumberErrors)
+					}
+				)
+			}
 		}
 	}
 	catch {

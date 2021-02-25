@@ -1,7 +1,7 @@
 function Test-HostServices {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostServices",
+		[parameter()][string] $TestName = "Windows Services Health",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Verify auto-start services are running",
 		[parameter()][hashtable] $ScriptParams
@@ -15,7 +15,15 @@ function Test-HostServices {
 		$services = Get-WmiQueryResult -ClassName "Win32_Service" -Query "startmode = 'auto' and state != 'running'" -Params $ScriptParams
 		if ($services.Count -gt 0) {
 			$stat = $except
-			$services | Foreach-Object {$tempdata.Add($_.Name)}
+			$services | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name = $_.Name
+						StartMode = $_.StartMode
+						State = $_.State
+					}
+				)
+			}
 			$msg = "$($services.Count) stopped services: $($services.Name -join ',')"
 		}
 	}

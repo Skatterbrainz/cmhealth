@@ -1,7 +1,7 @@
 function Test-SqlDbDiskAlignment {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlDbDiskAlignment",
+		[parameter()][string] $TestName = "SQL Server Disk Alignment Status",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate disk alignment with SQL recommended practices",
 		[parameter()][hashtable] $ScriptParams

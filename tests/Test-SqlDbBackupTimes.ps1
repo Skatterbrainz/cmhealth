@@ -1,8 +1,8 @@
 function Test-SqlDbBackupTimes {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlDbBackupTimes",
-		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestName = "SQL Database Backup Times",
+		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for backups that took too long to finish",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -40,7 +40,17 @@ ORDER BY T1.Seconds DESC"
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg = "$($res.Count) backups took longer than $MaxRunTime seconds"
-			$res | Foreach-Object {$tempdata.Add( "$($_.Database)=$($_.Seconds) sec") }
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Database = $_.Database
+						BackupType = $_.BackupType
+						Size = $_.Size
+						StartDate = $_.StartDate
+						Duration = "$($_.Seconds) sec"
+					}
+				)
+			}
 		}
 	}
 	catch {

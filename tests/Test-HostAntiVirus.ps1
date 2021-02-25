@@ -1,7 +1,7 @@
 function Test-HostAntiVirus {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostAntiVirus",
+		[parameter()][string] $TestName = "AntiVirus Product Installations",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Check for third-party antivirus software installations",
 		[parameter()][hashtable] $ScriptParams

@@ -1,7 +1,7 @@
 function Test-CmClientMissing {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmClientMissing",
+		[parameter()][string] $TestName = "Missing Clients",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for discovered machines without a client",
 		[parameter()][hashtable] $ScriptParams

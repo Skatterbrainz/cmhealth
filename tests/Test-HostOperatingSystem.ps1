@@ -1,7 +1,7 @@
 function Test-HostOperatingSystem {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostOperatingSystem",
+		[parameter()][string] $TestName = "Supported Operating System",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate supported operating system for CM site system roles",
 		[parameter()][hashtable] $ScriptParams
@@ -14,7 +14,7 @@ function Test-HostOperatingSystem {
 		$stat    = "PASS"
 		$except  = "FAIL"
 		$msg     = "No issues found"
-		$osdata  = Get-WmiQueryResult -ClassName "Win32_Product" -Params $ScriptParams
+		$osdata  = Get-WmiQueryResult -ClassName "Win32_OperatingSystem" -Params $ScriptParams
 		$osname  = $osdata.Caption
 		$osbuild = $osdata.BuildNumber
 		$matched = (($supported | Foreach-Object {$osname -match $_}) -eq $True)

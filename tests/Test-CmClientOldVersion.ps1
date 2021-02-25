@@ -1,7 +1,7 @@
 function Test-CmClientOldVersion {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmClientOldVersion",
+		[parameter()][string] $TestName = "Old Client Versions",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for clients with version older than site version",
 		[parameter()][hashtable] $ScriptParams

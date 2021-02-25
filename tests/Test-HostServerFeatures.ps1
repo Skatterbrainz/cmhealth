@@ -1,7 +1,7 @@
 function Test-HostServerFeatures {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostServerFeatures",
+		[parameter()][string] $TestName = "Installed Windows Features",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate Windows Server roles and features for CM site systems",
 		[parameter()][hashtable] $ScriptParams
@@ -37,7 +37,7 @@ function Test-HostServerFeatures {
 					Write-Verbose "$($feature.Name) is not installed!"
 					if ($ScriptParams.Remediate -eq $True) {
 						try {
-							Write-Host "installing: $($Feature.Name)" -ForegroundColor Cyan
+							Write-Verbose "installing: $($Feature.Name)"
 							if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
 								if ($ScriptParams.Credential) {
 									Install-WindowsFeature -Name "$($Feature.Name)" -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop

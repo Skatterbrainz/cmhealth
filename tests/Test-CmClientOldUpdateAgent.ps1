@@ -1,7 +1,7 @@
 function Test-CmClientOldUpdateAgent {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmClientOldUpdateAgent",
+		[parameter()][string] $TestName = "Clients with Old Windows Update Agent",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Clients with old Windows Update agent",
 		[parameter()][hashtable] $ScriptParams

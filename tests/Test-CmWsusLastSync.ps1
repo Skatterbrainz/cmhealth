@@ -1,7 +1,7 @@
 function Test-CmWsusLastSync {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmWsusLastSync",
+		[parameter()][string] $TestName = "Last SUP / WSUS Synchronization",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Validate last WSUS synchronization result",
 		[parameter()][hashtable] $ScriptParams

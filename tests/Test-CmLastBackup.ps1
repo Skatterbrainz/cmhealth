@@ -1,7 +1,7 @@
 function Test-CmLastBackup {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmLastBackup",
+		[parameter()][string] $TestName = "Last Site Backup",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Validate last ConfigMgr site backup status",
 		[parameter()][hashtable] $ScriptParams

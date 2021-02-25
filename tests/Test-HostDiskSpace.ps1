@@ -1,7 +1,7 @@
 function Test-HostDiskSpace {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostDiskSpace",
+		[parameter()][string] $TestName = "Disk Space Health",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate logical disk utilitization",
 		[parameter()][hashtable] $ScriptParams

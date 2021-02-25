@@ -1,8 +1,8 @@
 function Test-SqlAgentJobStatus {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlAgentJobStatus",
-		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $TestName = "SQL Agent Job Status",
+		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Validate SQL Agent Job status",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -16,19 +16,30 @@ function Test-SqlAgentJobStatus {
 		$msg = "No errors in the past $($HoursBack) hours"
 		if ($null -ne $ScriptParams.Credential) {
 			$params = @{
-				SqlInstance   = $ScriptParams.SqlInstance 
+				SqlInstance   = $ScriptParams.SqlInstance
 				StartDate     = (Get-Date).AddHours(-$HoursBack)
 				SqlCredential = $ScriptParams.Credential
 			}
 		} else {
 			$params = @{
-				SqlInstance = $ScriptParams.SqlInstance 
+				SqlInstance = $ScriptParams.SqlInstance
 				StartDate   = (Get-Date).AddHours(-$HoursBack)
 			}
 		}
 		$res = @(Get-DbaAgentJobHistory @params | Where-Object {$_.Status -ne "Succeeded"})
 		if ($res.Count -gt 0) {
 			$stat = $except
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name    = $_.Job
+						Step    = $_.StepName
+						RunDate = $_.RunDate
+						Status  = $_.Status
+						Message = $_.Message
+					}
+				)
+			}
 			$msg  = "$($res.Count) sql agent jobs failed within the past $HoursBack hours"
 		}
 	}

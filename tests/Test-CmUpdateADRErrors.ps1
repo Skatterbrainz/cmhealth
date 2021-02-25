@@ -1,7 +1,7 @@
 function Test-CmUpdateADRErrors {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmUpdateADRErrors",
+		[parameter()][string] $TestName = "ADR Errors",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for ADR Rule Errors",
 		[parameter()][hashtable] $ScriptParams
@@ -17,7 +17,14 @@ function Test-CmUpdateADRErrors {
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
-			$res | Foreach-Object {$tempdata.Add("$($_.Name)=$($_.LastErrorCode)")}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name = $($_.Name)
+						LastError = $($_.LastErrorCode)
+					}
+				)
+			}
 		}
 	}
 	catch {

@@ -1,8 +1,8 @@
 function Test-SqlRoleMembers {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlRoleMembers",
-		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $TestName = "SQL Database Role Members",
+		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate SQL database ownership role",
 		[parameter()][hashtable] $ScriptParams
 	)

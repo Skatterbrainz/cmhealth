@@ -1,8 +1,8 @@
 function Test-SqlDbDedicated {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlDbDedicated",
-		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $TestName = "Unsupported Databases",
+		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify SQL Instance is dedicated to ConfigMgr site",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -23,17 +23,25 @@ function Test-SqlDbDedicated {
 		$dblist2 = @()
 		$dbnames | ForEach-Object {
 			Write-Verbose "database name: $_"
-			if (-not (($_ -match 'CM_') -or ($_ -in $supported))) {
-				$dblist1 += $_
+			if (($_ -notmatch 'CM_') -and ($_ -notin $supported)) {
+				Write-Verbose "database is not supported: $($_)"
+				$dblist1 += $($_).ToString()
 			} else {
-				$dblist2 += $_
+				Write-Verbase "database is supported: $($_)"
+				$dblist2 += $($_).ToString()
 			}
 		}
 		if ($dblist1.Count -gt 0) {
-			Write-Verbose "unsupported names were found"
+			Write-Verbose "$($dblist1.Count) unsupported names were found"
 			$stat = $except
-			$msg  = "Databases found which are not supported by MEMCM SQL licensing"
-			$tempdata.Add("$($dblist1 -join ',')")
+			$msg  = "$($dblist1.Count) databases are not supported by MEMCM SQL licensing"
+			$dblist1 | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Unsupported = $($_).ToString()
+					}
+				)
+			}
 		} else {
 			Write-Verbose "no unsupported names were found"
 			if ($dblist2.Count -gt 0) {

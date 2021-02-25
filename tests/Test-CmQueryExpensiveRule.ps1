@@ -1,7 +1,7 @@
 function Test-CmQueryExpensiveRule {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmQueryExpensiveRule",
+		[parameter()][string] $TestName = "Expensive Query Membership Rules",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Check for queries which are expensive to process",
 		[parameter()][hashtable] $ScriptParams

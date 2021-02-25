@@ -1,7 +1,7 @@
 function Test-CMDPDiskSpace {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CMDPDiskSpace",
+		[parameter()][string] $TestName = "Distribution Point Disk Space",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check disk space status on all DPs",
 		[parameter()][hashtable] $ScriptParams

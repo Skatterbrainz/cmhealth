@@ -1,7 +1,7 @@
 function Test-CmClientAssignmentFailures {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmClientAssignmentFailures",
+		[parameter()][string] $TestName = "Client Assignment Failures",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for clients that failed site assignment",
 		[parameter()][hashtable] $ScriptParams

@@ -1,8 +1,8 @@
 function Test-SqlUpdates {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-SqlUpdates",
-		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $TestName = "SQL Server Update Status",
+		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Verify SQL Updates and Service Packs",
 		[parameter()][hashtable] $ScriptParams
 	)

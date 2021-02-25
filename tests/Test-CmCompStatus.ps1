@@ -1,7 +1,7 @@
 function Test-CmCompStatus {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmCompStatus",
+		[parameter()][string] $TestName = "Component Status Errors",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check Component Status Error messages",
 		[parameter()][hashtable] $ScriptParams

@@ -1,7 +1,7 @@
 function Test-HostServiceAccounts {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostServiceAccounts",
+		[parameter()][string] $TestName = "Service Account Permissions",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate services accounts and permissions",
 		[parameter()][hashtable] $ScriptParams

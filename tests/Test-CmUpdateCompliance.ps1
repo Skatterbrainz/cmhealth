@@ -1,7 +1,7 @@
 function Test-CmUpdateCompliance {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmUpdateCompliance",
+		[parameter()][string] $TestName = "Software Update Compliance Summary",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Summary of required updates not yet installed",
 		[parameter()][hashtable] $ScriptParams
@@ -47,7 +47,7 @@ ORDER BY
 			$stat = $except
 			$msg  = "$($res.Count) items found"
 			$res | Foreach-Object {
-				$dataset = @{
+				$dataset = [pscustomobject]@{
 					DeviceName = $($_.DeviceName)
 					UpdateClassification = $($_.UpdateClassification)
 					State = $($_.StateDescription)

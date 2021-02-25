@@ -1,7 +1,7 @@
 function Test-CmUpdateScanErrors {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmUpdateScanErrors",
+		[parameter()][string] $TestName = "Clients with Update Scan Errors",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Update scanning errors",
 		[parameter()][hashtable] $ScriptParams
@@ -22,7 +22,15 @@ ORDER BY cdr.Name"
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
-			$res | Foreach-Object {$tempdata.Add("Name=$($_.Name),ID=$($_.ResourceID),Error=$($_.LastErrorCode)")}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name = $($_.Name)
+						ID = $($_.ResourceID)
+						Error = $($_.LastErrorCode)
+					}
+				)
+			}
 		}
 	}
 	catch {

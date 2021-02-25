@@ -1,7 +1,7 @@
 function Test-CmComponentErrorSolutions {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmComponentErrorSolutions",
+		[parameter()][string] $TestName = "Component Error Solutions",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Get component error solutions",
 		[parameter()][hashtable] $ScriptParams

@@ -1,7 +1,7 @@
 function Test-HostNetworkPorts {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-HostNetworkPorts",
+		[parameter()][string] $TestName = "Network Port Accessibility",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Test open TCP ports",
 		[parameter()][hashtable] $ScriptParams

@@ -1,7 +1,7 @@
 function Test-CmInstallAccountRoles {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmInstallAccountRoles",
+		[parameter()][string] $TestName = "ConfigMgr Install Account Roles and Permissions",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Check if site install account has more permissions/roles than it needs",
 		[parameter()][hashtable] $ScriptParams

@@ -7,7 +7,7 @@
 function Test-CmCollectionRefresh {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-CmCollectionRefresh",
+		[parameter()][string] $TestName = "Collection Refresh Performance",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate Collections refresh impact on performance",
 		[parameter()][hashtable] $ScriptParams
