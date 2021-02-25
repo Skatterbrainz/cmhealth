@@ -14,18 +14,33 @@
 function Out-HealthReport {
 	[CmdletBinding()]
 	param (
-		[parameter(Mandatory=$True, ValueFromPipeline=$True, ValueFromPipelineByPropertyName=$True)]$TestData,
+		[parameter(Mandatory=$True, ValueFromPipeline=$True)]$TestData,
 		[parameter(Mandatory=$False)][string]$Path = "$($env:USERPROFILE)\Desktop\healthreport.htm",
+		[parameter(Mandatory=$False)][string][ValidateSet('All','Fail','Pass','Warning','Error')] $Status = 'All',
 		[parameter(Mandatory=$False)][switch]$Show
 	)
+	$stats = $TestData | Group-Object Status | Select-Object Name,Count,Group
+
 	BEGIN {
+		Write-Verbose "defining HTML properties"
 		$tablewidth = "800px"
 		$leftpanel = "150px"
+		$styles = @"
+<style><!--
+td,th {font-family:verdana;font-size:10pt;}
+body {font-family:calibri,helvetica,sans;}
+--></style>
+"@
 		$heading = "<h1>Health Report</h1>"
+		$footer  = "<p>Copyright &copy;$(Get-Date -f 'yyyy') Skatterbrainz, All rights reserved. No tables reserved.</p>"
+		if ($Status -ne 'All') {
+			Write-Verbose "filtering test data for status = $Status"
+			$TestData = $TestData | Where-Object {$_.Status -eq $Status}
+		}
+		Write-Verbose "processing test data"
 	}
 	PROCESS {
-		$summary = $TestData | Group-Object Status
-
+		#$summary = $TestData | Group-Object Status | Select-Object Name,Count,Group
 		foreach ($item in $TestData) {
 			$chunk = $item | foreach-object {
 @"
@@ -47,22 +62,17 @@ function Out-HealthReport {
 		}
 	}
 	END {
-		$body += "<p>Copyright &copy;$(Get-Date -f 'yyyy') Skatterbrainz, All rights reserved. No tables reserved.</p>"
+		Write-Verbose "combining output to HTML"
+		$body += $footer
 
-		$summary = "<table width=$tablewidth><tr><th>Count</th><th>Result</th><th>Tests</th></tr>"
-		$TestData | Group-Object Status | Foreach-Object {
-			$summary += "<tr><td>$($_.Count)</td><td>$($_.Name)</td><td>$("<ul><li>$($_.Group.TestName -join '</li><li>')</li></ul>")</td></tr>"
+		$statsummary = "<table width=$tablewidth><tr><th>Count</th><th>Result</th><th>Tests</th></tr>"
+		$summary | Foreach-Object {
+			$statsummary += "<tr><td>$($_.Count)</td><td>$($_.Name)</td><td>$("<ul><li>$($_.Group.TestName -join '</li><li>')</li></ul>")</td></tr>"
 		}
-		$summary += "</table>"
-		$heading += $summary
-		$body = $heading + $body
-		$head = @"
-<style><!--
-td,th {font-family:verdana;font-size:10pt;}
-body {font-family:calibri,helvetica,sans;}
---></style>
-"@
-		$report = "Health Report" | ConvertTo-Html -Title "Health Report" -Body $body -Head $head
+		$statsummary += "</table>"
+
+		$body = $heading + $statsummary + $body
+		$report = "Health Report" | ConvertTo-Html -Title "Health Report" -Body $body -Head $styles
 		$report | Out-File $Path -Force
 		if ($Show) { Start-Process $Path }
 	}
