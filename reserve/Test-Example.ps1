@@ -1,9 +1,9 @@
 function Test-Example {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Test-Example",
-		[parameter()][string] $TestGroup = "configuration",
-		[parameter()][string] $Description = "Description of this test",
+		[parameter()][string] $TestName = "Short Description",
+		[parameter()][string] $TestGroup = "configuration or operation",
+		[parameter()][string] $Description = "Detailed description of this test",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
