@@ -28,6 +28,7 @@ function Test-SqlServerMemory {
 		} else {
 			$tmem = (Get-DbaComputerSystem -ComputerName $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).TotalPhysicalMemory.Megabyte
 		}
+		$tmem = [math]::Round($tmem, 0)
 		Write-Verbose "total physical memory = $tmem MB"
 		$target = $tmem * $($MaxMemAllocation * 0.1)
 		Write-Verbose "target memory = $target"
