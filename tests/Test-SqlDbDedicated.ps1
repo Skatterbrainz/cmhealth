@@ -27,7 +27,7 @@ function Test-SqlDbDedicated {
 				Write-Verbose "database is not supported: $($_)"
 				$dblist1 += $($_).ToString()
 			} else {
-				Write-Verbase "database is supported: $($_)"
+				Write-Verbose "database is supported: $($_)"
 				$dblist2 += $($_).ToString()
 			}
 		}
