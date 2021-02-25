@@ -1,43 +1,31 @@
-function Test-HostADKVersion {
+function Test-ATPClientStatus {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Validate ADK Version",
-		[parameter()][string] $TestGroup = "configuration",
-		[parameter()][string] $Description = "Verify ADK version is supported",
+		[parameter()][string] $TestName = "ATP Client Onboarding and Activity Status",
+		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $Description = "ATP Devices onboarded and active",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
 		$startTime = (Get-Date)
-		$versionTable = [pscustomobject]@{
-			1906 = "10.0.17763,10.1.18362"
-			1910 = "10.0.17763,10.1.18362"
-			2002 = "10.1.18362,10.1.18362"
-			2006 = "10.1.18362,10.1.19041"
-			2010 = "10.1.18362,10.1.19041"
-		}
 		#[int]$Setting = Get-CmHealthDefaultValue -KeySet "keygroup:keyname" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS" # do not change this
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
-		$apps = Get-WmiQueryResult -ClassName "Win32_Product" -Query "Name = 'Windows PE x86 x64'" -Params $ScriptParams
-		foreach ($app in $apps) {
-			$name = $app.Name
-			$version = $app.Version
-			if ($pct -gt $MaxPctUsed) {
+		$query = "select distinct ATP_OnboadingState as ATPOnboard,count(*) as Devices from dbo.v_CombinedDeviceResources group by ATP_OnboardingState"
+		#$query = "select Name,ATP_OnboardingState,ATP_LastConnected from v_CombinedDeviceResources"
+		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
+		if ($res.Count -gt 0) {
+			$onboard = $res | Where-Object {$_.ATPOnboard -eq 1}
+			$total = $($res.Devices | Measure-Object -Sum).Sum
+			$pending = $total - $onboard
+			if (($onboard -gt 0) -and ($pending -gt 0)) {
 				$stat = $except
-				$msg  = "One or more disks are low on free space"
+				$msg  = "$($res.Count) items found"
+				#$res | Foreach-Object {$tempdata.Add( [pscustomobject]@{Name=$_.Name} )}
 			}
-			$tempdata.Add(
-				[pscustomobject]@{
-					ADKPE   = $name
-					Version = $version
-					Used    = $used
-					PctUsed = $pct
-					MaxPct  = $MaxPctUsed
-				}
-			)
-		} # foreach
+		}
 	}
 	catch {
 		$stat = 'ERROR'
