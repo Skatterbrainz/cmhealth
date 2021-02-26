@@ -11,8 +11,9 @@ function Test-CmLastBackup {
 		[int]$DaysBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SiteBackupMaxDaysOld" -DataSet $CmHealthConfig
 		Write-Verbose "threshold (days back) = $DaysBack"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat = "PASS"
-		$msg  = "No issues found"
+		$stat   = "PASS"
+		$except = "FAIL"
+		$msg    = "No issues found"
 		$query = "DECLARE @starttime as DATETIME,
 @endtime AS DATETIME, @id as INT, @sitecode CHAR(3), @numberofdays INT
 SET @sitecode = '$($ScriptParams.SiteCode)'
@@ -45,14 +46,15 @@ CASE
 	WHEN (@id = 5035) THEN 'SMS Site Backup completed successfully with zero errors but still there could be some warnings'
 	WHEN (@id != 5035) THEN 'SMS Site Backup failed to completed successfully'
 END AS 'Comments'"
-		Write-Verbose "submitting the following query to the SQL instance:"
-		Write-Verbose $query
+		#Write-Verbose "submitting the following query to the SQL instance:"
+		#Write-Verbose $query
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($null -eq $res) {
-			throw "No backup status found. Verify backups are enabled."
+			$stat = $except
+			$msg = "No backup status found. Verify backups are enabled."
 		} else {
 			if ($res.Comments -notmatch "completed successfully with zero") {
-				$stat = "FAIL"
+				$stat = $except
 				$msg  = "$($res.Comments)"
 			} else {
 				$msg = $res.Comments
@@ -64,7 +66,6 @@ END AS 'Comments'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -72,7 +73,7 @@ END AS 'Comments'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
