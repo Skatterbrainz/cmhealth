@@ -23,32 +23,20 @@ function Test-AdSysMgtContainer {
 		foreach ($i in $colProplist) { $objSearcher.PropertiesToLoad.Add($i) | Out-Null }
 		$colResults = $objSearcher.FindAll()
 		if ($colResults.Count -gt 0) {
-			$stat = "PASS"
-			$msg  = "System Management container verified"
-		} else {
-			if ($Remediate -eq $True) {
-				if ([string]::IsNullOrEmpty($ComputerName)) {
-					throw "Remediation requires the Site Server hostname to be provided (stop)"
+			$obj = Get-ADSIObject -Identity $colResults.Path.substring(7)
+			$msg = "System Management container exists"
+			Write-Verbose "getting security permissions on container"
+			$acls = dsacls.exe $obj.distinguishedName
+			# foreach principal, strip off "Allow" prefix and "FULL CONTROL" suffix
+			$full = $acls | Where-Object {$_ -match 'FULL CONTROL'} | ForEach-Object {$_.Substring(6,32).Trim()}
+			$tempdata.Add(
+				[pscustomobject]@{
+					FullControlUsers = $($full -join ';')
 				}
-				$DomainDn = $([adsi]"").distinguishedName
-				$ShortDn  = $([adsi]"").dc
-				$SystemDn = "CN=System," + $DomainDn
-				$SysContainer = [adsi]"LDAP://$SystemDn"
-				$SysMgmtContainer = $SysContainer.Create("Container", "CN=System Management")
-				$SysMgmtContainer.SetInfo()
-				Write-Verbose "container has been created"
-				Write-Verbose "assigning permissions to container"
-				$path = "AD:\CN=System Management,$SystemDn"
-				$acl = Get-Acl -Path $path
-				$ace = New-Object Security.AccessControl.ActiveDirectoryAccessRule("$ShortDn\$ComputerName",'FullControl')
-				$acl.AddAccessRule($ace)
-				Set-Acl -Path $path -AclObject $acl
-				$stat = "REMEDIATED"
-				$msg  = "System Management container has been created"
-			} else {
-				$stat = $except
-				$msg  = "System Management container was not found"
-			}
+			)
+		} else {
+			$stat = $except
+			$msg  = "System Management container was not found"
 		}
 	}
 	catch {
@@ -56,7 +44,6 @@ function Test-AdSysMgtContainer {
 		$msg  = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -64,7 +51,7 @@ function Test-AdSysMgtContainer {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
