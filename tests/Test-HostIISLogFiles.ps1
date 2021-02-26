@@ -71,19 +71,18 @@ function Test-HostIISLogFiles {
 		}
 	}
 	catch {
-		$rt = Get-RunTime -BaseTime $startTime
 		$result = [pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
-			Status   = 'ERROR'
-			Activity = $($_.CategoryInfo.Activity -join(";"))
-			Message  = $($_.Exception.Message -join(";"))
-			RunTime  = $rt
-			Trace    = $($_.ScriptStackTrace -join(";"))
-			RunAs    = $($env:USERNAME)
-			RunOn    = $($env:COMPUTERNAME)
+			Status      = 'ERROR'
+			Activity    = $($_.CategoryInfo.Activity -join(";"))
+			Message     = $($_.Exception.Message -join(";"))
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
+			Trace       = $($_.ScriptStackTrace -join(";"))
+			RunAs       = $($env:USERNAME)
+			RunOn       = $($env:COMPUTERNAME)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		}
 	}

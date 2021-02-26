@@ -15,14 +15,6 @@ function Test-HostServiceAccounts {
 		$stat   = "PASS"
 		$except = "FAIL"
 		$msg    = "No issues found"
-		#$mpath  = Split-Path (Get-Module CMhealth).Path -Parent
-		#$jfile  = "$mpath\tests\services.json"
-		#if (!(Test-Path $jfile)) { throw "file not found: $jfile" }
-		#Write-Verbose "loading configuration file: $jfile"
-		#$jdata = Get-Content $jfile | ConvertFrom-Json
-		#if ($ScriptParams.Credential) {
-		#	$cs = New-CimSession -ComputerName $ScriptParams.ComputerName -Authentication Negotiate -Credential $ScriptParams.Credential -ErrorAction Stop
-		#}
 		foreach ($service in $svcConfig.Services) {
 			$svcName = $service.Name
 			$svcRef  = $service.Reference
@@ -32,7 +24,6 @@ function Test-HostServiceAccounts {
 			Write-Verbose "service name: $svcName"
 			try {
 				$svc = Get-WmiQueryResult -ClassName "Win32_Service" -Query "Name = '$svcName'" -Params $ScriptParams
-				#$svc = Get-WmiQueryResult -ClassName "Win32_Service" -Query "Name = '$svcName'" -Params $ScriptParams
 				$svcAcct  = $svc.StartName
 				$svcStart = $svc.StartMode
 				$svcDelay = $svc.DelayedAutoStart
@@ -79,6 +70,7 @@ function Test-HostServiceAccounts {
 							StartMode   = $startup
 							DelayStart  = $delayed
 							Compliant   = $res
+							Status      = $stat
 							Reason      = $msgx
 						})
 					}
@@ -95,7 +87,6 @@ function Test-HostServiceAccounts {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -103,7 +94,7 @@ function Test-HostServiceAccounts {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

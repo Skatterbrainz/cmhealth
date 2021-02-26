@@ -1,4 +1,4 @@
-function Test-HostNetworkPorts {
+function Test-HostNetworkAccessibility {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Network Port Accessibility",
@@ -22,7 +22,7 @@ function Test-HostNetworkPorts {
 				$conn = New-Object System.Net.Sockets.TcpClient($(hostname),$port)
 				$test = [pscustomobject]@{
 					Hostname = $(hostname)
-					Port     = $port 
+					Port     = $port
 					Status   = $conn.Connected
 				}
 				$good++
@@ -47,7 +47,6 @@ function Test-HostNetworkPorts {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -55,7 +54,7 @@ function Test-HostNetworkPorts {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

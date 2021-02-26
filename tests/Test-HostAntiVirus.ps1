@@ -36,7 +36,6 @@ function Test-HostAntiVirus {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -44,7 +43,7 @@ function Test-HostAntiVirus {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
