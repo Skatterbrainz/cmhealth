@@ -16,8 +16,15 @@ function Test-CmBoundariesOrphaned {
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 1) {
 			$stat = $except
-			$msg = "$($res.Count) boundaries found not in a boundary group" 
-			$res | Foreach-Object {$tempdata.Add(@("Name=$($_.DisplayName)","Scope=$($_.Value)"))}
+			$msg = "$($res.Count) boundaries found not in a boundary group"
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name = $($_.DisplayName)
+						Scope = $($_.Value)
+					}
+				)
+			}
 		}
 	}
 	catch {
@@ -25,7 +32,6 @@ function Test-CmBoundariesOrphaned {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -33,7 +39,7 @@ function Test-CmBoundariesOrphaned {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

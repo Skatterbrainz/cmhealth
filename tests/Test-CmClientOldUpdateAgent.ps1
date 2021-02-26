@@ -8,6 +8,7 @@ function Test-CmClientOldUpdateAgent {
 	)
 	# reference: https://support.microsoft.com/en-us/help/949104/how-to-update-the-windows-update-agent-to-the-latest-version#:~:text=9600.16422.-,The%20latest%20version%20of%20the%20Windows%20Update%20Agent%20for%20Windows,7600.256.
 	try {
+		$startTime = (Get-Date)
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS" # do not change this
 		$except = "WARNING"
@@ -66,7 +67,6 @@ WHERE ops.Version0 > '6.2' AND uss.LastWUAVersion < '7.9.9600.16422'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -74,7 +74,7 @@ WHERE ops.Version0 > '6.2' AND uss.LastWUAVersion < '7.9.9600.16422'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

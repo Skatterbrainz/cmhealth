@@ -19,9 +19,8 @@ ads.TargetCollectionID,
 coll.Name AS CollectionName,
 ads.AssignmentID,
 ads.DeploymentTime,
-case
-	when ads.OfferTypeID = 0 then 'Required'
-	else 'Available' END AS OfferType,
+case when ads.OfferTypeID = 0 then 'Required'
+else 'Available' END AS OfferType,
 ads.AlreadyPresent,
 (ads.Success + ads.Error + ads.InProgress + ads.Unknown + ads.RequirementsNotMet) as Total,
 ads.Success,
@@ -29,16 +28,29 @@ ads.InProgress,
 ads.Unknown,
 ads.Error,
 ads.RequirementsNotMet
-from
-	v_AppDeploymentSummary as ads inner join
-	v_Collection as coll on ads.TargetCollectionID = coll.CollectionID
+from v_AppDeploymentSummary as ads inner join
+v_Collection as coll on ads.TargetCollectionID = coll.CollectionID
 where (ads.Error > 0)
 order by DeploymentName"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found"
-			$res | Foreach-Object {$tempdata.Add($_.DeploymentName)}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Deployment = $_.DeploymentName
+						CollectionID = $_.CollectionID
+						CollectionName = $_.CollectionName
+						OfferType = $_.OfferType
+						Total = $_.Total
+						Success = $_.Success
+						InProgress = $_.InProgress
+						Unknown = $_.Unknown
+						Failed = $_.Error
+					}
+				)
+			}
 		}
 	}
 	catch {
@@ -46,7 +58,6 @@ order by DeploymentName"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -54,7 +65,7 @@ order by DeploymentName"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

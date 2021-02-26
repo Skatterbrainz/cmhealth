@@ -17,7 +17,7 @@ fcm.ResourceID,
 fcm.Name,
 fcm.SiteCode,
 fcm.Domain,
-sys.Operating_System_Name_and0
+sys.Operating_System_Name_and0 as OSName
 FROM v_FullCollectionMembership fcm
 INNER JOIN v_R_System sys ON fcm.ResourceID = sys.ResourceID
 WHERE fcm.IsClient != 1 AND fcm.Name NOT LIKE '%Unknown%' AND fcm.CollectionID = 'SMS00001'
@@ -26,7 +26,17 @@ AND sys.Operating_System_Name_and0 IS NOT NULL AND sys.Operating_System_Name_and
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
-			$res | Foreach-Object {$tempdata.Add("Name=$($_.Name),SiteCode=$($_.SiteCode)")}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						ComputerName = $($_.Name)
+						ResourceID = $($_.ResourceID)
+						Domain = $($_.Domain)
+						OS = $($_.OSName)
+						SiteCode = $($_.SiteCode)
+					}
+				)
+			}
 		}
 	}
 	catch {
@@ -34,7 +44,6 @@ AND sys.Operating_System_Name_and0 IS NOT NULL AND sys.Operating_System_Name_and
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -42,7 +51,7 @@ AND sys.Operating_System_Name_and0 IS NOT NULL AND sys.Operating_System_Name_and
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
