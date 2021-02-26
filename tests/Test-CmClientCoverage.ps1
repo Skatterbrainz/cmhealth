@@ -23,8 +23,21 @@ function Test-CmClientCoverage {
 		$cmcount = $cmcomps.Count
 		Write-Verbose "CM computers = $cmcount"
 		if (($adcount -gt 0) -and ($cmcount -gt 0)) {
-			$actual = $($cmcount / $adcount) * 100
-			Write-Verbose "actual = $actual"
+			$delta1 = $cmcomps | Where-Object {$_.name -notin $adcomps}
+			$delta2 = $adcomps | Where-Object {$_ -notin $cmcomps.name}
+			Write-Verbose "there are $($delta1.Count) computers in configmgr which are not in active directory"
+			Write-Verbose "there are $($delta2.Count) computers in active directory which are not in configmgr"
+			if (($delta1.Count -gt 0) -or ($delta2.Count -gt 0)) {
+				$stat = $except
+				$msg = "discrepancies found between configmgr and active directory computer coverage"
+				$tempdata.Add(
+					[pscustomobject]@{
+						ADComputers = $adcomps.Count
+						CMComputers = $cmcomps.Count
+						NotInAD = $delta1
+					}
+				)
+			}
 			if ($actual -lt $Coverage) {
 				$stat  = $except
 				$msg   = "$actual percent coverage is below the minimum threshold of $Coverage percent"
