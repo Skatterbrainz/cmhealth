@@ -1,9 +1,9 @@
 function Test-CmEPClientInfections {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Short Description",
+		[parameter()][string] $TestName = "Check for Endpoint Protection Infections",
 		[parameter()][string] $TestGroup = "configuration or operation",
-		[parameter()][string] $Description = "Detailed description of this test",
+		[parameter()][string] $Description = "Query history of EP client infections",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
