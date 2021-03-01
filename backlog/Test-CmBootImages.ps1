@@ -13,61 +13,37 @@ function Test-CmBootImages {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
-		<#
-		=======================================================
-		|	COMMENT: DELETE THIS BLOCK WHEN FINISHED:
-		|
-		|	perform test and return result as an object...
-		|		$stat = $except (no need to set "PASS" since it's the default)
-		|		$msg = "custom message that N issues were found"
-		|		add supporting data to $tempdata array if it helps output
-		|		loop output into $tempdata.Add() array to return as TestData param in output
-		=======================================================
-		#>
-
-		<#
-		=======================================================
-		COMMENT: EXAMPLE FOR SQL QUERY RELATED TESTS... DELETE THIS BLOCK IF NOT USED
-		=======================================================
-
-		$query = ""
+		$query = "SELECT 
+PackageID,Name,Version,case 
+when (left(Version,10) = '10.0.17134') then '1803'
+when (left(Version,10) = '10.0.17763') then '1809'
+when (left(Version,10) = '10.0.18362') then '1903'
+when (left(Version,10) = '10.0.18363') then '1909'
+when (left(Version,10) = '10.0.19041') then '2004'
+when (left(Version,10) = '10.0.19042') then '20H2'
+else '' end as BuildNumber,
+Description,
+PkgSourcePath,
+SourceDate,
+LastRefreshTime
+FROM v_BootImagePackage"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found"
-			#$res | Foreach-Object {$tempdata.Add( [pscustomobject]@{Name=$_.Name} )}
-		}
-		=======================================================
-		#>
-
-		<#
-		=======================================================
-		COMMENT: EXAMPLE FOR WMI/CIM QUERY RELATED TESTS... DELETE THIS BLOCK IF NOT USED
-		=======================================================
-
-		$disks  = Get-WmiQueryResult -ClassName "Win32_LogicalDisk" -Query "DriveType = 3" -Params $ScriptParams
-		foreach ($disk in $disks) {
-			$drv  = $disk.DeviceID
-			$size = $disk.Size
-			$free = $disk.FreeSpace
-			$used = $size - $free
-			$pct  = $([math]::Round($used / $size, 1)) * 100
-			if ($pct -gt $MaxPctUsed) {
-				$stat = $except
-				$msg  = "One or more disks are low on free space"
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name        = $_.Name
+						PackageID   = $_.PackageID
+						Version     = $_.Version
+						BuildNumber = $_.BuildNumber
+						Description = $_.Description
+						SourcePath  = $_.PkgSourcePath
+					}
+				)
 			}
-			$tempdata.Add(
-				[pscustomobject]@{
-					Drive   = $drv
-					Size    = $size
-					Used    = $used
-					PctUsed = $pct
-					MaxPct  = $MaxPctUsed
-				}
-			)
-		} # foreach
-		=======================================================
-		#>
+		}
 	}
 	catch {
 		$stat = 'ERROR'

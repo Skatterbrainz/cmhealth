@@ -13,22 +13,22 @@ function Test-HostAntiVirus {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
-		$apps = Get-WmiQueryResult -ClassName "Win32_Product" -Query "Name like '%antivirus%'" -Params $ScriptParams
+		$apps = Get-WmiQueryResult -ClassName "Win32_Product" -Query "" -Params $ScriptParams
 		$apps | Foreach-Object {
-			$tempdata.Add(
-				[pscustomobject]@{
-					ProductName = $_.Name
-					Vendor      = $_.Vendor
-					Version     = $_.Version
-					DisplayName = $_.Caption
+			$appname = $_.Name
+			foreach ($pn in ('McAfee','Sophos','Symantec','antivirus','malware','security','endpoint')) {
+				if ($appname -match $pn) {
+					Write-Verbose "match found: $appname"
+					$tempdata.Add(
+						[pscustomobject]@{
+							ProductName = $_.Name
+							Vendor      = $_.Vendor
+							Version     = $_.Version
+							DisplayName = $_.Caption
+						}
+					)
 				}
-			)
-		}
-		if ($apps.Count -gt 0) {
-			$stat = $except
-			$services | Foreach-Object {$tempdata.Add($_.Name)}
-			$msg = "Third-party antivirus products were found"
-			$services | Foreach-Object {$tempdata.Add($_.Name)}
+			} # foreach
 		}
 	}
 	catch {

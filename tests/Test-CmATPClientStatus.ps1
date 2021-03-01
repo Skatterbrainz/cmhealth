@@ -1,4 +1,4 @@
-function Test-ATPClientStatus {
+function Test-CmATPClientStatus {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "ATP Client Onboarding and Activity Status",

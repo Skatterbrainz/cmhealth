@@ -15,7 +15,7 @@ function Test-HostServiceAccounts {
 		$stat   = "PASS"
 		$except = "FAIL"
 		$msg    = "No issues found"
-		foreach ($service in $svcConfig.Services) {
+		foreach ($service in $svcConfig) {
 			$svcName = $service.Name
 			$svcRef  = $service.Reference
 			$privs   = $service.Privileges

@@ -70,57 +70,55 @@ function Test-CmHealth {
 		[parameter(Mandatory=$False)][pscredential] $Credential
 	)
 	[string]$cfgfile = "$($env:USERPROFILE)\Desktop\cmhealth.json"
-	if (-not(Test-Path $cfgfile)) {
-		New-CmHealthConfig
-	} else {
-		$startTime1 = (Get-Date)
-		if (!(Test-Path "$($env:USERPROFILE)\Desktop\cmhealth.json")) {
-			Write-Warning "Default configuration has not been defined. Use 'Test-CmHealth -Initialize' first"
-			break
-		}
-		$Script:CmHealthConfig = Import-CmHealthSettings
-		if ($null -eq $CmHealthConfig) {
-			Write-Warning "configuration data could not be imported"
-			break
-		}
-		$params = [ordered]@{
-			ComputerName = $SiteServer
-			SqlInstance  = $SqlInstance
-			SiteCode     = $SiteCode
-			Database     = $Database
-			Source       = $Source
-			Remediate    = $Remediate
-			Credential   = $Credential
-			Verbose      = $VerbosePreference
-		}
-		$mpath = $(Split-Path (Get-Module cmhealth).Path)
-		$tpath = "$($mpath)\tests"
-		$tests = Get-ChildItem -Path $tpath -Filter "*.ps1"
-		Write-Verbose "$($tests.Count) tests found in library"
-		switch ($TestingScope) {
-			'All' {
-				$testset = @($tests.BaseName)
-			}
-			'Select' {
-				$testset = @($tests.BaseName | Out-GridView -Title "Select Test to Execute" -OutputMode Multiple)
-			}
-			'Previous' {
-				$testset = @(Get-CmHealthLastTestSet)
-			}
-			Default {
-				$testset = @($tests.BaseName | Where-Object {$_ -match "Test-$($TestingScope)"})
-			}
-		}
-		Write-Verbose "$($testset.Count) tests were selected"
-		if ($testset.Count -gt 0) {
-			Set-CmHealthLastTestSet -TestNames $testset | Out-Null
-		}
-		foreach ($test in $testset) {
-			Write-Verbose "TEST: $test"
-			$testname = $test += ' -ScriptParams $params'
-			Invoke-Expression -Command $testname
-		}
-		$runTime = New-TimeSpan -Start $startTime1 -End (Get-Date)
-		Write-Host "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec"
+	if (-not(Test-Path $cfgfile)) { New-CmHealthConfig }
+	$startTime1 = (Get-Date)
+	Write-Warning "If you haven't refreshed the cmhealth.json file since 0.2.24 or earlier, rename or delete the file and run this command again."
+	if (!(Test-Path "$($env:USERPROFILE)\Desktop\cmhealth.json")) {
+		Write-Warning "Default configuration has not been defined. Use 'Test-CmHealth -Initialize' first"
+		break
 	}
+	$Script:CmHealthConfig = Import-CmHealthSettings
+	if ($null -eq $CmHealthConfig) {
+		Write-Warning "configuration data could not be imported"
+		break
+	}
+	$params = [ordered]@{
+		ComputerName = $SiteServer
+		SqlInstance  = $SqlInstance
+		SiteCode     = $SiteCode
+		Database     = $Database
+		Source       = $Source
+		Remediate    = $Remediate
+		Credential   = $Credential
+		Verbose      = $VerbosePreference
+	}
+	$mpath = $(Split-Path (Get-Module cmhealth).Path)
+	$tpath = "$($mpath)\tests"
+	$tests = Get-ChildItem -Path $tpath -Filter "*.ps1"
+	Write-Verbose "$($tests.Count) tests found in library"
+	switch ($TestingScope) {
+		'All' {
+			$testset = @($tests.BaseName)
+		}
+		'Select' {
+			$testset = @($tests.BaseName | Out-GridView -Title "Select Test to Execute" -OutputMode Multiple)
+		}
+		'Previous' {
+			$testset = @(Get-CmHealthLastTestSet)
+		}
+		Default {
+			$testset = @($tests.BaseName | Where-Object {$_ -match "Test-$($TestingScope)"})
+		}
+	}
+	Write-Verbose "$($testset.Count) tests were selected"
+	if ($testset.Count -gt 0) {
+		Set-CmHealthLastTestSet -TestNames $testset | Out-Null
+	}
+	foreach ($test in $testset) {
+		Write-Verbose "TEST: $test"
+		$testname = $test += ' -ScriptParams $params'
+		Invoke-Expression -Command $testname
+	}
+	$runTime = New-TimeSpan -Start $startTime1 -End (Get-Date)
+	Write-Host "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec"
 }

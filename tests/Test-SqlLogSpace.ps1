@@ -1,4 +1,4 @@
-function Test-Example {
+function Test-SqlLogSpace {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "SQL Log Space Usage",
