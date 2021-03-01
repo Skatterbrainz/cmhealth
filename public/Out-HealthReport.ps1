@@ -26,6 +26,15 @@ function Out-HealthReport {
 		$tablewidth = "800px"
 		$leftpanel = "150px"
 		$styles = @"
+<style>
+BODY {background-color:#CCCCCC;font-family:Calibri,sans-serif; font-size: small;}
+TABLE {border-width: 1px;border-style: solid;border-color: black;border-collapse: collapse; width: 98%;}
+TH {border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:#293956;color:white;padding: 5px; font-weight: bold;text-align:left;}
+TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:#F0F0F0; padding: 2px;}
+</style>
+"@
+
+		$styles = @"
 <style><!--
 td,th {font-family:verdana;font-size:10pt;}
 body {font-family:calibri,helvetica,sans;}
