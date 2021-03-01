@@ -23,7 +23,14 @@ function Test-ATPClientStatus {
 			if (($onboard -gt 0) -and ($pending -gt 0)) {
 				$stat = $except
 				$msg  = "$($res.Count) items found"
-				#$res | Foreach-Object {$tempdata.Add( [pscustomobject]@{Name=$_.Name} )}
+				$res | Foreach-Object {
+					$tempdata.Add(
+						[pscustomobject]@{
+							ATPOnboard = $_.ATPOnboard
+							Devices = $_.Devices
+						}
+					)
+				}
 			}
 		}
 	}
