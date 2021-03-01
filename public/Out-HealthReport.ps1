@@ -7,6 +7,8 @@
 	Health test data, returned from Test-CmHealth
 .PARAMETER Path
 	HTML file path
+.PARAMETER Status
+	Filter results by status type: All, Fail, Pass, Warning, Error (default is All)
 .PARAMETER Show
 	Open HTML report when complete
 #>
@@ -50,7 +52,12 @@ body {font-family:calibri,helvetica,sans;}
 	}
 	PROCESS {
 		#$summary = $TestData | Group-Object Status | Select-Object Name,Count,Group
-		foreach ($item in $TestData) {
+		if ($Status -ne 'All') {
+			$inputData = $TestData | Where-Object {$_.Status -eq $Status}
+		} else {
+			$inputData = $TestData
+		}
+		foreach ($item in $inputData) {
 			$chunk = $item | foreach-object {
 @"
 <h2>$($_.TestName)</h2>
