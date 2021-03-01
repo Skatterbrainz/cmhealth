@@ -222,5 +222,10 @@
 		{"Feature": "WAS-Process-Model", "Caption": "Process Model"},
 		{"Feature": "WAS-NET-Environment", "Caption": ".NET Environment 3.5"},
 		{"Feature": "WAS-Config-APIs", "Caption": "Configuration APIs"}
+	],
+	"tools": [
+		{
+			"DriverAutomationTool": "6.5.2"
+		}
 	]
 }
