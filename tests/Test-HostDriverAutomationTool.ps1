@@ -10,14 +10,15 @@ function Test-HostDriverAutomationTool {
 		$startTime = (Get-Date)
 		[string]$latest = Get-CmHealthDefaultValue -KeySet "tools:DriverAutomationTool" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat   = "PASS" # do not change this
+		$stat   = "WARNING" # assume not-installed is the baseline
 		$except = "WARNING" # or "FAIL"
-		$msg    = "No issues found" # do not change this either
+		$msg    = "Driver Automation Tool is not installed" # do not change this either
 		$res  = Get-WmiQueryResult -ClassName "Win32_Product" -Query "Name = 'Driver Automation Tool'" -Params $ScriptParams
 		foreach ($app in $res) {
 			$appver = $app.Version
 			if ($appver -ge $latest) {
 				$msg = "latest version is installed: $latest"
+				$stat = "PASS"
 			} else {
 				$msg = "outdated version is installed: $appver"
 				$stat = $except
