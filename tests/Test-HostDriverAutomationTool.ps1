@@ -13,13 +13,14 @@ function Test-HostDriverAutomationTool {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
-		$res  = Get-WmiQueryResult -ClassName "Win32_Prodct" -Query "Name = 'Driver Automation Tool" -Params $ScriptParams
+		$res  = Get-WmiQueryResult -ClassName "Win32_Product" -Query "Name = 'Driver Automation Tool'" -Params $ScriptParams
 		foreach ($app in $res) {
 			$appver = $app.Version
 			if ($appver -ge $latest) {
 				$msg = "latest version is installed: $latest"
 			} else {
 				$msg = "outdated version is installed: $appver"
+				$stat = $except
 			}
 			$tempdata.Add(
 				[pscustomobject]@{

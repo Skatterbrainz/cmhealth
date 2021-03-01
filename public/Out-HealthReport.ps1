@@ -21,29 +21,10 @@ function Out-HealthReport {
 		[parameter(Mandatory=$False)][string][ValidateSet('All','Fail','Pass','Warning','Error')] $Status = 'All',
 		[parameter(Mandatory=$False)][switch]$Show
 	)
-	$stats = $TestData | Group-Object Status | Select-Object Name,Count,Group
-
 	BEGIN {
 		Write-Verbose "defining HTML properties"
 		$tablewidth = "800px"
-		$leftpanel = "150px"
-		$styles = @"
-<style>
-BODY {background-color:#CCCCCC;font-family:Calibri,sans-serif; font-size: small;}
-TABLE {border-width: 1px;border-style: solid;border-color: black;border-collapse: collapse; width: 98%;}
-TH {border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:#293956;color:white;padding: 5px; font-weight: bold;text-align:left;}
-TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:#F0F0F0; padding: 2px;}
-</style>
-"@
-
-		$styles = @"
-<style><!--
-td,th {font-family:verdana;font-size:10pt;}
-body {font-family:calibri,helvetica,sans;}
---></style>
-"@
-		$heading = "<h1>Health Report</h1>"
-		$footer  = "<p>Copyright &copy;$(Get-Date -f 'yyyy') Skatterbrainz, All rights reserved. No tables reserved.</p>"
+		$leftpanel  = "150px"
 		if ($Status -ne 'All') {
 			Write-Verbose "filtering test data for status = $Status"
 			$TestData = $TestData | Where-Object {$_.Status -eq $Status}
@@ -58,36 +39,51 @@ body {font-family:calibri,helvetica,sans;}
 			$inputData = $TestData
 		}
 		foreach ($item in $inputData) {
-			$chunk = $item | foreach-object {
+			$tname  = $item.TestName
+			$tdesc  = $item.Description
+			$tgroup = $item.TestGroup
+			$tmsg   = $item.Message
+			$tstat  = $item.Status
+			$trun   = $item.RunTime
+			$tdata  = $item.TestData | ConvertTo-Html -Fragment
+			$chunk  = $item | foreach-object {
 @"
-<h2>$($_.TestName)</h2>
+<h2>$($tName)</h2>
 <table width=$tablewidth>
-<tr><td width=$leftpanel>Description</td><td>$($_.Description)</td></tr>
-<tr><td>Group</td><td>$($_.TestGroup)</td></tr>
-<tr><td>Test Result</td><td>$($_.Status)</td></tr>
-<tr><td>Message</td><td>$($_.Message)</td></tr>
-<tr><td>Runtime</td><td>$($_.Runtime)</td></tr>
+<tr><td width=$leftpanel>Description</td><td>$($tDesc)</td></tr>
+<tr><td>Group</td><td>$($tgroup)</td></tr>
+<tr><td>Test Result</td><td>$($tstat)</td></tr>
+<tr><td>Message</td><td>$($tmsg)</td></tr>
+<tr><td>Runtime</td><td>$($trun)</td></tr>
+<tr><td>Output</td><td>$($tdata)</td></tr>
+</table>
 "@
-				if ($item.TestData.Count -gt 0) {
-					$tdata = $item.TestData -join ';'
-					$chunk += "<tr><td>Data</td><td>$($tdata.ToString())</td></tr>"
-				}
 			}
-			$chunk += "</table>"
 			$body += $chunk
-		}
+		} # foreach
 	}
 	END {
+		$stats = $inputData | Group-Object Status | Select-Object Name,Count,Group
+		$styles = @"
+<style>
+BODY {background-color:#CCCCCC;font-family:Calibri,sans-serif; font-size: small;}
+TABLE {border-width: 1px;border-style: solid;border-color: black;border-collapse: collapse; width: 98%;}
+TH {border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:#293956;color:white;padding: 5px; font-weight: bold;text-align:left;}
+TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:#F0F0F0; padding: 2px;}
+</style>
+"@
 		Write-Verbose "combining output to HTML"
-		$body += $footer
 
-		$statsummary = "<table width=$tablewidth><tr><th>Count</th><th>Result</th><th>Tests</th></tr>"
-		$summary | Foreach-Object {
-			$statsummary += "<tr><td>$($_.Count)</td><td>$($_.Name)</td><td>$("<ul><li>$($_.Group.TestName -join '</li><li>')</li></ul>")</td></tr>"
-		}
-		$statsummary += "</table>"
+		#$statsummary = "<table width=$tablewidth><tr><th>Count</th><th>Result</th><th>Tests</th></tr>"
+		#$stats | Foreach-Object {
+		#	$statsummary += "<tr><td>$($_.Count)</td><td>$($_.Name)</td><td>$("<ul><li>$($_.Group.TestName -join '</li><li>')</li></ul>")</td></tr>"
+		#}
+		#$statsummary += "</table>"
 
-		$body = $heading + $statsummary + $body
+		$heading = "<h1>Health Report</h1>"
+		$footer  = "<p>Copyright &copy;$(Get-Date -f 'yyyy') Skatterbrainz, All rights reserved. No tables reserved.</p>"
+		#$body = $heading + $statsummary + $body + $footer
+		$body = $heading + $body + $footer
 		$report = "Health Report" | ConvertTo-Html -Title "Health Report" -Body $body -Head $styles
 		$report | Out-File $Path -Force
 		if ($Show) { Start-Process $Path }
