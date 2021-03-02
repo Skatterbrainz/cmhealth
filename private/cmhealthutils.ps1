@@ -63,7 +63,7 @@ function Get-CmHealthDefaultValue {
 function Get-CmHealthLastTestSet {
 	[CmdletBinding()]
 	param()
-	$filepath = Join-Path -Path $env:USERPROFILE -ChildPath "desktop\cmhealth-lastrun.txt"
+	$filepath = Join-Path -Path $env:TEMP -ChildPath "cmhealth-lastrun.txt"
 	if (Test-Path $filepath) {
 		Write-Verbose "importing test selection from $filepath"
 		Write-Output $(Get-Content -Path $filepath)
@@ -76,7 +76,7 @@ function Set-CmHealthLastTestSet {
 	[CmdletBinding()]
 	param(
 		[parameter(Mandatory=$True)][string[]] $TestNames,
-		[parameter(Mandatory=$False)][string] $FilePath = "$($env:USERPROFILE)\Desktop\cmhealth-lastrun.txt"
+		[parameter(Mandatory=$False)][string] $FilePath = "$($env:TEMP)\cmhealth-lastrun.txt"
 	)
 	Write-Verbose "saving test selection to $FilePath"
 	$TestNames | Out-File -FilePath $FilePath -Force
