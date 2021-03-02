@@ -92,10 +92,14 @@ function Test-CmHealth {
 		Credential   = $Credential
 		Verbose      = $VerbosePreference
 	}
+	$GLOBAL:CmhParams = $params
 	$mpath = $(Split-Path (Get-Module cmhealth).Path)
 	$tpath = "$($mpath)\tests"
 	$tests = Get-ChildItem -Path $tpath -Filter "*.ps1"
 	Write-Verbose "$($tests.Count) tests found in library"
+	if ($TestingScope -in ('All','AD')) {
+		Write-Warning "AD tests may require RSAT to be installed"
+	}
 	switch ($TestingScope) {
 		'All' {
 			$testset = @($tests.BaseName)

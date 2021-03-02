@@ -20,22 +20,25 @@ function Test-HostNetworkAccessibility {
 			Write-Verbose "testing port: $port"
 			try {
 				$conn = New-Object System.Net.Sockets.TcpClient($(hostname),$port)
-				$test = [pscustomobject]@{
-					Hostname = $(hostname)
-					Port     = $port
-					Status   = $conn.Connected
-				}
+				$tempdata.Add(
+					[pscustomobject]@{
+						Hostname = $(hostname)
+						Port     = $port
+						Status   = $conn.Connected
+					}
+				)
 				$good++
 			}
 			catch {
-				$test = [pscustomobject]@{
-					Hostname = $(hostname)
-					Port     = $port
-					Status   = "blocked"
-				}
+				$tempdata.Add(
+					[pscustomobject]@{
+						Hostname = $(hostname)
+						Port     = $port
+						Status   = "blocked"
+					}
+				)
 				$bad++
 			}
-			$tempdata.Add($test)
 			$counter++
 		}
 		if ($bad -gt 0) {

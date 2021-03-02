@@ -34,7 +34,7 @@ function Test-HostServerFeatures {
 		foreach ($feature in $features) {
 			if ($feature.Name -in $flist) {
 				if ($feature.Installed -ne $True) {
-					Write-Verbose "$($feature.Name) is not installed!"
+					Write-Verbose "feature not installed: $($feature.Name)"
 					if ($ScriptParams.Remediate -eq $True) {
 						try {
 							Write-Verbose "installing: $($Feature.Name)"
@@ -71,6 +71,7 @@ function Test-HostServerFeatures {
 					}
 				}
 				else {
+					Write-Verbose "feature is installed: $($feature.Name)"
 					$tempdata.Add([pscustomobject]@{
 						Feature = $feature.Name
 						Status  = "PASS"
@@ -89,7 +90,6 @@ function Test-HostServerFeatures {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -97,7 +97,7 @@ function Test-HostServerFeatures {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
