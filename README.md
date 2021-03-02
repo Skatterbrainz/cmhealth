@@ -46,9 +46,12 @@ packages or the dependencies, and install them manually.
 ### First-Time Use
 
 The first time you invoke Test-CmHealth, it will create a file on your Desktop named "cmhealth.json".
-This file contains the default values for all of the tests to use for comparing with nominal or "best practices" 
-settings. If you forget to do this the FIRST time, it will cause an error if you try to use any of the following 
-examples below. You can copy an existing cmhealth.json from one machine or user desktop to another to save time.
+This file contains the default values for all of the tests to use for comparing with nominal or "best practices". 
+
+**Not happy with the baseline values? Not a problem!** Simple edit the cmhealth.json file on your 
+desktop, and adjust to your preferences. Thi
+
+You can copy an existing cmhealth.json from one machine or user desktop to another to save time.
 
 ### Show Detailed Help and Examples
 
@@ -124,6 +127,7 @@ The Out-HealthReport function converts the output from a test run into HTML. Use
 for using it:
 
 ```
+$result = Test-CmHealth -SiteCode P01 -Databsae CM_P01 -Verbose
 $result | Out-HealthReport -Show
 ```
 
