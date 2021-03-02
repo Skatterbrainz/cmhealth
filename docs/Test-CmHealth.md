@@ -14,8 +14,8 @@ schema: 2.0.0
 
 ```
 Test-CmHealth [-SiteCode] <String> [-Database] <String> [[-SiteServer] <String>] [[-SqlInstance] <String>]
- [[-TestingScope] <String>] [[-Remediate] <Boolean>] [[-Source] <String>] [[-Credential] <PSCredential>]
- [<CommonParameters>]
+ [[-TestingScope] <String>] [[-ConfigFile] <String>] [[-Remediate] <Boolean>] [[-Source] <String>]
+ [[-Credential] <PSCredential>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -32,6 +32,21 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
+### -ConfigFile
+{{ Fill ConfigFile Description }}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Credential
 {{ Fill Credential Description }}
 
@@ -41,7 +56,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 7
+Position: 8
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -71,7 +86,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 5
+Position: 6
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -116,7 +131,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 6
+Position: 7
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
