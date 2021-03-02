@@ -9,8 +9,21 @@
 	HTML file path
 .PARAMETER Status
 	Filter results by status type: All, Fail, Pass, Warning, Error (default is All)
+.PARAMETER Detailed
+	Show test output data in report
 .PARAMETER Show
 	Open HTML report when complete
+.EXAMPLE
+	$testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
+	$testresult | Out-HealthReport -Show
+.EXAMPLE
+	Test-CmHealth -SiteCode P01 -Database CM_P01 | Out-HealthReport -Status Fail -Show
+.EXAMPLE
+	Test-CmHealth -SiteCode P01 -Database CM_P01 | Out-HealthReport -Status Fail -Detailed -Show
+.LINK
+	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-HealthReport.md
+.NOTES
+	Released with 0.2.24
 #>
 
 function Out-HealthReport {
@@ -19,6 +32,9 @@ function Out-HealthReport {
 		[parameter(Mandatory=$True, ValueFromPipeline=$True)]$TestData,
 		[parameter(Mandatory=$False)][string]$Path = "$($env:USERPROFILE)\Desktop\healthreport.htm",
 		[parameter(Mandatory=$False)][string][ValidateSet('All','Fail','Pass','Warning','Error')] $Status = 'All',
+		[parameter(Mandatory=$False)][string]$Title = "ConfigMgr Site",
+		[parameter(Mandatory=$False)][string]$CssFile = "",
+		[parameter(Mandatory=$False)][switch]$Detailed,
 		[parameter(Mandatory=$False)][switch]$Show
 	)
 	BEGIN {
@@ -44,9 +60,18 @@ function Out-HealthReport {
 			$tgroup = $item.TestGroup
 			$tmsg   = $item.Message
 			$tstat  = $item.Status
+			switch ($tstat) {
+				'PASS' { $tstat = "<span style=color:green>$tstat</span>"}
+				'FAIL' { $tstat = "<span style=color:red>$tstat</span>"}
+				'WARNING' { $tstat = "<span style=color:orange>$tstat</span>"}
+				'ERROR' { $tstat = "<span style=color:red>$tstat</span>"}
+			}
 			$trun   = $item.RunTime
-			$tdata  = $item.TestData | ConvertTo-Html -Fragment
+			if ($Detailed) {
+				$tdata  = $item.TestData | ConvertTo-Html -Fragment
+			}
 			$chunk  = $item | foreach-object {
+				if ($Detailed) {
 @"
 <h2>$($tName)</h2>
 <table width=$tablewidth>
@@ -58,13 +83,27 @@ function Out-HealthReport {
 <tr><td>Output</td><td>$($tdata)</td></tr>
 </table>
 "@
+				} else {
+@"
+<h2>$($tName)</h2>
+<table width=$tablewidth>
+<tr><td width=$leftpanel>Description</td><td>$($tDesc)</td></tr>
+<tr><td>Group</td><td>$($tgroup)</td></tr>
+<tr><td>Test Result</td><td>$($tstat)</td></tr>
+<tr><td>Message</td><td>$($tmsg)</td></tr>
+<tr><td>Runtime</td><td>$($trun)</td></tr>
+</table>
+"@
+				}
 			}
 			$body += $chunk
 		} # foreach
 	}
 	END {
 		$stats = $inputData | Group-Object Status | Select-Object Name,Count,Group
-		$styles = @"
+		if ([string]::IsNullOrEmpty($CssFile)) {
+			Write-Verbose "using default CSS"
+			$styles = @"
 <style>
 BODY {background-color:#CCCCCC;font-family:Calibri,sans-serif; font-size: small;}
 TABLE {border-width: 1px;border-style: solid;border-color: black;border-collapse: collapse; width: 98%;}
@@ -72,17 +111,19 @@ TH {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:#F0F0F0; padding: 2px;}
 </style>
 "@
+		} else {
+			Write-Verbose "importing CSS from file: $CssFile"
+			if (Test-Path $CssFile) {
+				$cssdata = Get-Content -Path $CssFile
+				$styles = "<style>$cssdata</style>"
+			}
+		}
 		Write-Verbose "combining output to HTML"
-
-		#$statsummary = "<table width=$tablewidth><tr><th>Count</th><th>Result</th><th>Tests</th></tr>"
-		#$stats | Foreach-Object {
-		#	$statsummary += "<tr><td>$($_.Count)</td><td>$($_.Name)</td><td>$("<ul><li>$($_.Group.TestName -join '</li><li>')</li></ul>")</td></tr>"
-		#}
-		#$statsummary += "</table>"
-
-		$heading = "<h1>Health Report</h1>"
+		if ($null -ne $GLOBAL:CmhParams) {
+			$Title += " $(($GLOBAL:CmhParams).SiteCode)"
+		}
+		$heading = "<h1>Health Report - $Title</h1>"
 		$footer  = "<p>Copyright &copy;$(Get-Date -f 'yyyy') Skatterbrainz, All rights reserved. No tables reserved.</p>"
-		#$body = $heading + $statsummary + $body + $footer
 		$body = $heading + $body + $footer
 		$report = "Health Report" | ConvertTo-Html -Title "Health Report" -Body $body -Head $styles
 		$report | Out-File $Path -Force
