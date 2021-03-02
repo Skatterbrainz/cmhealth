@@ -1,7 +1,7 @@
 ---
 external help file: cmhealth-help.xml
 Module Name: cmhealth
-online version:
+online version: https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-HealthReport.md
 schema: 2.0.0
 ---
 
@@ -13,7 +13,8 @@ Export HTML report
 ## SYNTAX
 
 ```
-Out-HealthReport [-TestData] <Object> [[-Path] <String>] [[-Status] <String>] [-Show] [<CommonParameters>]
+Out-HealthReport [-TestData] <Object> [[-Path] <String>] [[-Status] <String>] [[-Title] <String>]
+ [[-CssFile] <String>] [-Detailed] [-Show] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -21,12 +22,22 @@ Export HTML health test report
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+$testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
 ```
 
-{{ Add example description here }}
+$testresult | Out-HealthReport -Show
+
+### EXAMPLE 2
+```
+Test-CmHealth -SiteCode P01 -Database CM_P01 | Out-HealthReport -Status Fail -Show
+```
+
+### EXAMPLE 3
+```
+Test-CmHealth -SiteCode P01 -Database CM_P01 | Out-HealthReport -Status Fail -Detailed -Show
+```
 
 ## PARAMETERS
 
@@ -61,7 +72,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-{{ Fill Status Description }}
+Filter results by status type: All, Fail, Pass, Warning, Error (default is All)
 
 ```yaml
 Type: String
@@ -71,6 +82,51 @@ Aliases:
 Required: False
 Position: 3
 Default value: All
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Title
+{{ Fill Title Description }}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: ConfigMgr Site
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CssFile
+{{ Fill CssFile Description }}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Detailed
+Show test output data in report
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -98,5 +154,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
+Released with 0.2.24
 
 ## RELATED LINKS
+
+[https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-HealthReport.md](https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-HealthReport.md)
+
