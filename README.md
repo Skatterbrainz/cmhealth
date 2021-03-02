@@ -39,6 +39,7 @@ packages or the dependencies, and install them manually.
   * [carbon](https://www.powershellgallery.com/packages/carbon/)
   * [adsips](https://www.powershellgallery.com/packages/adsips/)
   * [cmhealth](https://www.powershellgallery.com/packages/cmhealth/)
+  * [psWindowsUpdate](https://www.powershellgallery.com/packages/pswindowsupdate/)
 
 ## Usage / Examples
 
@@ -116,7 +117,22 @@ $params = @{
 $result = Test-CmHealth @params
 ```
 
+## Generate an HTML Report
+
+The Out-HealthReport function converts the output from a test run into HTML. Use 
+```Get-Help Out-HealthReport``` for more details about the parameters provided. Some examples 
+for using it:
+
+```
+$result | Out-HealthReport -Show
+```
+
+Converts the test results from $result to an HTML report, using default CSS styling, report title,
+path location and then opens it in your default web browser.
+
 ## Adding Your Own Tests
+
+The tests provided with the basic installation can be viewed [here](https://github.com/Skatterbrainz/cmhealth/tree/master/tests).
 
 To add more tests, copy the "Test-Example.ps1" script from the "reserve" folder, to an appropriate name 
 under the "Tests" folder. Then edit the parameters as follows:
