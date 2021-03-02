@@ -23,8 +23,8 @@ function Test-SqlLogSpace {
 					[pscustomobject]@{
 						Instance = $log.SqlInstance
 						Database = $log.Database
-						LogSize = $log.LogSize
-						PercentUsed = $log.LogSpaceUsedPercent
+						LogSize  = $log.LogSize
+						PercentUsed  = $log.LogSpaceUsedPercent
 						LogSpaceUsed = $log.LogSpaceUsed
 					}
 				)
@@ -36,7 +36,6 @@ function Test-SqlLogSpace {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -44,7 +43,7 @@ function Test-SqlLogSpace {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

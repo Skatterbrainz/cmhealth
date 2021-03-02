@@ -19,15 +19,16 @@ v_CombinedDeviceResources AS cdr ON uss.ResourceID = cdr.MachineID
 WHERE (uss.LastErrorCode <> 0)
 ORDER BY cdr.Name"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
+			$msg  = "$($res.Count) update scan errors were found"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
-						Name = $($_.Name)
-						ID = $($_.ResourceID)
-						Error = $($_.LastErrorCode)
+						Name     = $_.Name
+						ID       = $_.ResourceID
+						Error    = $_.LastErrorCode
+						LastScan = $_.ScanTime
 					}
 				)
 			}
@@ -38,7 +39,6 @@ ORDER BY cdr.Name"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -46,7 +46,7 @@ ORDER BY cdr.Name"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

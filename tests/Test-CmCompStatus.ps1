@@ -29,15 +29,23 @@ Errors > 0"
 			$c2 = $($res | Where-Object Status -eq 'Warning').Count
 			if ($c1 -gt 0) {
 				$stat = $except
-				$clist = $($res | Where-Object Status -eq 'Critical' | Select-Object -ExpandProperty ComponentName)
-				$tempdata.Add("Critical=$($clist -join ';')")
+				#$clist = $($res | Where-Object Status -eq 'Critical' | Select-Object -ExpandProperty ComponentName)
+				#$tempdata.Add("Critical=$($clist -join ';')")
 			} elseif ($c2 -gt 0) {
 				$stat = 'WARNING'
-				$wlist = $($res | Where-Object Status -eq 'Warning' | Select-Object -ExpandProperty ComponentName)
-				$tempdata.Add("Warning=$($wlist -join ';')")
+				#$wlist = $($res | Where-Object Status -eq 'Warning' | Select-Object -ExpandProperty ComponentName)
+				#$tempdata.Add("Warning=$($wlist -join ';')")
 			}
 			$msg = "Component status since 12:00 = $c1 critical, $c2 warning out of $($res.count) total"
-			$res | Foreach-Object {$tempdata.Add("$($_.ComponentName)=$($_.Errors)")}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Component = $_.ComponentName
+						Errors = $_.Errors
+						Status = $_.Status
+					}
+				)
+			}
 		}
 	}
 	catch {
@@ -45,7 +53,6 @@ Errors > 0"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -53,7 +60,7 @@ Errors > 0"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

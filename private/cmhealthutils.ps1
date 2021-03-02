@@ -135,3 +135,11 @@ function Get-RunTime {
 	$ret = $("{0}h:{1}m:{2}s:{3}ms" -f $($runTime | Foreach-Object {$_.Hours,$_.Minutes,$_.Seconds,$_.Milliseconds}))
 	Write-Output $ret
 }
+
+function Convert-DecErrToHex {
+	param (
+		[parameter(Mandatory=$True)]$DecimalNumber
+	)
+	$n = [math]::Abs($DecimalNumber)
+	Write-Output $('0x'+(++$n).ToString('X'))
+}

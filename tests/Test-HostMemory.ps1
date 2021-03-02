@@ -25,13 +25,13 @@ function Test-HostMemory {
 		$RAMPercentFree = [Math]::Round($RAMPercentFree, 2)
 		Write-Verbose "total memory = $TotalRAM"
 		Write-Verbose "minimum allowed memory = $MinMemory"
-		if ($TotalRAM -lt $MinMem) {
+		if ($TotalRAM -lt $MinMemory) {
 			$stat = $except
 			$msg  = "$($TotalRam) GB is below the minimum recommended $MinMemory GB"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
-						Total = $($TotalRam)
+						Total    = $($TotalRam)
 						Expected = $($MinMemory)
 					}
 				)

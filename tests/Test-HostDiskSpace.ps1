@@ -29,8 +29,8 @@ function Test-HostDiskSpace {
 			$tempdata.Add(
 				[pscustomobject]@{
 					Drive   = $drv
-					Size    = $size
-					Used    = $used
+					SizeGB  = [math]::Round($size / 1GB, 1)
+					UsedGB  = [math]::Round($used / 1GB, 1)
 					PctUsed = $pct
 					MaxPct  = $MaxPctUsed
 				}

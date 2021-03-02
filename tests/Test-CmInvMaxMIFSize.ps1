@@ -1,7 +1,7 @@
 function Test-CmInvMaxMIFSize {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Invalid Max MIF File Size Impact",
+		[parameter()][string] $TestName = "Max MIF File Size",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $Description = "Validate inventory loader maximum MIF file size setting",
 		[parameter()][hashtable] $ScriptParams
@@ -22,6 +22,12 @@ function Test-CmInvMaxMIFSize {
 			} else {
 				$stat = $except
 				$msg  = "Max MIF size is $res (hex) which should be 3200000 (hex) or $MaxMIF"
+				$tempdata.Add(
+					[pscustomobject]@{
+						CurrentMax  = "$res (hex)"
+						Recommended = "3200000 ($MaxMIF hex)"
+					}
+				)
 			}
 		}
 	}
@@ -30,7 +36,6 @@ function Test-CmInvMaxMIFSize {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -38,7 +43,7 @@ function Test-CmInvMaxMIFSize {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

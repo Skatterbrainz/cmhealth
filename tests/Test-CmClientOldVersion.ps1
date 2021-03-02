@@ -22,9 +22,9 @@ INNER JOIN v_R_System_Valid sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_Site st ON st.SiteCode = fcm.SiteCode
 WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
+			$msg  = "$($res.Count) devices have an outdated client installed"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{

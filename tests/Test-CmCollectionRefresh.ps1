@@ -34,8 +34,24 @@ from v_Collections"
 		if ($cc.Count -gt $maxcolls) {
 			$stat = $except
 			$msg  = "Found $($cc.Count) collections are set to incremental or scheduled refresh"
-			$c1 | Foreach-Object {$tempdata.Add( "ID=$($_.SiteID), Name=$($_.CollectionName), RefreshType=$($_.RefreshType)")}
-			$c2 | Foreach-Object {$tempdata.Add( "ID=$($_.SiteID), Name=$($_.CollectionName), RefreshType=$($_.RefreshType)")}
+			$c1 | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						ID = $_.SiteID
+						Name = $_.CollectionName
+						RefreshType = $_.RefreshType
+					}
+				)
+			}
+			$c2 | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						ID = $_.SiteID
+						Name = $_.CollectionName
+						RefreshType = $_.RefreshType
+					}
+				)
+			}
 		}
 	}
 	catch {
@@ -43,7 +59,6 @@ from v_Collections"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -51,7 +66,7 @@ from v_Collections"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

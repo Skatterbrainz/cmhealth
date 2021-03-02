@@ -19,19 +19,18 @@ FROM v_CIAssignment cia WITH (NOLOCK)
 JOIN v_UpdateAssignmentStatus_Live assc WITH (NOLOCK) on assc.AssignmentID = cia.AssignmentID 
 JOIN v_R_System sys WITH (NOLOCK) on assc.ResourceID=sys.ResourceID AND ISNULL(sys.Obsolete0,0) <> 1
 JOIN v_FullCollectionMembership_Valid fcm WITH (NOLOCK) on assc.ResourceID = fcm.ResourceID
-WHERE
-assc.LastEnforcementErrorID <> 0
+WHERE assc.LastEnforcementErrorID <> 0
 AND assc.LastEnforcementMessageID in (6,9)
 AND assc.IsCompliant=0
 AND fcm.CollectionID = 'SMS00001'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($null -ne $res -and $res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found: $($res.ErrorCode -join ',')"
+			$msg  = "$($res.Count) items were found"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
-						Error = $($_.ErrorCode)
+						Error   = $($_.ErrorCode)
 						Message = $($_.Message)
 					}
 				)
@@ -43,7 +42,6 @@ AND fcm.CollectionID = 'SMS00001'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -51,7 +49,7 @@ AND fcm.CollectionID = 'SMS00001'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

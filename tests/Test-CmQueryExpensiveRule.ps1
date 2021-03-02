@@ -27,7 +27,8 @@ where c3.SiteID not like 'SMS%'"
 						QueryName = $row.QueryName
 						Collection = $row.CollectionName
 						CollectionID = $row.SiteID
-						Message = "Query statement uses LIKE with a leading wildcard"
+						Message = "LIKE with a leading wildcard"
+						Query = $row.WQL
 					}
 				)
 			} elseif ('like N\''%\w\w+.|%''') {
@@ -37,7 +38,8 @@ where c3.SiteID not like 'SMS%'"
 						QueryName = $row.QueryName
 						Collection = $row.CollectionName
 						CollectionID = $row.SiteID
-						Message = "Query statement uses LIKE with a leading wildcard"
+						Message = "LIKE with a leading wildcard"
+						Query = $row.WQL
 					}
 				)
 			}
@@ -52,7 +54,6 @@ where c3.SiteID not like 'SMS%'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -60,7 +61,7 @@ where c3.SiteID not like 'SMS%'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

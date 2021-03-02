@@ -56,10 +56,18 @@ JOIN v_FullCollectionMembership_VaLID fcm WITH (NOLOCK) ON uss.ResourceID = fcm.
 INNER JOIN v_GS_OPERATING_SYSTEM ops ON rsys.ResourceID = ops.ResourceID
 WHERE ops.Version0 > '6.2' AND uss.LastWUAVersion < '7.9.9600.16422'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found: $($res.MachineName -join ',')"
-			$res | Foreach-Object {$tempdata.Add(@($_.MachineName, $_.LastWUAVersion))}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Machine = $_.MachineName
+						SiteCode = $_.SiteCode
+						WUAVersion = $_.LastWUAVersion
+					}
+				)
+			}
 		}
 	}
 	catch {

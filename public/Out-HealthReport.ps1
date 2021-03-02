@@ -30,7 +30,7 @@ function Out-HealthReport {
 	[CmdletBinding()]
 	param (
 		[parameter(Mandatory=$True, ValueFromPipeline=$True)]$TestData,
-		[parameter(Mandatory=$False)][string]$Path = "$($env:USERPROFILE)\Desktop\healthreport.htm",
+		[parameter(Mandatory=$False)][string]$Path = "$($env:TEMP)\healthreport.htm",
 		[parameter(Mandatory=$False)][string][ValidateSet('All','Fail','Pass','Warning','Error')] $Status = 'All',
 		[parameter(Mandatory=$False)][string]$Title = "ConfigMgr Site",
 		[parameter(Mandatory=$False)][string]$CssFile = "",
@@ -122,9 +122,12 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 		if ($null -ne $GLOBAL:CmhParams) {
 			$Title += " $(($GLOBAL:CmhParams).SiteCode)"
 		}
+		$mversion = (Get-Module cmhealth -ListAvailable).Version -join '.'
 		$heading = "<h1>Health Report - $Title</h1>"
+		$prelim = "<p>$($env:COMPUTERNAME) - $(Get-Date) - $($env:USERNAME)</p>"
+		$prelim += "<p>CMHealth version $mversion</p>"
 		$footer  = "<p>Copyright &copy;$(Get-Date -f 'yyyy') Skatterbrainz, All rights reserved. No tables reserved.</p>"
-		$body = $heading + $body + $footer
+		$body = $heading + $prelim + $body + $footer
 		$report = "Health Report" | ConvertTo-Html -Title "Health Report" -Body $body -Head $styles
 		$report | Out-File $Path -Force
 		if ($Show) { Start-Process $Path }

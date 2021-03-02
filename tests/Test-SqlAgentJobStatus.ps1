@@ -40,7 +40,7 @@ function Test-SqlAgentJobStatus {
 					}
 				)
 			}
-			$msg  = "$($res.Count) sql agent jobs failed within the past $HoursBack hours"
+			$msg  = "$($res.Count) SQL Agent Jobs have failed within the past $HoursBack hours"
 		}
 	}
 	catch {

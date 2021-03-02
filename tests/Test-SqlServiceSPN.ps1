@@ -12,38 +12,27 @@ function Test-SqlServiceSPN {
 		$stat   = "PASS"
 		$except = "FAIL"
 		$msg    = "No issues found"
-		if ($null -ne $ScriptParams.Credential) {
-			$spns = Test-DbaSpn -ComputerName $ScriptParams.ComputerName -EnableException -Credential $ScriptParams.Credential
+		$sqlserver = $ScriptParams.SqlInstance
+		Write-Verbose "instance name = $sqlserver"
+		$domain    = $(Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -ExpandProperty Domain)
+		Write-Verbose "domain suffix = $domain"
+		$fqdn      = "$($sqlserver).$($domain)"
+		$spn       = "MSSQLSvc/$($fqdn)*"
+		Write-Verbose "SPN name = $spn"
+		$res       = $(SetSpn -T "$domain" -F -Q "$spn").Split("`n").Trim()
+		if ($res -contains "No such SPN found.") {
+			$stat = $except
+			$msg  = "No MSSQLSvc SPNs have been registered for $fqdn"
 		} else {
-			$spns = Test-DbaSpn -ComputerName $ScriptParams.ComputerName -EnableException
-		}
-		if ($spns.Count -gt 0) {
-			foreach ($spn in $spns) {
-				if ($spn.IsSet -ne $True) {
-					if ($ScriptParams.Remediate -eq $True) {
-						Set-DbaSpn -SPN $spn.RequiredSPN -ServiceAccount $spn.InstanceServiceAccount
-					} else {
-						$stat = $except
-						$msg  = "Missing SPN for $($spn.RequiredSPN)"
-						$tempdata.Add(
-							[pscustomobject]@{
-								Required = $spn.RequiredSPN
-								Status   = "Missing"
-							}
-						)
-					}
-				} else {
+			foreach ($sp in $res) {
+				if (![string]::IsNullOrEmpty($sp) -and (-not($sp.StartsWith("Checking") -or $sp.StartsWith("Existing SPN")))) {
 					$tempdata.Add(
 						[pscustomobject]@{
-							Required = $($spn.RequiredSPN)
-							Status = "Valid"
+							SPN = $sp
 						}
 					)
 				}
 			}
-		} else {
-			$stat = $except
-			$msg  = "No SPNs have been registered"
 		}
 	}
 	catch {
@@ -51,7 +40,6 @@ function Test-SqlServiceSPN {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -59,7 +47,7 @@ function Test-SqlServiceSPN {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

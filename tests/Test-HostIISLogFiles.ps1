@@ -44,6 +44,7 @@ function Test-HostIISLogFiles {
 		$tempdata.Add([pscustomobject]@{
 			Status = $stat
 			Message = $msg
+			Note    = "Path = $IISLogsPath"
 		})
 		#$totalDiskSize = $(Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID = 'C:'" | Select-Object -ExpandProperty Size) / 1MB
 		$totalDiskSize = $(Get-WmiQueryResult -ClassName "Win32_LogicalDisk" -Query "DeviceID = 'C:'" -Params $ScriptParams | Select-Object -Expand Size) / 1MB
@@ -57,8 +58,8 @@ function Test-HostIISLogFiles {
 		$tempdata.Add([pscustomobject]@{
 			Status  = $stat
 			Message = $msg
+			Note    = "Capacity = $totalDiskSize , LogSpace = $logSpaceUsed"
 		})
-		$rt = Get-RunTime -BaseTime $startTime
 		$result = [pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -66,7 +67,7 @@ function Test-HostIISLogFiles {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		}
 	}

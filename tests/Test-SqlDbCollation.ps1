@@ -22,13 +22,19 @@ function Test-SqlDbCollation {
 			$stat = $except
 			$msg  = "Collection is $($coll.DatabaseCollation) but should be $Collation"
 		}
+		$tempdata.Add(
+			[pscustomobject]@{
+				Collation = $coll.DatabaseCollation
+				Required  = $Collation
+				Status    = $stat
+			}
+		)
 	}
 	catch {
 		$stat = 'ERROR'
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -36,7 +42,7 @@ function Test-SqlDbCollation {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

@@ -21,9 +21,9 @@ INNER JOIN v_FullCollectionMembership_Valid fcm ON fcm.Name = stat.MachineName
 WHERE stat.Time > DATEADD(dd,-CONVERT(INT,7),GETDATE()) and
 stat.Severity=0xC0000000 AND stat.PerClient!=0 AND fcm.CollectionID = 'SMS00001'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found: $($res.MachineName -join ',')"
+			$msg  = "$($res.Count) clients have reported errors"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{

@@ -12,9 +12,9 @@ function Test-HostDriveBlockSize {
 		Write-Verbose "block size required = $bsize"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
-		$except = "FAIL"
+		$except = "WARNING"
 		$msg    = "Success"
-		$vols = Get-WmiQueryResult -ClassName "Win32_Volume" -Query "DriveType = 3" -Params $ScriptParams
+		$vols = Get-WmiQueryResult -ClassName "Win32_Volume" -Query "DriveType=3" -Params $ScriptParams
 		foreach ($vol in $vols) {
 			if ($vol.BlockSize -ne $bsize) {
 				$res  = "FAIL"
@@ -38,7 +38,6 @@ function Test-HostDriveBlockSize {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -46,7 +45,7 @@ function Test-HostDriveBlockSize {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

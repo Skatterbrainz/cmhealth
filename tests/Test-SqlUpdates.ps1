@@ -17,7 +17,12 @@ function Test-SqlUpdates {
 		} else {
 			$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update
 		}
-		if ($res.Compliant -ne $True) {
+		if ($null -ne $res) {
+			$bcurrent = $null
+			$btarget  = $null
+			$stat     = "ERROR"
+			$msg      = "Unable to connect to SQL instance ($($ScriptParams.SqlInstance))"
+		} elseif ($res.Compliant -ne $True) {
 			$bcurrent = $res.BuildLevel
 			$btarget  = $res.BuildTarget
 			$stat = $except
@@ -29,7 +34,6 @@ function Test-SqlUpdates {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -37,7 +41,7 @@ function Test-SqlUpdates {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

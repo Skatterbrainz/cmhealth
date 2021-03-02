@@ -26,10 +26,20 @@ INNER JOIN v_R_System sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_CH_ClientSummary chs ON chs.ResourceID = fcm.ResourceID AND chs.ClientActiveStatus = 0 
 WHERE fcm.CollectionID = 'SMS00001' AND chs.LastActiveTime < DATEADD(dd,-CONVERT(INT,$($DaysOld)),GETDATE())"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) clients inventory older than $($DaysOld) days: $($res.Name -join ',')"
-			$res | Foreach-Object {$tempdata.Add("Name=$($_.Name),LastHW=$($_.LastHWScan),SiteCode=$($_.SiteCode)")}
+			$msg  = "$($res.Count) clients inventory older than $($DaysOld) days"
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name   = $_.Name
+						Client = $_.Client_Version0
+						LastHW = $_.LastHWScan
+						LastActive = $_.AgentTime
+						SiteCode = $_.SiteCode
+					}
+				)
+			}
 		}
 	}
 	catch {
@@ -37,7 +47,6 @@ WHERE fcm.CollectionID = 'SMS00001' AND chs.LastActiveTime < DATEADD(dd,-CONVERT
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -45,7 +54,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND chs.LastActiveTime < DATEADD(dd,-CONVERT
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

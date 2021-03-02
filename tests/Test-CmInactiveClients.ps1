@@ -1,7 +1,7 @@
 function Test-CmInactiveClients {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Inactve Clients",
+		[parameter()][string] $TestName = "Inactive Clients",
 		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $Description = "Check for inactive clients",
 		[parameter()][hashtable] $ScriptParams
@@ -25,12 +25,15 @@ WHERE fcm.CollectionID = 'SMS00001'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
+			$msg  = "$($res.Count) inactive clients were found"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
-						Name = $_.Name
-						ResourceID = $_.ResourceID
+						Name        = $_.Name
+						SiteCode    = $_.SiteCode
+						ResourceID  = $_.ResourceID
+						Blocked     = $_.Blocked
+						Obsolete    = $_.Obsolete
 						LastContact = $_.LastContactTime
 					}
 				)
@@ -42,7 +45,6 @@ WHERE fcm.CollectionID = 'SMS00001'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -50,7 +52,7 @@ WHERE fcm.CollectionID = 'SMS00001'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

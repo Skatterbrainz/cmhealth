@@ -23,9 +23,9 @@ INNER JOIN v_R_System sys ON fcm.ResourceID = sys.ResourceID
 WHERE fcm.IsClient != 1 AND fcm.Name NOT LIKE '%Unknown%' AND fcm.CollectionID = 'SMS00001'
 AND sys.Operating_System_Name_and0 IS NOT NULL AND sys.Operating_System_Name_and0 <> ''"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found: $($res.Name -join ',')"
+			$msg  = "$($res.Count) devices are missing a ConfigMgr client"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{

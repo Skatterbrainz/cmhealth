@@ -23,8 +23,9 @@ FROM sys.dm_os_wait_stats OPTION (RECOMPILE)"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
+						SqlInstance = $ScriptParams.SqlInstance
 						CPUWaits = $($_.CPUWaits_Pct)
-						ResWaits = $($_.ResourceWaits_Pct)
+						ResourceWaits = $($_.ResourceWaits_Pct)
 					}
 				)
 			}

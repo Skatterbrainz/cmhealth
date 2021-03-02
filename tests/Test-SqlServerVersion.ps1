@@ -31,9 +31,9 @@ function Test-SqlServerVersion {
 			[pscustomobject]@{
 				SqlInstance = $res.SqlInstance
 				SqlVersion  = $fname
-				Build     = $res.Build
-				NameLevel = $res.NameLevel
-				Supported = $res.SupportedUntil
+				Build       = $res.Build
+				NameLevel   = $res.NameLevel
+				SupportEnds = $res.SupportedUntil
 			}
 		)
 	}

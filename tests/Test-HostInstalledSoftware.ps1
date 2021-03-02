@@ -14,7 +14,7 @@ function Test-HostInstalledSoftware {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
-		[array]$res = Get-WmiQueryResult -ClassName "Win32_Product" -Params $ScriptParams
+		[array]$res = Get-WmiQueryResult -ClassName "Win32_Product" -Params $ScriptParams | Sort-Object ProductName
 		Write-Verbose "$($res.Count) products were returned"
 		if ($res.Count -gt $MaxProducts) {
 			$stat = $except
@@ -37,7 +37,6 @@ function Test-HostInstalledSoftware {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -45,7 +44,7 @@ function Test-HostInstalledSoftware {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

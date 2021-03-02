@@ -33,6 +33,7 @@ FROM
     dbo.v_StateNames AS vSN_Status ON vUCS.Status = vSN_Status.StateID LEFT OUTER JOIN
     dbo.v_CICategoryInfo AS vCCI ON vCCI.CI_ID = vUCS.CI_ID
 WHERE
+	(LTRIM(vRS.Netbios_Name0) <> '') AND
 	(vCCI.CategoryTypeName = 'UpdateClassification') AND
 	(vSN_Status.TopicType = 500) AND
 	(vUI.CIType_ID = 8) AND

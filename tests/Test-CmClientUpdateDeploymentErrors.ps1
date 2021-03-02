@@ -28,10 +28,20 @@ WHERE assc.LastEnforcementErrorID & 0x0000FFFF <> 0 AND
 assc.LastEnforcementMessageID IN (6,9) AND assc.IsCompliant=0 AND
 fcm.CollectionID = 'SMS00001'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found: $($res.MachineName -join ',')"
-			$res | Foreach-Object {$tempdata.Add(@($_.MachineName, $_.ErrorCode))}
+			$msg  = "$($res.Count) clients with update deployment errors found"
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						ComputerName = $_.MachineName
+						Client = $_.SMSClientVersion
+						LastUser = $_.LastLoggedOnUser
+						ErrorCode = $_.ErrorCode
+						SiteCode = $_.SiteCode
+					}
+				)
+			}
 		}
 	}
 	catch {
@@ -39,7 +49,6 @@ fcm.CollectionID = 'SMS00001'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -47,7 +56,7 @@ fcm.CollectionID = 'SMS00001'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

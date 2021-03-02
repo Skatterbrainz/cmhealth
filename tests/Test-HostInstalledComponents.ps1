@@ -13,18 +13,18 @@ function Test-HostInstalledComponents {
 		$stat   = "PASS"
 		$except = "FAIL"
 		$msg    = "All required components are installed"
-
 		$reg64 = Get-ChildItem -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall 
 		$reg32 = Get-ChildItem -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
-
 		$reg64 | ForEach-Object {
 			if ($_.Property -contains 'DisplayName') {
 				$pn = $_.GetValue('DisplayName')
 				$pv = $_.GetValue('DisplayVersion')
 				if ($pn -in $applist.ProductName) {
 					$app = $applist | Where-Object {$_.ProductName -eq $pn}
-					if ($app.Version -ne $pv) {
+					if ($app.Version -ge $pv) {
 						$compliant = $except
+					} else {
+						$compliant = $True
 					}
 					$tempdata.Add([pscustomobject]@{
 						ProductName = $pn
@@ -45,8 +45,10 @@ function Test-HostInstalledComponents {
 				$pv = $_.GetValue('DisplayVersion')
 				if ($pn -in $applist.ProductName) {
 					$app = $applist | Where-Object {$_.ProductName -eq $pn}
-					if ($app.Version -ne $pv) {
+					if ($app.Version -ge $pv) {
 						$compliant = $False
+					} else {
+						$compliant = $True
 					}
 					$tempdata.Add([pscustomobject]@{
 						ProductName = $pn
@@ -64,7 +66,6 @@ function Test-HostInstalledComponents {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -72,7 +73,7 @@ function Test-HostInstalledComponents {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

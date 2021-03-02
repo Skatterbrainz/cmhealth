@@ -15,12 +15,12 @@ function Test-HostServerFeatures {
 		Import-Module ServerManager
 		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
 			if ($ScriptParams.Credential) {
-				$features = Get-WindowsFeature -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -ErrorAction Stop 
+				$features = Get-WindowsFeature -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -ErrorAction Stop | Sort-Object Name
 			} else {
-				$features = Get-WindowsFeature -ComputerName $ScriptParams.ComputerName -ErrorAction Stop 
+				$features = Get-WindowsFeature -ComputerName $ScriptParams.ComputerName -ErrorAction Stop | Sort-Object Name
 			}
 		} else {
-			$features = Get-WindowsFeature -ErrorAction Stop
+			$features = Get-WindowsFeature -ErrorAction Stop | Sort-Object Name
 		}
 		$LogFile = Join-Path $env:TEMP "serverfeatures.log"
 		if ($ScriptParams.Remediate -eq $True -and ([string]::IsNullOrEmpty($ScriptParams.Source))) {
@@ -47,36 +47,44 @@ function Test-HostServerFeatures {
 							} else {
 								Install-WindowsFeature -Name "$($Feature.Name)" -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
 							}
-							$tempdata.Add([pscustomobject]@{
-								Feature = $feature.Name
-								Status  = "Remediated"
-								Message = "Success"
-							})
+							$tempdata.Add(
+								[pscustomobject]@{
+									Feature = $feature.Name
+									Status  = "Remediated"
+									Message = "Success"
+								}
+							)
 						}
 						catch {
-							$tempdata.Add([pscustomobject]@{
-								Feature = $feature.Name
-								Status  = "ERROR"
-								Message = $_.Exception.Message -join ';'
-							})
+							$tempdata.Add(
+								[pscustomobject]@{
+									Feature = $feature.Name
+									Status  = "ERROR"
+									Message = $_.Exception.Message -join ';'
+								}
+							)
 						}
 					} else {
 						$exceptions++
-						$tempdata.Add([pscustomobject]@{
-							Feature = $feature.Name 
-							Statue  = $except
-							Message = "Not installed"
-						})
+						$tempdata.Add(
+							[pscustomobject]@{
+								Feature = $feature.Name 
+								Status  = $except
+								Message = "Not installed"
+							}
+						)
 						$missing.Add($feature.Name)
 					}
 				}
 				else {
 					Write-Verbose "feature is installed: $($feature.Name)"
-					$tempdata.Add([pscustomobject]@{
-						Feature = $feature.Name
-						Status  = "PASS"
-						Message = "Already installed"
-					})
+					$tempdata.Add(
+						[pscustomobject]@{
+							Feature = $feature.Name
+							Status  = "PASS"
+							Message = "Already installed"
+						}
+					)
 				}
 			}
 		}

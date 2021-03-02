@@ -26,7 +26,8 @@ CASE ObjectType
 	ELSE 'Unknown ID ' +  CONVERT(VARCHAR(200), ObjectType)
 END AS ObjectTypeName
 FROM fn_ListObjectContentExtraInfo(1033) AS SMS_ObjectContentExtraInfo
-WHERE Targeted = 0"
+WHERE Targeted = 0
+ORDER BY SoftwareName"
 		$res = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query)
 		if ($res.Count -gt 1) {
 			$stat = $except

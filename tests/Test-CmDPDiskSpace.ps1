@@ -42,17 +42,38 @@ function Test-CMDPDiskSpace {
 					$used = $size - $free
 					$pct  = $([math]::Round($used / $size, 1)) * 100
 					if ($pct -gt $MaxPctUsed) {
-						$tempData.Add([pscustomobject]@{Computer=$($dp);Drive=$($disk.DeviceID);Size=$($size);Used=$pct})
+						$tempData.Add(
+							[pscustomobject]@{
+								Computer = $($dp)
+								Drive    = $($disk.DeviceID)
+								SizeGB   = [math]::Round($size / 1GB, 1)
+								PctUsed  = $pct
+							}
+						)
 						$stat = $except
 						$issues++
 					} else {
-						$tempData.Add([pscustomobject]@{Computer=$($dp);Drive=$($disk.DeviceID);Size=$($size);Used=$pct})
+						$tempData.Add(
+							[pscustomobject]@{
+								Computer = $($dp)
+								Drive    = $($disk.DeviceID)
+								SizeGB   = [math]::Round($size / 1GB, 1)
+								PctUsed  = $pct
+							}
+						)
 					}
 				} # foreach
 				if ($issues -gt 0) { $msg = "$issues issues were found" }
 			} else {
 				Write-Warning "DP disk information is not available: $dp"
-				$tempData.Add([pscustomobject]@{Computer=$($dp);Drive=$null;Size=$null;Used=$null})
+				$tempData.Add(
+					[pscustomobject]@{
+						Computer = $($dp)
+						Drive    = $null
+						SizeGB   = $null
+						PctUsed  = $null
+					}
+				)
 			}
 			$index++
 		} # foreach
@@ -62,7 +83,6 @@ function Test-CMDPDiskSpace {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -70,7 +90,7 @@ function Test-CMDPDiskSpace {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

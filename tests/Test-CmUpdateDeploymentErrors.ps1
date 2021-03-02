@@ -14,6 +14,9 @@ function Test-CmUpdateDeploymentErrors {
 		$msg    = "No issues found" # do not change this either
 		$query = "SELECT DISTINCT
 fcm.ResourceID,
+fcm.Name,
+sys.AD_Site_Name0 as ADSiteName,
+sys.User_Name0 as UserName,
 ISNULL(assc.LastEnforcementErrorCode,0) AS ErrorCode,
 ISNULL(assc.LastEnforcementErrorCode,0) AS Message
 FROM v_CIAssignment cia WITH (NOLOCK)
@@ -22,12 +25,24 @@ JOIN v_R_System sys WITH (NOLOCK) ON assc.ResourceID=sys.ResourceID AND ISNULL(s
 JOIN v_FullCollectionMembership_Valid fcm WITH (NOLOCK) ON assc.ResourceID = fcm.ResourceID
 WHERE assc.LastEnforcementErrorID & 0x0000FFFF <> 0 AND
 assc.LastEnforcementMessageID in (6,9) AND
-assc.IsCompliant=0 AND fcm.CollectionID = 'SMS00001'"
+assc.IsCompliant=0 AND fcm.CollectionID = 'SMS00001'
+ORDER BY fcm.Name"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found: $($res.ErrorCode -join ',')"
-			$res | Foreach-Object {$tempdata.Add([pscustomobject]@{Resource=$($_.ResourceID);ErrorCode=$($_.ErrorCode);Message=$($_.Message)})}
+			$msg  = "$($res.Count) deployment errors found"
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Resource  = $($_.ResourceID)
+						Computer  = $($_.Name)
+						UserName  = $($_.UserName)
+						ADSite    = $($_.ADSiteName)
+						ErrorCode = $($_.ErrorCode)
+						HexCode = Convert-DecErrToHex -DecimalNumber $($_.ErrorCode)
+					}
+				)
+			}
 		}
 	}
 	catch {
@@ -35,7 +50,6 @@ assc.IsCompliant=0 AND fcm.CollectionID = 'SMS00001'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -43,7 +57,7 @@ assc.IsCompliant=0 AND fcm.CollectionID = 'SMS00001'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
