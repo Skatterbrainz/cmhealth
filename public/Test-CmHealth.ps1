@@ -15,6 +15,9 @@
 .PARAMETER TestingScope
 	Scope of tests to execute: All (default), Host, AD, SQL, CM, WSUS, Select
 	The Select option displays a gridview to select the individual tests to perform
+.PARAMETER ConfigFile
+	Path to cmhealth.json (create or import). If not found, it will attempt to create a new
+	one in the specified path.  The default path is the userprofile\desktop folder.
 .PARAMETER Remediate
 	Attempt remediation when possible
 .PARAMETER Source
@@ -65,19 +68,19 @@ function Test-CmHealth {
 		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SiteServer = "localhost",
 		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SqlInstance = "localhost",
 		[parameter(Mandatory=$False)][ValidateSet('All','AD','CM','Host','SQL','WSUS','Select','Previous')][string] $TestingScope = 'All',
+		[parameter(Mandatory=$False)][string]$ConfigFile = "$($env:USERPROFILE)\desktop\cmhealth.json",
 		[parameter(Mandatory=$False)][boolean] $Remediate = $False,
 		[parameter(Mandatory=$False)][string] $Source = "c:\windows\winsxs",
 		[parameter(Mandatory=$False)][pscredential] $Credential
 	)
-	[string]$cfgfile = "$($env:USERPROFILE)\Desktop\cmhealth.json"
-	if (-not(Test-Path $cfgfile)) { New-CmHealthConfig }
+	if (-not(Test-Path $ConfigFile)) { New-CmHealthConfig -Path $ConfigFile }
 	$startTime1 = (Get-Date)
 	Write-Warning "If you haven't refreshed the cmhealth.json file since 0.2.24 or earlier, rename or delete the file and run this command again."
-	if (!(Test-Path "$($env:USERPROFILE)\Desktop\cmhealth.json")) {
-		Write-Warning "Default configuration has not been defined. Use 'Test-CmHealth -Initialize' first"
+	if (!(Test-Path "$ConfigFile")) {
+		Write-Warning "Default configuration has not been defined."
 		break
 	}
-	$Script:CmHealthConfig = Import-CmHealthSettings
+	$Script:CmHealthConfig = Import-CmHealthSettings -Primary ConfigFile
 	if ($null -eq $CmHealthConfig) {
 		Write-Warning "configuration data could not be imported"
 		break

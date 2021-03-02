@@ -25,14 +25,15 @@ function Import-CmHealthSettings {
 
 function New-CmHealthConfig {
 	[CmdletBinding()]
-	param()
+	param(
+		[parameter(Mandatory=$False)][string]$Path = "$($env:USERPROFILE)\Desktop\cmhealth.json"
+	)
 	Write-Verbose "Creating default cmhealth settings file on user desktop"
 	$mpath = Split-Path $(Get-Module cmhealth).Path
 	$rpath = "$($mpath)\reserve"
 	$configFile = "$($rpath)\cmhealth.json"
-	$targetPath = "$($env:USERPROFILE)\Desktop"
-	Copy-Item -Path $configFile -Destination $targetPath -Force
-	Write-Verbose "cmhealth settings file saved as: $($targetPath)\cmhealth.json"
+	Copy-Item -Path $configFile -Destination $Path -Force
+	Write-Verbose "cmhealth settings file saved as: $($Path)"
 }
 
 function Get-CmHealthDefaultValue {
