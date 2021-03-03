@@ -14,39 +14,49 @@ function Test-HostSystemLogErrors {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
-		$query = @"
+$query = @"
 <QueryList>
   <Query Id="0" Path="System">
     <Select Path="System">*[System[(Level=2 or Level=3) and TimeCreated[timediff(@SystemTime) &lt;= 86400000]]]</Select>
   </Query>
 </QueryList>
 "@
-		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			if ($ScriptParams.Credential) {
-				$res = @(Get-WinEvent -LogName System -FilterXPath $query -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -ErrorAction SilentlyContinue)
+		[array]$computers = $ScriptParams.ComputerName
+		if ($ScriptParams.ComputerName -ne $ScriptParams.SqlInstance) {
+			$computers += $ScriptParams.SqlInstance
+		}
+		foreach ($computer in $computers) {
+			Write-Verbose "computer: $computer"
+			if ($computer -ne $env:COMPUTERNAME) {
+				if ($ScriptParams.Credential) {
+					$res = @(Get-WinEvent -LogName System -FilterXPath $query -ComputerName $computer -Credential $ScriptParams.Credential -ErrorAction SilentlyContinue)
+				} else {
+					$res = @(Get-WinEvent -LogName System -FilterXPath $query -ComputerName $computer -ErrorAction SilentlyContinue)
+				}
 			} else {
-				$res = @(Get-WinEvent -LogName System -FilterXPath $query -ComputerName $ScriptParams.ComputerName -ErrorAction SilentlyContinue)
+				$computer = $env:COMPUTERNAME
+				$res = @(Get-WinEvent -LogName System -FilterXPath $query -ErrorAction SilentlyContinue)
 			}
-		} else {
-			$res = @(Get-WinEvent -LogName System -FilterXPath $query -ErrorAction SilentlyContinue)
-		}
-		$vwarnings = $res | Where-Object {$_.LevelDisplayName -eq 'Warning'}
-		$verrors   = $res | Where-Object {$_.LevelDisplayName -eq 'Error'}
-		if ($verrors.Count -gt 0) {
-			$stat = $except
-			$msg  = "$($verrors.Count) errors have occurred in the System log in the past $MaxHours hours"
-		} else {
-			if ($vwarnings.Count -gt 0) {
+			$vwarnings = $res | Where-Object {$_.LevelDisplayName -eq 'Warning'}
+			$verrors   = $res | Where-Object {$_.LevelDisplayName -eq 'Error'}
+			if (($verrors.Count -gt 0) -or ($vwarnings.Count -gt 0)) {
+				$msg  = "$($verrors.Count) Errors and $($vwarnings.Count) Warnings occurred in the System log within the past $MaxHours hours"
 				$stat = $except
-				$msg  = "$($vwarnings.Count) warnings have occurred in the System log in the past $MaxHours hours"
+				$res | Foreach-Object {
+					$tempdata.Add(
+						[pscustomobject]@{
+							Computer = $_.MachineName
+							Level = $_.LevelDisplayName
+							ID = $_.Id
+							Provider = $_.ProviderName
+							Log = $_.LogName
+							TimeCreated = $_.TimeCreated
+							Message = $_.Message
+						}
+					)
+				}
 			}
-		}
-		$tempdata.Add(
-			[pscustomobject]@{
-				Errors = $($verrors.Count)
-				Warnings = $($vwarnings.Count)
-			}
-		)
+		} # foreach
 	}
 	catch {
 		$stat = 'ERROR'
