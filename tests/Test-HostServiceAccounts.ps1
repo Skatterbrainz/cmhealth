@@ -24,56 +24,75 @@ function Test-HostServiceAccounts {
 			Write-Verbose "service name: $svcName"
 			try {
 				$svc = Get-WmiQueryResult -ClassName "Win32_Service" -Query "Name = '$svcName'" -Params $ScriptParams
-				$svcAcct  = $svc.StartName
-				$svcStart = $svc.StartMode
-				$svcDelay = $svc.DelayedAutoStart
-				Write-Verbose "checking service account: $svcAcct"
-				if ($svcAcct -in $builtin) {
-					Write-Verbose "built-in account with default privileges"
-				}
-				else {
-					$cprivs = Get-CPrivilege -Identity $svcAcct
-					$privs -split ',' | Foreach-Object {
-						$priv = $_
-						if ($priv -notin $cprivs) {
-							$res  = $except
-							$stat = $except
-							$msgx = 'Insufficient privileges'
-						} else {
-							$res  = 'PASS'
-							$msgx = 'Correct configuration'
-						}
-						Write-Verbose "service account privileges: $res"
-						if ($svcStart -ne $startup) {
-							$res  = $except
-							$stat = $except
-							$msgx = 'Startup type'
-						} else {
-							$res  = 'PASS'
-							$msgx = 'Correct configuration'
-						}
-						Write-Verbose "startup mode = $res"
-						if ($svcDelay -ne $delayed) {
-							$res  = $except
-							$stat = $except
-							$msgx = 'Delayed start'
-						} else {
-							$res  = 'PASS'
-							$msgx = 'Correct configuration'
-						}
-						Write-Verbose "startup delay = $res"
-						$tempdata.Add([pscustomobject]@{
-							ServiceName = $svcName
-							ServiceAcct = $svcAcct
-							Reference   = $svcRef
-							Privilege   = $priv
-							StartMode   = $startup
-							DelayStart  = $delayed
-							Compliant   = $res
-							Status      = $stat
-							Reason      = $msgx
-						})
+				if ($null -ne $svc) {
+					$svcAcct  = $svc.StartName
+					$svcStart = $svc.StartMode
+					$svcDelay = $svc.DelayedAutoStart
+					Write-Verbose "checking service account: $svcAcct"
+					if ($svcAcct -in $builtin) {
+						Write-Verbose "built-in account with default privileges"
+						$tempdata.Add(
+							[pscustomobject]@{
+								ServiceName = $svcName
+								ServiceAcct = $svcAcct
+								Reference   = $svcRef
+								Privilege   = 'default'
+								StartMode   = $startup
+								DelayStart  = $delayed
+								Compliant   = 'true'
+								Status      = 'PASS'
+								Reason      = 'Default configuration'
+							}
+						)
 					}
+					else {
+						$cprivs = Get-CPrivilege -Identity $svcAcct
+						$privs -split ',' | Foreach-Object {
+							$priv = $_
+							if ($priv -notin $cprivs) {
+								$res  = $except
+								$stat = $except
+								$msgx = 'Insufficient privileges'
+							} else {
+								$res  = 'PASS'
+								$msgx = 'Correct configuration'
+							}
+							Write-Verbose "service account privileges: $res"
+							if ($svcStart -ne $startup) {
+								$res  = $except
+								$stat = $except
+								$msgx = 'Startup type'
+							} else {
+								$res  = 'PASS'
+								$msgx = 'Correct configuration'
+							}
+							Write-Verbose "startup mode = $res"
+							if ($svcDelay -ne $delayed) {
+								$res  = $except
+								$stat = $except
+								$msgx = 'Delayed start'
+							} else {
+								$res  = 'PASS'
+								$msgx = 'Correct configuration'
+							}
+							Write-Verbose "startup delay = $res"
+							$tempdata.Add(
+								[pscustomobject]@{
+									ServiceName = $svcName
+									ServiceAcct = $svcAcct
+									Reference   = $svcRef
+									Privilege   = $priv
+									StartMode   = $startup
+									DelayStart  = $delayed
+									Compliant   = $res
+									Status      = $stat
+									Reason      = $msgx
+								}
+							)
+						}
+					}
+				} else {
+					Write-Verbose "service not found: $svcName"
 				}
 			}
 			catch {
