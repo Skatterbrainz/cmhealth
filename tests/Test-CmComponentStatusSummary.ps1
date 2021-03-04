@@ -1,9 +1,9 @@
-function Test-CmCompStatus {
+function Test-CmComponentStatusSummary {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Component Status Errors",
+		[parameter()][string] $TestName = "Component Status Summary",
 		[parameter()][string] $TestGroup = "operation",
-		[parameter()][string] $Description = "Check Component Status Error messages",
+		[parameter()][string] $Description = "Check Component Status summary counts",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -29,12 +29,8 @@ Errors > 0"
 			$c2 = $($res | Where-Object Status -eq 'Warning').Count
 			if ($c1 -gt 0) {
 				$stat = $except
-				#$clist = $($res | Where-Object Status -eq 'Critical' | Select-Object -ExpandProperty ComponentName)
-				#$tempdata.Add("Critical=$($clist -join ';')")
 			} elseif ($c2 -gt 0) {
 				$stat = 'WARNING'
-				#$wlist = $($res | Where-Object Status -eq 'Warning' | Select-Object -ExpandProperty ComponentName)
-				#$tempdata.Add("Warning=$($wlist -join ';')")
 			}
 			$msg = "Component status since 12:00 = $c1 critical, $c2 warning out of $($res.count) total"
 			$res | Foreach-Object {

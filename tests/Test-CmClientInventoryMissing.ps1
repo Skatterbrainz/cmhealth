@@ -1,9 +1,9 @@
-function Test-CmClientStaleInventory {
+function Test-CmClientInventoryMissing {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Stale Client Inventory Data",
+		[parameter()][string] $TestName = "Clients Missing Inventory Data",
 		[parameter()][string] $TestGroup = "operation",
-		[parameter()][string] $Description = "Clients with outdated or missing inventory data",
+		[parameter()][string] $Description = "Clients with no inventory data",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -25,7 +25,7 @@ FROM v_FullCollectionMembership fcm
 INNER JOIN v_R_System sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_CH_ClientSummary chs ON chs.ResourceID = fcm.ResourceID AND chs.ClientActiveStatus = 0 
 WHERE fcm.CollectionID = 'SMS00001' AND 
-chs.LastHW < DATEADD(dd,-CONVERT(INT,$($DaysOld)),GETDATE())
+chs.LastHW IS NULL
 ORDER BY fcm.Name"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {

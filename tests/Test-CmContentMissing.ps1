@@ -1,4 +1,4 @@
-function Test-CmMissingContent {
+function Test-CmContentMissing {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Packages Missing Content",
