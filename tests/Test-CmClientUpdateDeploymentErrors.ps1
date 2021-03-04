@@ -26,7 +26,8 @@ JOIN v_R_System sys WITH (NOLOCK) ON assc.ResourceID=sys.ResourceID and isnull(s
 JOIN v_FullCollectionMembership_Valid fcm WITH (NOLOCK) ON assc.ResourceID = fcm.ResourceID
 WHERE assc.LastEnforcementErrorID & 0x0000FFFF <> 0 AND
 assc.LastEnforcementMessageID IN (6,9) AND assc.IsCompliant=0 AND
-fcm.CollectionID = 'SMS00001'"
+fcm.CollectionID = 'SMS00001'
+ORDER BY sys.Name0"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except
@@ -34,11 +35,12 @@ fcm.CollectionID = 'SMS00001'"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
-						ComputerName = $_.MachineName
-						Client = $_.SMSClientVersion
-						LastUser = $_.LastLoggedOnUser
+						Computer  = $_.MachineName
+						Client    = $_.SMSClientVersion
+						LastUser  = $_.LastLoggedOnUser
 						ErrorCode = $_.ErrorCode
-						SiteCode = $_.SiteCode
+						HexCode   = Convert-DecErrToHex -DecimalNumber $($_.ErrorCode)
+						SiteCode  = $_.SiteCode
 					}
 				)
 			}

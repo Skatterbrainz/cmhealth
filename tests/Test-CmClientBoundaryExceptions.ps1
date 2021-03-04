@@ -26,7 +26,7 @@ ORDER BY cdr.Name"
 		$set2 = $res | Where-Object {$_.BoundaryGroups -eq 'NONE'}
 		if ($set2.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($set2.Count) items found"
+			$msg  = "$($set2.Count) clients found without an assigned boundary group"
 			$set2 | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{

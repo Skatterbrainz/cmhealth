@@ -15,7 +15,7 @@ function Test-CmCollectionRefresh {
 	try {
 		$startTime = (Get-Date)
 		[int]$maxcolls  = Get-CmHealthDefaultValue -KeySet "configmgr:MaxCollectionRefreshCount" -DataSet $CmHealthConfig
-		Write-Verbose "max collections = $maxcolls"
+		Write-Verbose "max collections allowed = $maxcolls"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "WARNING"
@@ -27,28 +27,24 @@ when RefreshType = 2 then 'Scheduled'
 when RefreshType = 4 then 'Incremental'
 when RefreshType = 6 then 'Scheduled and Incremental'
 else 'Unknown' end) as RefreshType,
-SiteID, CollectionName
-from v_Collections"
+SiteID, CollectionName, MemberCount,
+case when CollectionType = 2 then 'Device' 
+from v_Collections
+where RefreshType in (2,4,6)
+order by CollectionName"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		$cc = ($res | Where-Object {$_.RefreshType -in ('Incremental','Scheduled','Scheduled and Incremental')})
-		if ($cc.Count -gt $maxcolls) {
+		if ($res.Count -gt $maxcolls) {
 			$stat = $except
-			$msg  = "Found $($cc.Count) collections are set to incremental or scheduled refresh"
-			$c1 | Foreach-Object {
+			$msg  = "$($cc.Count) collections are set to incremental and/or scheduled refresh."
+			$msg += "Maximum recommended limit is $maxcolls"
+			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
 						ID = $_.SiteID
 						Name = $_.CollectionName
+						Type = $_.CollectionType
 						RefreshType = $_.RefreshType
-					}
-				)
-			}
-			$c2 | Foreach-Object {
-				$tempdata.Add(
-					[pscustomobject]@{
-						ID = $_.SiteID
-						Name = $_.CollectionName
-						RefreshType = $_.RefreshType
+						Members = $_.MemberCount
 					}
 				)
 			}

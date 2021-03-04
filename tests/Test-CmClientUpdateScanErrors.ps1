@@ -26,7 +26,8 @@ join v_ClientCollectionMembers ccm with (NOLOCK) on uss.ResourceID = ccm.Resourc
 join v_SoftwareUpdateSource sus with (NOLOCK) on sus.UpdateSource_ID = uss.UpdateSource_ID
 join v_R_System rsys with (NOLOCK) on rsys.ResourceID = uss.ResourceID
 join v_FullCollectionMembership_Valid fcm with (NOLOCK) on uss.ResourceID = fcm.ResourceID
-where uss.LastStatusMessageID <> 0 and fcm.CollectionID = 'SMS00001' "
+where uss.LastStatusMessageID <> 0 and fcm.CollectionID = 'SMS00001'
+ORDER BY rsys.Name0"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except
@@ -35,10 +36,11 @@ where uss.LastStatusMessageID <> 0 and fcm.CollectionID = 'SMS00001' "
 				$tempdata.Add(
 					[pscustomobject]@{
 						ComputerName = $_.MachineName
-						Client = $_.SMSClientVersion
+						Client     = $_.SMSClientVersion
 						WUAVersion = $_.WUAVersion
-						LastUser = $_.LastLoggedOnUser
-						ErrorCode = $_.ErrorCode
+						LastUser   = $_.LastLoggedOnUser
+						ErrorCode  = $_.LastErrorCode
+						HexCode    = Convert-DecErrToHex -DecimalNumber $($_.LastErrorCode)
 					}
 				)
 			}

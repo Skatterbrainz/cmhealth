@@ -1,9 +1,9 @@
-function Test-CmClientMissing {
+function Test-CmClientsInactive {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Missing Clients",
+		[parameter()][string] $TestName = "Inactive Clients",
 		[parameter()][string] $TestGroup = "operation",
-		[parameter()][string] $Description = "Check for discovered devices without a client",
+		[parameter()][string] $Description = "Check for inactive clients",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -15,26 +15,27 @@ function Test-CmClientMissing {
 		$query = "SELECT DISTINCT
 fcm.ResourceID,
 fcm.Name,
-fcm.SiteCode,
-fcm.Domain,
-sys.Operating_System_Name_and0 as OSName
+CASE WHEN fcm.IsObsolete = 1 THEN '*' ELSE '' END AS Obsolete,
+CASE WHEN fcm.IsBlocked = 1 THEN '*' ELSE '' END AS Blocked,
+chs.LastActiveTime as LastContactTime,
+fcm.SiteCode
 FROM v_FullCollectionMembership fcm
-INNER JOIN v_R_System sys ON fcm.ResourceID = sys.ResourceID
-WHERE fcm.IsClient != 1 AND fcm.Name NOT LIKE '%Unknown%' AND fcm.CollectionID = 'SMS00001'
-AND sys.Operating_System_Name_and0 IS NOT NULL AND sys.Operating_System_Name_and0 <> ''
-ORDER BY fcm.Name"
+INNER JOIN v_CH_ClientSummary chs ON chs.ResourceID = fcm.ResourceID AND chs.ClientActiveStatus = 0
+WHERE fcm.CollectionID = 'SMS00001'
+order by fcm.Name"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) devices are missing a ConfigMgr client"
+			$msg  = "$($res.Count) inactive clients were found"
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
-						ComputerName = $($_.Name)
-						ResourceID = $($_.ResourceID)
-						Domain = $($_.Domain)
-						OS = $($_.OSName)
-						SiteCode = $($_.SiteCode)
+						Name        = $_.Name
+						SiteCode    = $_.SiteCode
+						ResourceID  = $_.ResourceID
+						Blocked     = $_.Blocked
+						Obsolete    = $_.Obsolete
+						LastContact = $_.LastContactTime
 					}
 				)
 			}

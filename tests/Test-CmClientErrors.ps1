@@ -19,7 +19,8 @@ stat.Component
 FROM v_StatusMessage stat
 INNER JOIN v_FullCollectionMembership_Valid fcm ON fcm.Name = stat.MachineName
 WHERE stat.Time > DATEADD(dd,-CONVERT(INT,7),GETDATE()) and
-stat.Severity=0xC0000000 AND stat.PerClient!=0 AND fcm.CollectionID = 'SMS00001'"
+stat.Severity=0xC0000000 AND stat.PerClient!=0 AND fcm.CollectionID = 'SMS00001'
+ORDER BY stat.MachineName"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except

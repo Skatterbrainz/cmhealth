@@ -24,7 +24,9 @@ chs.LastSW AS LastScanDate
 FROM v_FullCollectionMembership fcm
 INNER JOIN v_R_System sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_CH_ClientSummary chs ON chs.ResourceID = fcm.ResourceID AND chs.ClientActiveStatus = 0 
-WHERE fcm.CollectionID = 'SMS00001' AND chs.LastActiveTime < DATEADD(dd,-CONVERT(INT,$($DaysOld)),GETDATE())"
+WHERE fcm.CollectionID = 'SMS00001' AND 
+chs.LastHW < DATEADD(dd,-CONVERT(INT,$($DaysOld)),GETDATE())
+ORDER BY fcm.Name"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except
