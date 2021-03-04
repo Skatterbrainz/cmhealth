@@ -9,6 +9,7 @@ function Test-CmCertificates {
 	try {
 		$startTime = (Get-Date)
 		#[int]$Setting = Get-CmHealthDefaultValue -KeySet "keygroup:keyname" -DataSet $CmHealthConfig
+		[int]$expdays = 30
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS" # do not change this
 		$except = "WARNING" # or "FAIL"
@@ -17,15 +18,17 @@ function Test-CmCertificates {
   			FROM dbo.vCM_SiteConfiguration where RoleName like '%Certificate'"
 		Write-Verbose "submitting query"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		Write-Verbose "returned $($res.Count) items"
+		Write-Verbose "returned $($res.Count) certificate records"
+		$ecount = 0
 		foreach ($row in $res) {
 			[string]$cfg = $($row.Configuration -replace "`n",",")
 			[datetime]$exp = $($cfg -split 'Expires:')[1].Trim()
 			Write-Verbose "expiration date is $exp"
-			if ((New-TimeSpan -Start (Get-Date) -End $exp).Days -lt 30) {
-				Write-Verbose "expiration less than 30 days"
+			if ((New-TimeSpan -Start (Get-Date) -End $exp).Days -lt $expdays) {
+				Write-Verbose "expiration less than $expdays days"
 				$stat = $except
 				$msgx = "Certificate about to expire or has expired"
+				$ecount++
 			} else {
 				$msgx = "Valid"
 			}
@@ -40,8 +43,7 @@ function Test-CmCertificates {
 		}
 		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found"
-			#$res | Foreach-Object {$tempdata.Add( [pscustomobject]@{Name=$_.Name} )}
+			$msg  = "$($ecount) of $($res.Count) certificates expired or will expire within $expdays days"
 		}
 	}
 	catch {

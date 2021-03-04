@@ -13,12 +13,14 @@ function Test-SqlDbFileGrowth {
 		$except = "WARNING"
 		$msg    = "No issues found"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		<#
+
 		if ($ScriptParams.Credential) {
 			$dbfiles = Get-DbaDbFile -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -SqlCredential $ScriptParams.Credential
 		} else {
 			$dbfiles = Get-DbaDbFile -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database
 		}
+		$procs = Get-WmiQueryResult -ClassName "Win32_Processor" -Params $ScriptParams
+
 		$query = "select distinct Name from v_CombinedDeviceResources where (Name not like '%Unknown%') and (Name not like 'Provisioning Device%')"
 		if ($null -ne $ScriptParams.Credential) {
 			$clients = @(Invoke-DbaQuery -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -Query $query -SqlCredential $ScriptParams.Credential).Count
@@ -38,7 +40,7 @@ function Test-SqlDbFileGrowth {
 				# more work needed here!
 			}
 		} # switch
-		#>
+
 	}
 	catch {
 		$stat = 'ERROR'
