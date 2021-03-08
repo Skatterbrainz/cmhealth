@@ -25,9 +25,8 @@ Export HTML health test report
 ### EXAMPLE 1
 ```
 $testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
-```
-
 $testresult | Out-HealthReport -Show
+```
 
 ### EXAMPLE 2
 ```
@@ -66,7 +65,7 @@ Aliases:
 
 Required: False
 Position: 2
-Default value: "$($env:USERPROFILE)\Desktop\healthreport.htm"
+Default value: "$($env:TEMP)\healthreport.htm"
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
