@@ -80,7 +80,7 @@ function Test-CmHealth {
 		Write-Warning "Default configuration has not been defined."
 		break
 	}
-	$Script:CmHealthConfig = Import-CmHealthSettings -Primary ConfigFile
+	$Script:CmHealthConfig = Import-CmHealthSettings -Primary $ConfigFile
 	if ($null -eq $CmHealthConfig) {
 		Write-Warning "configuration data could not be imported"
 		break
