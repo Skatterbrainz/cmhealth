@@ -62,13 +62,14 @@ function Get-CmHealthDefaultValue {
 
 function Get-CmHealthLastTestSet {
 	[CmdletBinding()]
-	param()
-	$filepath = Join-Path -Path $env:TEMP -ChildPath "cmhealth-lastrun.txt"
-	if (Test-Path $filepath) {
-		Write-Verbose "importing test selection from $filepath"
-		Write-Output $(Get-Content -Path $filepath)
+	param(
+		[parameter(Mandatory=$False)][string] $FilePath = "$($env:TEMP)\cmhealth-lastrun.txt"
+	)
+	if (Test-Path $FilePath) {
+		Write-Verbose "importing test selection from $FilePath"
+		Write-Output $(Get-Content -Path $FilePath)
 	} else {
-		Write-Warning "No previous tests have been completed. Run some tests first."
+		Write-Warning "Test history file not found: $FilePath"
 	}
 }
 
@@ -142,4 +143,83 @@ function Convert-DecErrToHex {
 	)
 	$n = [math]::Abs($DecimalNumber)
 	Write-Output $('0x'+(++$n).ToString('X'))
+}
+
+# original from http://vcloud-lab.com/entries/powershell/powershell-get-registry-value-data
+function Get-RegistryValueData {
+    [CmdletBinding(SupportsShouldProcess=$True,
+        ConfirmImpact='Medium',
+        HelpURI='http://vcloud-lab.com')]
+    Param ( 
+        [parameter(Position=0, ValueFromPipeline=$True, ValueFromPipelineByPropertyName=$True)]
+        [alias('C')]
+        [String[]]$ComputerName = '.',
+        [Parameter(Position=1, Mandatory=$True, ValueFromPipelineByPropertyName=$True)] 
+        [alias('Hive')]
+        [ValidateSet('ClassesRoot', 'CurrentUser', 'LocalMachine', 'Users', 'CurrentConfig')]
+        [String]$RegistryHive = 'LocalMachine',
+        [Parameter(Position=2, Mandatory=$True, ValueFromPipelineByPropertyName=$True)]
+        [alias('KeyPath')]
+        [String]$RegistryKeyPath = 'SYSTEM\CurrentControlSet\Services\USBSTOR',
+        [parameter(Position=3, Mandatory=$True, ValueFromPipelineByPropertyName=$true)]
+        [alias('Value')]
+        [String]$ValueName = 'Start'
+    )
+    Begin {
+        $RegistryRoot= "[{0}]::{1}" -f 'Microsoft.Win32.RegistryHive', $RegistryHive
+        try {
+            $RegistryHive = Invoke-Expression $RegistryRoot -ErrorAction Stop
+        }
+        catch {
+            Write-Host "Incorrect Registry Hive mentioned, $RegistryHive does not exist" 
+        }
+    }
+    Process {
+        Foreach ($Computer in $ComputerName) {
+            if (Test-Connection $computer -Count 2 -Quiet) {
+                $reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey($RegistryHive, $Computer)
+                $key = $reg.OpenSubKey($RegistryKeyPath)
+                $Data = $key.GetValue($ValueName)
+                $Obj = [pscustomobject]@{
+                    Computer = $Computer
+                    RegistryValueName = "$RegistryKeyPath\$ValueName"
+                    RegistryValueData = $Data
+                }
+                $Obj
+            }
+            else {
+                Write-Host "$Computer not reachable" -BackgroundColor DarkRed
+            }
+        }
+    }
+    End {
+        #[Microsoft.Win32.RegistryHive]::ClassesRoot
+        #[Microsoft.Win32.RegistryHive]::CurrentUser
+        #[Microsoft.Win32.RegistryHive]::LocalMachine
+        #[Microsoft.Win32.RegistryHive]::Users
+        #[Microsoft.Win32.RegistryHive]::CurrentConfig
+    }
+}
+
+# returns 4-digit ConfigMgr site version build number (e.g. "9045")
+function Get-CmBuildNumber {
+	[CmdletBinding()]
+	param (
+		[parameter(Mandatory=$False)][string]$ComputerName = '.'
+	)
+	$cmv = Get-RegistryValueData -ComputerName $ComputerName -RegistryHive LocalMachine -RegistryKeyPath SOFTWARE\Microsoft\SMS\Setup -ValueName 'Version'
+	Write-Output $($cmv | Select-Object -ExpandProperty RegistryValueData)
+}
+
+function Get-CmVersionName {
+	param(
+		[parameter(Mandatory=$True)][string] $Version
+	)
+	$mpath = $(Get-Module cmhealth -ListAvailable).Path | Select-Object -First 1
+	$fpath = $(Join-Path -Path $(Split-Path $mpath) -ChildPath "private\buildnumbers_cm.csv")
+	if (Test-Path $fpath) {
+		$csvdata = Import-Csv -Path $fpath
+		$build = $csvdata | Where-Object {$_.Build -eq $Version} | Select-Object -ExpandProperty Name
+		Write-Output $build
+	}
 }
