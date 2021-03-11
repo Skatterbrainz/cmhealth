@@ -119,7 +119,10 @@ function Test-CmHealth {
 	}
 	Write-Verbose "$($testset.Count) tests were selected"
 	if ($testset.Count -gt 0) {
+		Write-Verbose "saving test selection to history file"
 		Set-CmHealthLastTestSet -TestNames $testset | Out-Null
+	} else {
+		Write-Verbose "no tests were selected"
 	}
 	foreach ($test in $testset) {
 		Write-Verbose "TEST: $test"
