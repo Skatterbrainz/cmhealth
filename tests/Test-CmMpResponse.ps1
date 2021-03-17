@@ -40,16 +40,16 @@ ORDER BY srs.ServerName"
 			if (($MpcertStatusCode -ne "200") -or ($MplistStatusCode -ne "200")) {
 				$stat = $except
 				$msg = "Invalid web response"
-				$tempdata.Add(
-					[pscustomobject]@{
-						SiteServer = $server
-						MPCertStatus = $MpcertStatusCode
-						MPCertUrl = $URL1
-						MPListStatus = $MplistStatusCode
-						MPListUrl = $URL2
-					}
-				)
 			}
+			$tempdata.Add(
+				[pscustomobject]@{
+					SiteServer = $server
+					MPCertStatus = $MpcertStatusCode
+					MPCertUrl = $URL1
+					MPListStatus = $MplistStatusCode
+					MPListUrl = $URL2
+				}
+			)
 		}
 		catch {
 			$MpcertStatus =  $_.Exception.Response.StatusCode
