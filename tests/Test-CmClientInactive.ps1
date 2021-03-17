@@ -1,4 +1,4 @@
-function Test-CmClientsInactive {
+function Test-CmClientInactive {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Inactive Clients",

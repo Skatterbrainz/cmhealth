@@ -1,9 +1,9 @@
-function Test-CmEPClientInfections {
+function Test-CmClientATPStatus {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Check for Endpoint Protection Infections",
-		[parameter()][string] $TestGroup = "configuration or operation",
-		[parameter()][string] $Description = "Query history of EP client infections",
+		[parameter()][string] $TestName = "ATP Client Onboarding and Activity Status",
+		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $Description = "ATP Devices onboarded and active",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -13,19 +13,27 @@ function Test-CmEPClientInfections {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
-		$query = "select Name,EP_LastThreatName,EP_LastInfectionTime from dbo.v_CombinedDeviceResources where EP_LastThreatName IS NOT NULL order by Name"
+		$query = "select distinct [ATP_OnboardingState] as ATPOnboard, Count(*) as Devices 
+		from v_CombinedDeviceResources where Name not in 
+		('x86 Unknown Computer (x86 Unknown Computer)','x64 Unknown Computer (x64 Unknown Computer)',
+		'Provisioning Device (Provisioning Device)')
+		group by [ATP_OnboardingState]"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
-			$stat = $except
-			$msg  = "$($res.Count) items found"
-			$res | Foreach-Object {
-				$tempdata.Add(
-					[pscustomobject]@{
-						DeviceName = $_.Name
-						ThreatName = $_.EP_LastThreatName
-						DateTime = $_.EP_LastThreatName
-					}
-				)
+			$onboard = $res | Where-Object {$_.ATPOnboard -eq 1}
+			$total = $($res.Devices | Measure-Object -Sum).Sum
+			$pending = $total - $onboard
+			if (($onboard -gt 0) -and ($pending -gt 0)) {
+				$stat = $except
+				$msg  = "$($res.Count) items found"
+				$res | Foreach-Object {
+					$tempdata.Add(
+						[pscustomobject]@{
+							ATPOnboard = $_.ATPOnboard
+							Devices = $_.Devices
+						}
+					)
+				}
 			}
 		}
 	}

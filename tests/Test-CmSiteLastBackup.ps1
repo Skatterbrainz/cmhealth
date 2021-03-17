@@ -1,4 +1,4 @@
-function Test-CmLastBackup {
+function Test-CmSiteLastBackup {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Last Site Backup",

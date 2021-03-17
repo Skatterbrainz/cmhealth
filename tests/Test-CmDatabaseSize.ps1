@@ -1,4 +1,4 @@
-function Test-CmDbSize {
+function Test-CmDatabaseSize {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Database Size",

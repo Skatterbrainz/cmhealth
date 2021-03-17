@@ -1,4 +1,4 @@
-function Test-CmClientDiskSpace {
+function Test-CmClientLowDiskSpace {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Clients with Low Disk Space",
