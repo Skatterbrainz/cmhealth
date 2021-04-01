@@ -17,7 +17,7 @@
 	The Select option displays a gridview to select the individual tests to perform
 .PARAMETER ConfigFile
 	Path to cmhealth.json (create or import). If not found, it will attempt to create a new
-	one in the specified path.  The default path is the userprofile\desktop folder.
+	one in the specified path.  The default path is the user TEMP folder.
 .PARAMETER Remediate
 	Attempt remediation when possible
 .PARAMETER Source
@@ -68,7 +68,7 @@ function Test-CmHealth {
 		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SiteServer = "localhost",
 		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SqlInstance = "localhost",
 		[parameter(Mandatory=$False)][ValidateSet('All','AD','CM','Host','SQL','WSUS','Select','Previous')][string] $TestingScope = 'All',
-		[parameter(Mandatory=$False)][string]$ConfigFile = "$($env:USERPROFILE)\desktop\cmhealth.json",
+		[parameter(Mandatory=$False)][string]$ConfigFile = "$($env:TEMP)\cmhealth.json",
 		[parameter(Mandatory=$False)][boolean] $Remediate = $False,
 		[parameter(Mandatory=$False)][string] $Source = "c:\windows\winsxs",
 		[parameter(Mandatory=$False)][pscredential] $Credential

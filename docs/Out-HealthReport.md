@@ -25,8 +25,9 @@ Export HTML health test report
 ### EXAMPLE 1
 ```
 $testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
-$testresult | Out-HealthReport -Show
 ```
+
+$testresult | Out-HealthReport -Show
 
 ### EXAMPLE 2
 ```
