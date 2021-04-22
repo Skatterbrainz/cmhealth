@@ -20,9 +20,9 @@ cdr.ADSiteName,
 cdr.LastLogonUser,
 cdr.LastMPServerName,
 ld.Name0 as Drive, 
-ld.Size0 as Size, 
-ld.FreeSpace0 as FreeSpace,
-(ld.Size0 - ld.FreeSpace0) as Used,
+ROUND((ld.Size0/1024),2) as SizeMB, 
+ROUND((ld.FreeSpace0/1024),2) as FreeSpaceMB,
+ROUND(((ld.Size0 - ld.FreeSpace0)/1024),2) as UsedMB,
 ROUND(((ld.Size0 - ld.FreeSpace0) / CONVERT(decimal,ld.Size0)),2) as PctUsed
 from v_CombinedDeviceResources cdr
 inner join v_GS_LOGICAL_DISK ld on ld.ResourceID = cdr.MachineID
@@ -42,9 +42,9 @@ order by Name"
                         LastUser = $_.LastLogonUser
                         LastMP   = $_.LastMPServerName
                         Drive    = $_.Drive
-                        Size     = [math]::Round(($_.Size / 1GB),2)
-                        Used     = [math]::Round(($_.Used / 1GB),2)
-                        Free     = [math]::Round(($_.FreeSpace / 1GB),2)
+                        SizeMB   = $_.SizeMB
+                        UsedMB   = $_.UsedMB
+                        FreeMB   = $_.FreeSpaceMB
                         PctUsed  = [math]::Round(($_.PctUsed * 100),1)
                     }
                 )
