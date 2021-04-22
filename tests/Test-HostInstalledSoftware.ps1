@@ -14,7 +14,7 @@ function Test-HostInstalledSoftware {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
-		[array]$res = Get-WmiQueryResult -ClassName "Win32_Product" -Params $ScriptParams | Sort-Object ProductName
+		[array]$res = Get-WmiQueryResult -ClassName "Win32_Product" -Params $ScriptParams | Sort-Object Name
 		Write-Verbose "$($res.Count) products were returned"
 		if ($res.Count -gt $MaxProducts) {
 			$stat = $except
