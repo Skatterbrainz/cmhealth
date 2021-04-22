@@ -41,7 +41,7 @@ function Test-CmSiteCertificates {
 				}
 			)
 		}
-		if ($res.Count -gt 0) {
+		if ($ecount -gt 0) {
 			$stat = $except
 			$msg  = "$($ecount) of $($res.Count) certificates expired or will expire within $expdays days"
 		}
