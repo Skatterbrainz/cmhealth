@@ -14,7 +14,7 @@ function Test-CmClientCoverage {
 		$except = "WARNING"
 		$msg    = "Coverage meets stated threshold of $Coverage percent"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$adcomps = @(Get-AdsiComputer | Select-Object -ExpandProperty Name)
+		$adcomps = @(Get-AdsiComputer | Select-Object -ExpandProperty Name) # array of AD computer names
 		$adcount = $adcomps.Count
 		Write-Verbose "AD computers = $adcount"
 		$query = "select distinct name, clientversion, lasthardwarescan 
@@ -24,19 +24,21 @@ where (name not like '%unknown%') and (name not like 'Provisioning Device%')"
 		$cmcount = $cmcomps.Count
 		Write-Verbose "CM computers = $cmcount"
 		if (($adcount -gt 0) -and ($cmcount -gt 0)) {
-			$delta1 = $cmcomps | Where-Object {$_.name -notin $adcomps}
-			$delta2 = $adcomps | Where-Object {$_ -notin $cmcomps.name}
+			$delta1 = $cmcomps | Where-Object {$_.name -notin $adcomps} # CM device names not in AD
+			$delta2 = $adcomps | Where-Object {$_ -notin $cmcomps.name} # AD computer names not in CM
 			Write-Verbose "there are $($delta1.Count) computers in configmgr which are not in active directory"
 			Write-Verbose "there are $($delta2.Count) computers in active directory which are not in configmgr"
 			if (($delta1.Count -gt 0) -or ($delta2.Count -gt 0)) {
 				$stat = $except
 				$msg = "discrepancies found between configmgr and active directory computer coverage"
+				$d1names = $delta1.name -join ','
+				$d2names = $delta2 -join ','
 				$tempdata.Add(
 					[pscustomobject]@{
 						ADComputers = $($adcomps.Count)
 						CMComputers = $($cmcomps.Count)
-						OnlyAD  = $(if ($delta2.count -gt 0) { @($delta2) })
-						OnlyCM  = $(if ($delta1.count -gt 0) { @($delta1.Name) })
+						OnlyAD  = $d2names
+						OnlyCM  = $d1names
 						NotInAD = $($delta1.Count)
 						NotInCM = $($delta2.Count)
 					}
