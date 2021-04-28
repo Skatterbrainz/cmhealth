@@ -13,7 +13,7 @@ function Test-SqlServerVersion {
 		$stat    = "PASS" # do not change this
 		$except  = "FAIL" # or "WARNING"
 		$msg     = "No issues found" # do not change this either
-		$res     = Get-DbaBuildReference -SqlInstance $ScriptParams.SqlInstance
+		$res     = Get-DbaBuildReference -SqlInstance $ScriptParams.SqlInstance -Update
 		$fname   = "SQL Server $($res.NameLevel) $($res.SPLevel) $($res.CULevel)"
 		$expdate = $res.SupportedUntil
 		$supported = $(New-TimeSpan -Start (Get-Date) -End $expdate).TotalDays
