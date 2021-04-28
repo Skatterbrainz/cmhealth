@@ -23,7 +23,7 @@
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-HealthReport.md
 .NOTES
-	Released with 0.2.24
+	Thank you!
 #>
 
 function Out-HealthReport {
@@ -35,7 +35,8 @@ function Out-HealthReport {
 		[parameter(Mandatory=$False)][string]$Title = "ConfigMgr Site",
 		[parameter(Mandatory=$False)][string]$CssFile = "",
 		[parameter(Mandatory=$False)][switch]$Detailed,
-		[parameter(Mandatory=$False)][switch]$Show
+		[parameter(Mandatory=$False)][switch]$Show,
+		[parameter(Mandatory=$False)][string]$LogFile = "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log"
 	)
 	BEGIN {
 		Write-Log -Message "defining HTML properties"
