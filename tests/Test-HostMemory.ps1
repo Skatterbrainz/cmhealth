@@ -23,8 +23,8 @@ function Test-HostMemory {
 		$FreeRAM  = [Math]::Round($FreeRAM, 2)
 		$UsedRAM  = [Math]::Round($UsedRAM, 2)
 		$RAMPercentFree = [Math]::Round($RAMPercentFree, 2)
-		Write-Verbose "total memory = $TotalRAM"
-		Write-Verbose "minimum allowed memory = $MinMemory"
+		Write-Log -Message "total memory = $TotalRAM"
+		Write-Log -Message "minimum allowed memory = $MinMemory"
 		if ($TotalRAM -lt $MinMemory) {
 			$stat = $except
 			$msg  = "$($TotalRam) GB is below the minimum recommended $MinMemory GB"

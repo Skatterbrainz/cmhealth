@@ -12,7 +12,7 @@ function Test-SqlDbDedicated {
 		$except = "WARNING"
 		$msg    = "No issues found"
 		$supported  = Get-CmHealthDefaultValue -KeySet "sqlserver:LicensedDatabases" -DataSet $CmHealthConfig
-		Write-Verbose "Supported Names: $($supported -join ',')"
+		Write-Log -Message "Supported Names: $($supported -join ',')"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		if ($null -ne $ScriptParams.Credential) {
 			$dbnames = Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -SqlCredential $ScriptParams.Credential | Select-Object -ExpandProperty Name
@@ -22,17 +22,17 @@ function Test-SqlDbDedicated {
 		$dblist1 = @()
 		$dblist2 = @()
 		$dbnames | ForEach-Object {
-			Write-Verbose "database name: $_"
+			Write-Log -Message "database name: $_"
 			if (($_ -notmatch 'CM_') -and ($_ -notin $supported)) {
-				Write-Verbose "database is not supported: $($_)"
+				Write-Log -Message "database is not supported: $($_)"
 				$dblist1 += $($_).ToString()
 			} else {
-				Write-Verbose "database is supported: $($_)"
+				Write-Log -Message "database is supported: $($_)"
 				$dblist2 += $($_).ToString()
 			}
 		}
 		if ($dblist1.Count -gt 0) {
-			Write-Verbose "$($dblist1.Count) unsupported names were found"
+			Write-Log -Message "$($dblist1.Count) unsupported names were found"
 			$stat = $except
 			$msg  = "$($dblist1.Count) databases are not supported by MEMCM SQL licensing"
 			$dblist1 | Foreach-Object {
@@ -43,7 +43,7 @@ function Test-SqlDbDedicated {
 				)
 			}
 		} else {
-			Write-Verbose "no unsupported names were found"
+			Write-Log -Message "no unsupported names were found"
 			if ($dblist2.Count -gt 0) {
 				$tempdata.Add("$($dblist2 -join ',')")
 			} else {
@@ -57,7 +57,6 @@ function Test-SqlDbDedicated {
 		$stat = "ERROR"
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -65,7 +64,7 @@ function Test-SqlDbDedicated {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

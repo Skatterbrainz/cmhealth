@@ -16,7 +16,7 @@ function Test-SqlLogSpace {
 		$logs   = Get-DbaDbLogSpace -SqlInstance $ScriptParams.SqlInstance
 		foreach ($log in $logs) {
 			if ($log.LogSpaceUsedPercent -gt 50) {
-				Write-Verbose "log space warning: $($log.Database)"
+				Write-Log -Message "log space warning: $($log.Database)"
 				$msg = "Log space warning (greater than 50 percent used)"
 				$stat = $except
 				$tempdata.Add(

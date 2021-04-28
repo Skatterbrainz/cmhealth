@@ -28,34 +28,34 @@ function Test-CmSiteInstallAccountRoles {
 			$username = $res.LogonName
 			$basename = $($username -split '\\')[1]
 			if ($localAdmins.Name -contains $username) {
-				Write-Verbose "install account is a direct member of local Administrators group"
+				Write-Log -Message "install account is a direct member of local Administrators group"
 				$isLocalAdmin = $True
 			} else {
-				Write-Verbose "install account is not a member of local Administrators group"
+				Write-Log -Message "install account is not a member of local Administrators group"
 				$stat = $except
 				$msg += "install account has fewer permissions than it may require"
 			}
 			if ($sysadmins -contains $username) {
-				Write-Verbose "install account is a direct member of SQL sysadmins group"
+				Write-Log -Message "install account is a direct member of SQL sysadmins group"
 				$isSysAdmin = $True
 			}
 			$dagroup = Get-ADSIGroupMember -Identity "Domain Admins" | Select-Object -expand name
 			if ($dagroup -contains $basename) {
-				Write-Verbose "install account is a direct member of Domain Admins group"
+				Write-Log -Message "install account is a direct member of Domain Admins group"
 				$isDomainAdmin = $True
 				$stat = $except
 				$msg += "install account has more permissions than it may require"
 			}
 			$eagroup = Get-ADSIGroupMember -Identity "Enterprise Admins" | Select-Object -expand name
 			if ($eagroup -contains $basename) {
-				Write-Verbose "install account is a direct member of Enterprise Admins group"
+				Write-Log -Message "install account is a direct member of Enterprise Admins group"
 				$isEntAdmin = $True
 				$stat = $except
 				$msg += "install account has more permissions than it may require"
 			}
 			$sagroup = Get-ADSIGroupMember -Identity "Schema Admins" | Select-Object -expand name
 			if ($sagroup -contains $basename) {
-				Write-Verbose "install account is a direct member of Schema Admins group"
+				Write-Log -Message "install account is a direct member of Schema Admins group"
 				$isSchemaAdmin = $True
 				$stat = $except
 				$msg += "install account has more permissions than it may require"
@@ -78,7 +78,6 @@ function Test-CmSiteInstallAccountRoles {
 	}
 	finally {
 		$msg = $($msg -join ';')
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -86,7 +85,7 @@ function Test-CmSiteInstallAccountRoles {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

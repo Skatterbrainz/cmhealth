@@ -21,11 +21,11 @@ function Test-SqlServerVersion {
 			$stat = $except
 			$msg  = "FAIL! $fname support has expired!"
 		} elseif ($supported -le 30) {
-			Write-Verbose "Warning! Support will end in $supported days"
+			Write-Log -Message "Warning! Support will end in $supported days"
 			$stat = "WARNING"
 			$msg  = "$fname support is will expire within $supported days"
 		} else {
-			Write-Verbose "$fname is supported until $($res.SupportedUntil)"
+			Write-Log -Message "$fname is supported until $($res.SupportedUntil)"
 		}
 		$tempdata.Add(
 			[pscustomobject]@{

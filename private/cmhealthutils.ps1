@@ -6,10 +6,10 @@ function Import-CmHealthSettings {
 	)
 	try {
 		if (Test-Path $Primary) {
-			Write-Verbose "loading from: $Primary"
+			Write-Log -Message "loading from: $Primary"
 			$result = Get-Content -Path $Primary | ConvertFrom-Json
 		} elseif (Test-Path $Default) {
-			Write-Verbose "loading from: $Default"
+			Write-Log -Message "loading from: $Default"
 			$result = Get-Content -Path $Default | ConvertFrom-Json
 		} else {
 			throw "cmhealth.json was not found"
@@ -28,14 +28,14 @@ function New-CmHealthConfig {
 	param(
 		[parameter(Mandatory=$False)][string]$Path = "$($env:TEMP)\cmhealth.json"
 	)
-	Write-Verbose "Creating default cmhealth settings file on user desktop"
+	Write-Log -Message "Creating default cmhealth settings file at $Path"
 	$mpath = Split-Path $(Get-Module cmhealth).Path
 	$rpath = "$($mpath)\reserve"
-	Write-Verbose "source path is $rpath"
+	Write-Log -Message "source path is $rpath"
 	$configFile = "$($rpath)\cmhealth.json"
-	Write-Verbose "destination path is $Path"
+	Write-Log -Message "destination path is $Path"
 	Copy-Item -Path $configFile -Destination $Path -Force
-	Write-Verbose "cmhealth settings file saved as: $($Path)"
+	Write-Log -Message "cmhealth settings file saved as: $($Path)"
 }
 
 function Get-CmHealthDefaultValue {
@@ -68,7 +68,7 @@ function Get-CmHealthLastTestSet {
 		[parameter(Mandatory=$False)][string] $FilePath = "$($env:TEMP)\cmhealth-lastrun.txt"
 	)
 	if (Test-Path $FilePath) {
-		Write-Verbose "importing test selection from $FilePath"
+		Write-Log -Message "importing test selection from $FilePath"
 		Write-Output $(Get-Content -Path $FilePath)
 	} else {
 		Write-Warning "Test history file not found: $FilePath"
@@ -81,7 +81,7 @@ function Set-CmHealthLastTestSet {
 		[parameter(Mandatory=$True)][string[]] $TestNames,
 		[parameter(Mandatory=$False)][string] $FilePath = "$($env:TEMP)\cmhealth-lastrun.txt"
 	)
-	Write-Verbose "saving test selection to $FilePath"
+	Write-Log -Message "saving test selection to $FilePath"
 	$TestNames | Out-File -FilePath $FilePath -Force
 }
 
@@ -92,10 +92,10 @@ function Get-CmSqlQueryResult {
 		[parameter(Mandatory=$True)] $Params
 	)
 	if ($null -ne $Params.Credential) {
-		Write-Verbose "submitting query with credentials"
+		Write-Log -Message "submitting query with credentials"
 		$result = @(Invoke-DbaQuery -SqlInstance $Params.SqlInstance -Database $Params.Database -Query $Query -SqlCredential $Params.Credential)
 	} else {
-		Write-Verbose "submitting query without credentials"
+		Write-Log -Message "submitting query without credentials"
 		$result = @(Invoke-DbaQuery -SqlInstance $Params.SqlInstance -Database $Params.Database -Query $Query)
 	}
 	$result
@@ -110,20 +110,24 @@ function Get-WmiQueryResult {
 		[parameter(Mandatory=$True)] $Params
 	)
 	if (![string]::IsNullOrEmpty($Params.Credential)) {
-		Write-Verbose "submitting query with explicit credentials"
+		Write-Log -Message "submitting WMI query with explicit credentials"
+		Write-Log -Message "classname = $ClassName"
 		$cs1 = New-CimSession -Credential $Params.Credential -Authentication Negotiate -ComputerName $Params.ComputerName -ErrorAction Stop
 		if ([string]::IsNullOrEmpty($Query)) {
 			$result = @(Get-CimInstance -CimSession $cs1 -ClassName $ClassName -Namespace $Namespace -ErrorAction Stop)
 		} else {
+			Write-Log -Message "query = $Query"
 			$result = @(Get-CimInstance -CimSession $cs1 -ClassName $ClassName -Namespace $Namespace -Filter $Query -ErrorAction Stop)
 		}
 		$cs1 | Remove-CimSession
 	} else {
-		Write-Verbose "submitting query with implicit credentials"
+		Write-Log -Message "submitting WMI query with implicit credentials"
+		Write-Log -Message "classname = $ClassName"
 		if ([string]::IsNullOrEmpty($Query)) {
-			Write-Verbose "no query. classname = $ClassName. namespace = $Namespace"
+			Write-Log -Message "no query. classname = $ClassName. namespace = $Namespace"
 			[array]$result = Get-CimInstance -ClassName $ClassName -Namespace $Namespace -ErrorAction Stop
 		} else {
+			Write-Log -Message "query = $Query"
 			[array]$result = Get-CimInstance -ClassName $ClassName -Namespace $Namespace -Filter $Query -ErrorAction Stop
 		}
 	}
@@ -173,12 +177,14 @@ function Get-RegistryValueData {
             $RegistryHive = Invoke-Expression $RegistryRoot -ErrorAction Stop
         }
         catch {
-            Write-Host "Incorrect Registry Hive mentioned, $RegistryHive does not exist" 
+			Write-Log -Message "incorrect registry hive referenced: $RegistryHive does not exist" -Category Warning -Show
         }
     }
     Process {
         Foreach ($Computer in $ComputerName) {
+			Write-Log -Message "verifying connectivity to $computer"
             if (Test-Connection $computer -Count 2 -Quiet) {
+				Write-Log -Message "keypath = $RegistryKeyPath - value = $ValueName"
                 $reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey($RegistryHive, $Computer)
                 $key = $reg.OpenSubKey($RegistryKeyPath)
                 $Data = $key.GetValue($ValueName)
@@ -190,7 +196,7 @@ function Get-RegistryValueData {
                 $Obj
             }
             else {
-                Write-Host "$Computer not reachable" -BackgroundColor DarkRed
+                Write-Log -Message "$Computer not reachable" -Category Warning -Show
             }
         }
     }
@@ -217,11 +223,37 @@ function Get-CmVersionName {
 	param(
 		[parameter(Mandatory=$True)][string] $Version
 	)
+	Write-Log -Message "querying configuration manager version name"
 	$mpath = $(Get-Module cmhealth -ListAvailable).Path | Select-Object -First 1
 	$fpath = $(Join-Path -Path $(Split-Path $mpath) -ChildPath "private\buildnumbers_cm.csv")
+	Write-Log -Message "reading file $fpath"
 	if (Test-Path $fpath) {
 		$csvdata = Import-Csv -Path $fpath
 		$build = $csvdata | Where-Object {$_.Build -eq $Version} | Select-Object -ExpandProperty Name
 		Write-Output $build
+	} else {
+		Write-Log -Message "file not found! $fpath" -Category Warning
+	}
+}
+
+function Write-Log {
+	param (
+		[parameter(Mandatory=$False)][string]$Message = "",
+		[parameter(Mandatory=$False)][string][ValidateSet('Info','Warning','Error')]$Category = "Info",
+		[parameter(Mandatory=$False)][switch]$Show,
+		[parameter(Mandatory=$False)][switch]$ClearLog
+	)
+	$msg = "$(Get-Date -f 'yyyy-MM-dd hh:mm:ss') - $Category - $Message"
+	if ($ClearLog) {
+		$msg | Out-File -FilePath $LogFile -Force
+	} else {
+		$msg | Out-File -FilePath $LogFile -Append
+	}
+	if ($Show) { 
+		switch ($Category) {
+			'Error' { Write-Host $msg -ForegroundColor Red }
+			'Warning' { Write-Host $msg -ForegroundColor Yellow }
+			Default { Write-Host $msg -ForegroundColor Cyan }
+		}
 	}
 }

@@ -22,6 +22,7 @@ ORDER BY srs.ServerName"
 	foreach ($server in $servers.ServerName) {
 		$URL1 = "http://$Server/sms_mp/.sms_aut?mpcert"
 		$URL2 = "http://$Server/sms_mp/.sms_aut?mplist"
+		Write-Log -Message "submitting mp requests: $URL1 $URL2"
 		$WEBObject1 = [System.Net.WebRequest]::Create($URL1)
 		$WEBObject2 = [System.Net.WebRequest]::Create($URL2)
 		$WEBObject1.AuthenticationLevel = "None"

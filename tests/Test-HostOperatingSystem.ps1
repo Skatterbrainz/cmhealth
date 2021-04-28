@@ -9,7 +9,7 @@ function Test-HostOperatingSystem {
 	try {
 		$startTime = (Get-Date)
 		$supported = @(Get-CmHealthDefaultValue -KeySet "siteservers:SupportedOperatingSystems" -DataSet $CmHealthConfig)
-		Write-Verbose "Supported OS list = $($supported -join ',')"
+		Write-Log -Message "Supported OS list = $($supported -join ',')"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat    = "PASS"
 		$except  = "FAIL"
@@ -32,7 +32,6 @@ function Test-HostOperatingSystem {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -40,7 +39,7 @@ function Test-HostOperatingSystem {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

@@ -9,7 +9,7 @@ function Test-SqlServerMemory {
 	try {
 		$startTime = (Get-Date)
 		[int]$MaxMemAllocation = Get-CmHealthDefaultValue -KeySet "sqlserver:MaxMemAllocationPercent" -DataSet $CmHealthConfig
-		Write-Verbose "MaxMemAllocation = $MaxMemAllocation"
+		Write-Log -Message "MaxMemAllocation = $MaxMemAllocation"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "FAIL"
@@ -21,7 +21,7 @@ function Test-SqlServerMemory {
 		} else {
 			$cmax = (Get-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -EnableException -ErrorAction Stop).MaxValue
 		}
-		Write-Verbose "current sql limit = $cmax MB"
+		Write-Log -Message "current sql limit = $cmax MB"
 		# get total physical memory of host in MB
 		if ($ScriptParams.Credential) {
 			$tmem = (Get-DbaComputerSystem -ComputerName $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue -Credential $ScriptParams.Credential).TotalPhysicalMemory.Megabyte
@@ -29,11 +29,11 @@ function Test-SqlServerMemory {
 			$tmem = (Get-DbaComputerSystem -ComputerName $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue).TotalPhysicalMemory.Megabyte
 		}
 		$tmem = [math]::Round($tmem, 0)
-		Write-Verbose "total physical memory = $tmem MB"
+		Write-Log -Message "total physical memory = $tmem MB"
 		$target = $tmem * $($MaxMemAllocation * 0.1)
-		Write-Verbose "target memory = $target"
+		Write-Log -Message "target memory = $target"
 		$target = [math]::Round($target, 0)
-		Write-Verbose "target memory = $target (rounded)"
+		Write-Log -Message "target memory = $target (rounded)"
 		if ($cmax -eq $unlimited) {
 			$stat = $except
 			$msg  = "Current SQL Server max memory is unlimited. Should be limited to $MaxMemAllocation percent of total physical memory."
@@ -61,7 +61,6 @@ function Test-SqlServerMemory {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -69,7 +68,7 @@ function Test-SqlServerMemory {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

@@ -26,7 +26,7 @@ $query = @"
 			$computers += $ScriptParams.SqlInstance
 		}
 		foreach ($computer in $computers) {
-			Write-Verbose "computer: $computer"
+			Write-Log -Message "computer: $computer"
 			if ($computer -ne $env:COMPUTERNAME) {
 				if ($ScriptParams.Credential) {
 					$res = @(Get-WinEvent -LogName System -FilterXPath $query -ComputerName $computer -Credential $ScriptParams.Credential -ErrorAction SilentlyContinue)

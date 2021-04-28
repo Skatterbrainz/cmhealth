@@ -59,7 +59,7 @@ ORDER BY
 				$tempdata.Add($dataset)
 			}
 		} else {
-			Write-Verbose "no issues found"
+			Write-Log -Message "no issues found"
 		}
 	}
 	catch {

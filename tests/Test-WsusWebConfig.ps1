@@ -11,7 +11,8 @@ function Test-WsusWebConfig {
 		[int32] $MaxCachedUpdates = Get-CmHealthDefaultValue -KeySet "wsus:MaxCachedUpdates" -DataSet $CmHealthConfig
 		[int32] $MaxInstalledPrerequisites = Get-CmHealthDefaultValue -KeySet "wsus:MaxInstalledPrerequisites" -DataSet $CmHealthConfig
 		[string] $ConfigFile = "$($env:PROGRAMFILES)\Update Services\WebServices\ClientWebService\Web.config"
-
+		Write-Log -Message "max cached updates = $MaxCachedUpdates"
+		Write-Log -Message "max installed prereqs = $MaxInstalledPrerequisites"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "WARNING"
@@ -68,7 +69,6 @@ function Test-WsusWebConfig {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -76,7 +76,7 @@ function Test-WsusWebConfig {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

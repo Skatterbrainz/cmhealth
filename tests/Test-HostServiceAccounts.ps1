@@ -21,16 +21,16 @@ function Test-HostServiceAccounts {
 			$privs   = $service.Privileges
 			$startup = $service.StartMode
 			$delayed = if ($service.DelayedAutoStart -eq 'true') { $True } else { $False }
-			Write-Verbose "service name: $svcName"
+			Write-Log -Message "service name: $svcName"
 			try {
 				$svc = Get-WmiQueryResult -ClassName "Win32_Service" -Query "Name = '$svcName'" -Params $ScriptParams
 				if ($null -ne $svc) {
 					$svcAcct  = $svc.StartName
 					$svcStart = $svc.StartMode
 					$svcDelay = $svc.DelayedAutoStart
-					Write-Verbose "checking service account: $svcAcct"
+					Write-Log -Message "checking service account: $svcAcct"
 					if ($svcAcct -in $builtin) {
-						Write-Verbose "built-in account with default privileges"
+						Write-Log -Message "built-in account with default privileges"
 						$tempdata.Add(
 							[pscustomobject]@{
 								ServiceName = $svcName
@@ -57,7 +57,7 @@ function Test-HostServiceAccounts {
 								$res  = 'PASS'
 								$msgx = 'Correct configuration'
 							}
-							Write-Verbose "service account privileges: $res"
+							Write-Log -Message "service account privileges: $res"
 							if ($svcStart -ne $startup) {
 								$res  = $except
 								$stat = $except
@@ -66,7 +66,7 @@ function Test-HostServiceAccounts {
 								$res  = 'PASS'
 								$msgx = 'Correct configuration'
 							}
-							Write-Verbose "startup mode = $res"
+							Write-Log -Message "startup mode = $res"
 							if ($svcDelay -ne $delayed) {
 								$res  = $except
 								$stat = $except
@@ -75,7 +75,7 @@ function Test-HostServiceAccounts {
 								$res  = 'PASS'
 								$msgx = 'Correct configuration'
 							}
-							Write-Verbose "startup delay = $res"
+							Write-Log -Message "startup delay = $res"
 							$tempdata.Add(
 								[pscustomobject]@{
 									ServiceName = $svcName
@@ -92,7 +92,7 @@ function Test-HostServiceAccounts {
 						}
 					}
 				} else {
-					Write-Verbose "service not found: $svcName"
+					Write-Log -Message "service not found: $svcName"
 				}
 			}
 			catch {

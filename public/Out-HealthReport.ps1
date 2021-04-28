@@ -38,14 +38,14 @@ function Out-HealthReport {
 		[parameter(Mandatory=$False)][switch]$Show
 	)
 	BEGIN {
-		Write-Verbose "defining HTML properties"
+		Write-Log -Message "defining HTML properties"
 		$tablewidth = "800px"
 		$leftpanel  = "150px"
 		if ($Status -ne 'All') {
-			Write-Verbose "filtering test data for status = $Status"
+			Write-Log -Message "filtering test data for status = $Status"
 			$TestData = $TestData | Where-Object {$_.Status -eq $Status}
 		}
-		Write-Verbose "processing test data"
+		Write-Log -Message "processing test data"
 	}
 	PROCESS {
 		#$summary = $TestData | Group-Object Status | Select-Object Name,Count,Group
@@ -102,7 +102,7 @@ function Out-HealthReport {
 	END {
 		$stats = $inputData | Group-Object Status | Select-Object Name,Count,Group
 		if ([string]::IsNullOrEmpty($CssFile)) {
-			Write-Verbose "using default CSS"
+			Write-Log -Message "using default CSS"
 			$styles = @"
 <style>
 BODY {background-color:#CCCCCC;font-family:Calibri,sans-serif; font-size: small;}
@@ -112,13 +112,13 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 </style>
 "@
 		} else {
-			Write-Verbose "importing CSS from file: $CssFile"
+			Write-Log -Message "importing CSS from file: $CssFile"
 			if (Test-Path $CssFile) {
 				$cssdata = Get-Content -Path $CssFile
 				$styles = "<style>$cssdata</style>"
 			}
 		}
-		Write-Verbose "combining output to HTML"
+		Write-Log -Message "combining output to HTML"
 		if ($null -ne $GLOBAL:CmhParams) {
 			$Title += " $(($GLOBAL:CmhParams).SiteCode)"
 		}

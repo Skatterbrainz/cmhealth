@@ -11,7 +11,7 @@ function Test-AdSchemaExtension {
 	$except = "FAIL"
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		Write-Verbose "Verifying for AD Schema extension"
+		Write-Log -Message "Verifying for AD Schema extension"
 		$strFilter = "(&(objectClass=mSSMSSite)(Name=*))"
 		$objDomain = New-Object System.DirectoryServices.DirectoryEntry
 		$objSearcher = New-Object System.DirectoryServices.DirectorySearcher
@@ -23,7 +23,7 @@ function Test-AdSchemaExtension {
 		foreach ($i in $colProplist){$objSearcher.PropertiesToLoad.Add($i) | Out-Null}
 		$colResults = $objSearcher.FindAll()
 		if ($colResults.Count -gt 0) {
-			Write-Verbose "schema has been extended"
+			Write-Log -Message "schema has been extended"
 			$obj = Get-ADSIObject -Identity $colResults.Path.Substring(7)
 			$msg  = "Active Directory schema has been extended for configmgr"
 			$tempdata.Add(

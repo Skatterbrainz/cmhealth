@@ -10,7 +10,7 @@ function Test-AdSysMgtContainer {
 	$stat = "PASS"
 	$except = "FAIL"
 	try {
-		Write-Verbose "Searching for AD container: System Management"
+		Write-Log -Message "Searching for AD container: System Management"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$strFilter = "(&(objectCategory=Container)(Name=System Management))"
 		$objDomain = New-Object System.DirectoryServices.DirectoryEntry
@@ -25,7 +25,7 @@ function Test-AdSysMgtContainer {
 		if ($colResults.Count -gt 0) {
 			$obj = Get-ADSIObject -Identity $colResults.Path.substring(7)
 			$msg = "System Management container exists"
-			Write-Verbose "getting security permissions on container"
+			Write-Log -Message "getting security permissions on container"
 			$acls = dsacls.exe $obj.distinguishedName
 			# foreach principal, strip off "Allow" prefix and "FULL CONTROL" suffix
 			$full = $acls | Where-Object {$_ -match 'FULL CONTROL'} | ForEach-Object {$_.Substring(6,32).Trim()}

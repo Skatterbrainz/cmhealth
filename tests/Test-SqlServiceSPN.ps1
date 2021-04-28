@@ -13,12 +13,12 @@ function Test-SqlServiceSPN {
 		$except = "FAIL"
 		$msg    = "No issues found"
 		$sqlserver = $ScriptParams.SqlInstance
-		Write-Verbose "instance name = $sqlserver"
+		Write-Log -Message "instance name = $sqlserver"
 		$domain    = $(Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -ExpandProperty Domain)
-		Write-Verbose "domain suffix = $domain"
+		Write-Log -Message "domain suffix = $domain"
 		$fqdn      = "$($sqlserver).$($domain)"
 		$spn       = "MSSQLSvc/$($fqdn)*"
-		Write-Verbose "SPN name = $spn"
+		Write-Log -Message "SPN name = $spn"
 		$res       = $(SetSpn -T "$domain" -F -Q "$spn").Split("`n").Trim()
 		if ($res -contains "No such SPN found.") {
 			$stat = $except

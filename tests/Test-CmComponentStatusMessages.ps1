@@ -24,12 +24,13 @@ WHERE (sm.Severity IN (-1073741824, -2147483648)) AND
 'Software Distribution', 'Software Inventory Agent')) AND
 (sm.Time >= DATEADD(dd, -CONVERT(INT,$($DaysBack)), GETDATE()))"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		Write-Verbose "returned $($res.Count) items"
+		Write-Log -Message "returned $($res.Count) items"
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found within the last $DaysBack days"
+			Write-Log -Message $msg
 			$res | Foreach-Object {
-				Write-Verbose "adding to testdata queue"
+				Write-Log -Message "adding to testdata queue"
 				$tempdata.Add(
 					[pscustomobject]@{
 						Component    = $_.Component
@@ -42,7 +43,7 @@ WHERE (sm.Severity IN (-1073741824, -2147483648)) AND
 				)
 			}
 		} else {
-			Write-Verbose "no results were returned"
+			Write-Log -Message "no results were returned"
 		}
 	}
 	catch {

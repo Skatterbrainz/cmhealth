@@ -27,6 +27,8 @@
 	Number of days to go back for checking status messages, errors, warnings, etc. Default is 7
 .PARAMETER Credential
 	PS Credential object for authenticating under alternate context
+.PARAMETER LogFile
+	Path and name of log file. Default is $env:TEMP\cmhealth_yyyy-mm-dd.log
 .EXAMPLE
 	Test-CmHealth -SiteCode "P01" -Database "CM_P01"
 	Runs all tests on the local machine using the current user credentials
@@ -71,18 +73,21 @@ function Test-CmHealth {
 		[parameter(Mandatory=$False)][string]$ConfigFile = "$($env:TEMP)\cmhealth.json",
 		[parameter(Mandatory=$False)][boolean] $Remediate = $False,
 		[parameter(Mandatory=$False)][string] $Source = "c:\windows\winsxs",
-		[parameter(Mandatory=$False)][pscredential] $Credential
+		[parameter(Mandatory=$False)][pscredential] $Credential,
+		[parameter(Mandatory=$False)][string]$LogFile = "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log"
 	)
 	if (-not(Test-Path $ConfigFile)) { New-CmHealthConfig -Path $ConfigFile }
 	$startTime1 = (Get-Date)
 	Write-Warning "If you haven't refreshed the cmhealth.json file since 0.2.24 or earlier, rename or delete the file and run this command again."
+	Write-Host "log file = $LogFile"
+	Write-Log -Message "------------------ begin processing --------------------"
 	if (!(Test-Path "$ConfigFile")) {
-		Write-Warning "Default configuration has not been defined."
+		Write-Log -Message "Default configuration has not been defined." -Category Error -Show
 		break
 	}
 	$Script:CmHealthConfig = Import-CmHealthSettings -Primary $ConfigFile
 	if ($null -eq $CmHealthConfig) {
-		Write-Warning "configuration data could not be imported"
+		Write-Log -Message "configuration data could not be imported" -Category Error -Show
 		break
 	}
 	$params = [ordered]@{
@@ -99,9 +104,10 @@ function Test-CmHealth {
 	$mpath = $(Split-Path (Get-Module cmhealth).Path)
 	$tpath = "$($mpath)\tests"
 	$tests = Get-ChildItem -Path $tpath -Filter "*.ps1"
-	Write-Verbose "$($tests.Count) tests found in library"
+	Write-Log -Message "$($tests.Count) tests found in library"
+	Write-Log -Message "testing scope = $TestingScope"
 	if ($TestingScope -in ('All','AD')) {
-		Write-Warning "AD tests may require RSAT to be installed"
+		Write-Log -Message "AD tests may require RSAT to be installed" -Category Warning -Show
 	}
 	switch ($TestingScope) {
 		'All' {
@@ -117,18 +123,18 @@ function Test-CmHealth {
 			$testset = @($tests.BaseName | Where-Object {$_ -match "Test-$($TestingScope)"})
 		}
 	}
-	Write-Verbose "$($testset.Count) tests were selected"
+	Write-Log -Message "$($testset.Count) tests were selected"
 	if ($testset.Count -gt 0) {
-		Write-Verbose "saving test selection to history file"
+		Write-Log -Message "saving test selection to history file"
 		Set-CmHealthLastTestSet -TestNames $testset | Out-Null
 	} else {
-		Write-Verbose "no tests were selected"
+		Write-Log -Message "no tests were selected"
 	}
 	foreach ($test in $testset) {
-		Write-Verbose "TEST: $test"
+		Write-Log -Message "TEST == $test"
 		$testname = $test += ' -ScriptParams $params'
 		Invoke-Expression -Command $testname
 	}
 	$runTime = New-TimeSpan -Start $startTime1 -End (Get-Date)
-	Write-Host "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec"
+	Write-Log -Message "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec" -Show
 }

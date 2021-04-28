@@ -9,7 +9,7 @@ function Test-SqlAgentJobStatus {
 	try {
 		$startTime = (Get-Date)
 		[int]$HoursBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SqlAgentJobStatusHoursBack" -DataSet $CmHealthConfig
-		Write-Verbose "hours back = $HoursBack"
+		Write-Log -Message "hours back = $HoursBack"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "FAIL"
@@ -48,7 +48,6 @@ function Test-SqlAgentJobStatus {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -56,7 +55,7 @@ function Test-SqlAgentJobStatus {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

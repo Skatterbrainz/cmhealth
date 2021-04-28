@@ -12,26 +12,26 @@ function Test-CmDatabaseSize {
 		[int]$PerDevData = Get-CmHealthDefaultValue -KeySet "sqlserver:DataSizePerCMClientMB" -DataSet $CmHealthConfig
 		$maxUtilization = $maxUtilization * 0.1
 		$devData = $PerDevData * 1MB
-		Write-Verbose "Max Utilization Percent = $maxUtilization"
-		Write-Verbose "Per Device Data MB = $PerDevData"
+		Write-Log -Message "Max Utilization Percent = $maxUtilization"
+		Write-Log -Message "Per Device Data MB = $PerDevData"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "WARNING"
 		$msg    = "Correct configuration"
 		$query  = "select distinct ResourceID,Name0 from v_R_System"
 		$devices = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		Write-Verbose "calculating expected space requirements"
+		Write-Log -Message "calculating expected space requirements"
 		$devSizeMB = (($devices.Count * $devData) + $devData) / 1MB
 		$recSize = $devSizeMB * $maxUtilization
-		Write-Verbose "expected space: $devSizeMB MB (at $($devices.Count) devices)"
+		Write-Log -Message "expected space: $devSizeMB MB (at $($devices.Count) devices)"
 		if ($null -ne $ScriptParams.Credential) {
 			$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -SqlCredential $ScriptParams.Credential).SizeMB
 		} else {
 			$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database).SizeMB
 		}
-		Write-Verbose "actual space: $dbSizeMB MB"
+		Write-Log -Message "actual space: $dbSizeMB MB"
 		$pct = [math]::Round(($devSizeMB / $dbSizeMB) * 100, 1)
-		Write-Verbose "actual utilization: $pct`%"
+		Write-Log -Message "actual utilization: $pct`%"
 		if ($pct -gt $recSize) {
 			$stat = $except
 			$msg  = "Current DB size is $dbSizeMB MB ($pct percent of recommended). Recommended: $recSize MB"
@@ -44,7 +44,6 @@ function Test-CmDatabaseSize {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -52,7 +51,7 @@ function Test-CmDatabaseSize {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

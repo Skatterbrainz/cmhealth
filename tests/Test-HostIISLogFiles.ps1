@@ -10,8 +10,8 @@ function Test-HostIISLogFiles {
 		$startTime = (Get-Date)
 		[int]$MaxDaysOld  = Get-CmHealthDefaultValue -KeySet "iis:LogFilesMaxDaysOld" -DataSet $CmHealthConfig
 		[int]$MaxSpacePct = Get-CmHealthDefaultValue -KeySet "iis:LogFilesMaxSpacePercent" -DataSet $CmHealthConfig
-		Write-Verbose "MaxDaysOld = $MaxDaysOld"
-		Write-Verbose "MaxSpacePct = $MaxSpacePct"
+		Write-Log -Message "MaxDaysOld = $MaxDaysOld"
+		Write-Log -Message "MaxSpacePct = $MaxSpacePct"
 
 		$stat   = "PASS"
 		$except = "WARNING"
@@ -25,13 +25,13 @@ function Test-HostIISLogFiles {
 		$IISLogsPath = Join-Path $LogsBase -ChildPath "W3SVC1"
 		$logs = Get-ChildItem -Path $IISLogsPath -Filter "*.log"
 		$numlogs = $logs.Count
-		Write-Verbose "$numlogs log files were found"
+		Write-Log -Message "$numlogs log files were found"
 		$tsize = 0
 		$logs | Select-Object -ExpandProperty Length | Foreach-Object { $tsize += $_ }
 		$OldLogs = @($logs | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-$MaxDaysOld) })
 		$TotalSpaceMB = [math]::Round($tsize / 1MB, 2)
 		if ($OldLogs.Count -gt 0) {
-			Write-Verbose "$($oldLogs.Count) older log files were found"
+			Write-Log -Message "$($oldLogs.Count) older log files were found"
 			if ($Remediate -eq $True) {
 				$OldLogs | Select-Object -ExpandProperty FullName | Remove-Item -Force
 				$stat = "REMEDIATED"
@@ -53,7 +53,7 @@ function Test-HostIISLogFiles {
 			$stat = $except
 			$msg  = "IIS logs are using $TotalSpaceMB MB or $($logSpaceUsed * 100)`% of total capacity"
 		} else {
-			Write-Verbose "IIS logs are using $TotalSpaceMB MB or $($logSpaceUsed * 100)`% of total capacity"
+			Write-Log -Message "IIS logs are using $TotalSpaceMB MB or $($logSpaceUsed * 100)`% of total capacity"
 		}
 		$tempdata.Add([pscustomobject]@{
 			Status  = $stat

@@ -23,7 +23,7 @@ function Test-HostFirewallPorts {
 		}
 		foreach ($computer in $complist) {
 			foreach ($port in ($setting -split ',')) {
-				Write-Verbose "testing port: $port"
+				Write-Log -Message "testing port: $port ($computer)"
 				try {
 					$conn = New-Object System.Net.Sockets.TcpClient($(hostname),$port)
 					$tempdata.Add(

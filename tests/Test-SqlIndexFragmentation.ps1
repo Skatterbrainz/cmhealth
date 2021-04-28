@@ -9,6 +9,7 @@ function Test-SqlIndexFragmentation {
 	try {
 		$startTime = (Get-Date)
 		[int]$MinValue = Get-CmHealthDefaultValue -KeySet "sqlserver:IndexFragThresholdPercent" -DataSet $CmHealthConfig
+		Write-Log -Message "min index fragmentation pct = $MinValue"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "WARNING"
@@ -54,7 +55,6 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -62,7 +62,7 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

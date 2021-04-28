@@ -21,15 +21,15 @@ function Test-HostRestarts {
 </QueryList>
 "@
 		if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-			Write-Verbose "running on $($ScriptParams.ComputerName)"
+			Write-Log -Message "running on $($ScriptParams.ComputerName)"
 			if ($null -ne $ScriptParams.Credential) {
-				Write-Verbose "credential was provided"
+				Write-Log -Message "credential was provided"
 				$res = Get-WinEvent -LogName "System" -FilterXPath $query -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -ErrorAction SilentlyContinue
 			} else {
 				$res = Get-WinEvent -LogName "System" -FilterXPath $query -ComputerName $ScriptParams.ComputerName -ErrorAction SilentlyContinue
 			}
 		} else {
-			Write-Verbose "running on localhost"
+			Write-Log -Message "running on localhost"
 			$res = Get-WinEvent -LogName "System" -FilterXPath $query -ErrorAction SilentlyContinue
 		}
 		if ($res.Count -gt 0) {

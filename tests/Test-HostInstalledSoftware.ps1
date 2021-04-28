@@ -8,14 +8,14 @@ function Test-HostInstalledSoftware {
 	)
 	$startTime = (Get-Date)
 	[int]$MaxProducts  = Get-CmHealthDefaultValue -KeySet "siteservers:InstalledSoftwareThreshold" -DataSet $CmHealthConfig
-	Write-Verbose "MaxProducts = $MaxProducts"
+	Write-Log -Message "MaxProducts = $MaxProducts"
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS" # do not change this
 		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
 		[array]$res = Get-WmiQueryResult -ClassName "Win32_Product" -Params $ScriptParams | Sort-Object Name
-		Write-Verbose "$($res.Count) products were returned"
+		Write-Log -Message "$($res.Count) products were returned"
 		if ($res.Count -gt $MaxProducts) {
 			$stat = $except
 			$msg  = "$($res.Count) items found. See TestData for item details"

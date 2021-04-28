@@ -9,7 +9,7 @@ function Test-HostDiskSpace {
 	try {
 		$startTime = (Get-Date)
 		[int]$MaxPctUsed = Get-CmHealthDefaultValue -KeySet "siteservers:DiskSpaceMaxPercent" -DataSet $CmHealthConfig
-		Write-Verbose "MaxPctUsed = $MaxPctUsed"
+		Write-Log -Message "MaxPctUsed = $MaxPctUsed"
 
 		[System.Collections.Generic.List[PSObject]]$tempdata = @()
 		$stat   = "PASS"
@@ -42,7 +42,6 @@ function Test-HostDiskSpace {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -50,7 +49,7 @@ function Test-HostDiskSpace {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

@@ -9,7 +9,7 @@ function Test-HostDriveBlockSize {
 	try {
 		$startTime = (Get-Date)
 		[int]$bsize = Get-CmHealthDefaultValue -KeySet "siteservers:DiskFormatBlockSize" -DataSet $CmHealthConfig
-		Write-Verbose "block size required = $bsize"
+		Write-Log -Message "block size required = $bsize"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "WARNING"

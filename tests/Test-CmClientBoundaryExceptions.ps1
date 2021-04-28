@@ -27,17 +27,18 @@ ORDER BY cdr.Name"
 		if ($set2.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($set2.Count) clients found without an assigned boundary group"
+			Write-Log -Message $msg -Category Warning
 			$set2 | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
-						Name=$_.Name
-						OS = "$($_.DeviceOS) $($_.DeviceOSBuild)"
-						Manufacturer=$_.Manufacturer
-						Model = $_.Model
-						ADSite = $_.ADSiteName
+						Name         = $_.Name
+						OS           = "$($_.DeviceOS) $($_.DeviceOSBuild)"
+						Manufacturer = $_.Manufacturer
+						Model        = $_.Model
+						ADSite       = $_.ADSiteName
 						SerialNumber = $_.SerialNumber
-						MACAddress = $_.MACAddress
-						LastLogon = $_.LastLogonUser
+						MACAddress   = $_.MACAddress
+						LastLogon    = $_.LastLogonUser
 					}
 				)
 			}

@@ -14,7 +14,7 @@ function Test-HostWindowsUpdates {
 		$msg    = "No issues found"
 		$res = Get-WindowsUpdate -ComputerName $ScriptParams.ComputerName -WindowsUpdate -ErrorAction Stop
 		if ($res.Count -gt 0) {
-			Write-Verbose "$($res.Count) updates are not installed"
+			Write-Log -Message "$($res.Count) updates are not installed"
 			if ($ScriptParams.Remediate -eq $True) {
 				$rsx  = Get-WindowsUpdate -ComputerName $ScriptParams.ComputerName -WindowsUpdate -AcceptAll -Install -RecurseCycle 3 -IgnoreReboot
 				$stat = 'REMEDIATED'
@@ -43,7 +43,6 @@ function Test-HostWindowsUpdates {
 		}
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -51,7 +50,7 @@ function Test-HostWindowsUpdates {
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

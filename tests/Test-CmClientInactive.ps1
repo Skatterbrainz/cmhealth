@@ -27,6 +27,7 @@ order by fcm.Name"
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) inactive clients were found"
+			Write-Log -Message $msg
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{

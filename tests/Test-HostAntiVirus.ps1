@@ -18,7 +18,7 @@ function Test-HostAntiVirus {
 			$appname = $_.Name
 			foreach ($pn in ('McAfee','Sophos','Symantec','antivirus','malware','security','endpoint')) {
 				if ($appname -match $pn) {
-					Write-Verbose "match found: $appname"
+					Write-Log -Message "match found: $appname"
 					$tempdata.Add(
 						[pscustomobject]@{
 							ProductName = $_.Name

@@ -9,7 +9,7 @@ function Test-CmSiteLastBackup {
 	try {
 		$startTime = (Get-Date)
 		[int]$DaysBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SiteBackupMaxDaysOld" -DataSet $CmHealthConfig
-		Write-Verbose "threshold (days back) = $DaysBack"
+		Write-Log -Message "threshold (days back) = $DaysBack"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "FAIL"
@@ -46,8 +46,8 @@ CASE
 	WHEN (@id = 5035) THEN 'SMS Site Backup completed successfully with zero errors but still there could be some warnings'
 	WHEN (@id != 5035) THEN 'SMS Site Backup failed to completed successfully'
 END AS 'Comments'"
-		#Write-Verbose "submitting the following query to the SQL instance:"
-		#Write-Verbose $query
+		#Write-Log -Message "submitting the following query to the SQL instance:"
+		#Write-Log -Message $query
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($null -eq $res) {
 			$stat = $except

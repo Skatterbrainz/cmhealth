@@ -34,10 +34,10 @@ function Test-HostServerFeatures {
 		foreach ($feature in $features) {
 			if ($feature.Name -in $flist) {
 				if ($feature.Installed -ne $True) {
-					Write-Verbose "feature not installed: $($feature.Name)"
+					Write-Log -Message "feature not installed: $($feature.Name)"
 					if ($ScriptParams.Remediate -eq $True) {
 						try {
-							Write-Verbose "installing: $($Feature.Name)"
+							Write-Log -Message "installing: $($Feature.Name)"
 							if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
 								if ($ScriptParams.Credential) {
 									Install-WindowsFeature -Name "$($Feature.Name)" -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
@@ -77,7 +77,7 @@ function Test-HostServerFeatures {
 					}
 				}
 				else {
-					Write-Verbose "feature is installed: $($feature.Name)"
+					Write-Log -Message "feature is installed: $($feature.Name)"
 					$tempdata.Add(
 						[pscustomobject]@{
 							Feature = $feature.Name

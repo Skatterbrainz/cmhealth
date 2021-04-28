@@ -32,6 +32,7 @@ ORDER BY sys.Name0"
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) clients with update deployment errors found"
+			Write-Log -Message $msg
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{

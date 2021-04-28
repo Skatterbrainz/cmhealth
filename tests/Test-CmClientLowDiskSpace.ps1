@@ -33,6 +33,7 @@ order by Name"
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) clients were found having more than 80% full on C drive"
+			Write-Log -Message $msg
 			$res | Foreach-Object {
                 $tempdata.Add(
                     [pscustomobject]@{

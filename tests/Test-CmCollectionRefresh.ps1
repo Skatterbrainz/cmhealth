@@ -15,7 +15,7 @@ function Test-CmCollectionRefresh {
 	try {
 		$startTime = (Get-Date)
 		[int]$maxcolls  = Get-CmHealthDefaultValue -KeySet "configmgr:MaxCollectionRefreshCount" -DataSet $CmHealthConfig
-		Write-Verbose "max collections allowed = $maxcolls"
+		Write-Log -Message "max collections allowed = $maxcolls"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "WARNING"
@@ -37,6 +37,7 @@ order by CollectionName"
 			$stat = $except
 			$msg  = "$($cc.Count) collections are set to incremental and/or scheduled refresh."
 			$msg += "Maximum recommended limit is $maxcolls"
+			Write-Log -Message $msg
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{

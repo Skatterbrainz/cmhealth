@@ -25,6 +25,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) devices have an outdated client installed"
+			Write-Log -Message $msg
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{

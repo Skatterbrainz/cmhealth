@@ -9,6 +9,7 @@ function Test-SqlDbCollation {
 	try {
 		$startTime = (Get-Date)
 		[string]$Collation = Get-CmHealthDefaultValue -KeySet "sqlserver:DefaultCollation" -DataSet $CmHealthConfig
+		Write-Log -Message "collation = $Collation"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "FAIL"

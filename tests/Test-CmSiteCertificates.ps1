@@ -15,15 +15,15 @@ function Test-CmSiteCertificates {
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
 		$query = "SELECT SiteCode,RoleID,RoleName,State,Configuration,MessageID,LastEvaluatingTime,Param1
-  			FROM dbo.vCM_SiteConfiguration where RoleName like '%Certificate'"
-		Write-Verbose "submitting query"
+FROM dbo.vCM_SiteConfiguration where RoleName like '%Certificate'"
+		Write-Log -Message "submitting query"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		Write-Verbose "returned $($res.Count) certificate records"
+		Write-Log -Message "returned $($res.Count) certificate records"
 		$ecount = 0
 		foreach ($row in $res) {
 			[string]$cfg = $($row.Configuration -replace "`n",",")
 			[datetime]$exp = $($cfg -split 'Expires:')[1].Trim()
-			Write-Verbose "expiration date is $exp"
+			Write-Log -Message "expiration date is $exp"
 			if ((New-TimeSpan -Start (Get-Date) -End $exp).Days -lt $expdays) {
 				Write-Verbose "expiration less than $expdays days"
 				$stat = $except

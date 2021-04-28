@@ -9,7 +9,7 @@ function Test-CmWsusLastSync {
 	try {
 		$startTime = (Get-Date)
 		[int]$DaysBack = Get-CmHealthDefaultValue -KeySet "wsus:LastSyncMaxDaysOld" -DataSet $CmHealthConfig
-		Write-Verbose "DaysBack = $DaysBack"
+		Write-Log -Message "DaysBack = $DaysBack"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "FAIL"
@@ -58,7 +58,6 @@ END AS 'Comments'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -66,7 +65,7 @@ END AS 'Comments'"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}

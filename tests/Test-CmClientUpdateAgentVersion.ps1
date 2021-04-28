@@ -14,10 +14,10 @@ function Test-CmClientUpdateAgentVersion {
 		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
 		$query = "SELECT DISTINCT
-	rsys.Netbios_Name0 AS MachineName,
-	rsys.Client_Version0,
-	uss.LastWUAVersion,
-	fcm.SiteCode
+rsys.Netbios_Name0 AS MachineName,
+rsys.Client_Version0,
+uss.LastWUAVersion,
+fcm.SiteCode
 FROM v_UpdateScanStatus uss WITH (NOLOCK)
 JOIN v_ClientCollectionMembers ccm WITH (NOLOCK) ON uss.ResourceID = ccm.ResourceID
 JOIN v_SoftwareUpdateSource sus WITH (NOLOCK) ON sus.UpdateSource_ID = uss.UpdateSource_ID

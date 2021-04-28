@@ -27,6 +27,7 @@ ORDER BY fcm.Name"
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) devices are missing a ConfigMgr client"
+			Write-Log -Message $msg
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{

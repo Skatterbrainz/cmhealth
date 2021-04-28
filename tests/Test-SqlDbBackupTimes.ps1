@@ -10,6 +10,8 @@ function Test-SqlDbBackupTimes {
 		$startTime = (Get-Date)
 		[int] $DaysBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SiteBackupMaxDaysOld" -DataSet $CmHealthConfig
 		[int] $MaxRunTime = Get-CmHealthDefaultValue -KeySet "wsus:SiteBackupMaxRuntime" -DataSet $CmHealthConfig
+		Write-Log -Message "daysback = $DaysBack"
+		Write-Log -Message "maxruntime = $MaxRunTime"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
 		$except = "WARNING"
@@ -58,7 +60,6 @@ ORDER BY T1.Seconds DESC"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$rt = Get-RunTime -BaseTime $startTime
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
@@ -66,7 +67,7 @@ ORDER BY T1.Seconds DESC"
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
