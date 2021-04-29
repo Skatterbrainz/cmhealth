@@ -10,6 +10,9 @@ function Test-SqlDbBackupTimes {
 		$startTime = (Get-Date)
 		[int] $DaysBack = Get-CmHealthDefaultValue -KeySet "sqlserver:SiteBackupMaxDaysOld" -DataSet $CmHealthConfig
 		[int] $MaxRunTime = Get-CmHealthDefaultValue -KeySet "wsus:SiteBackupMaxRuntime" -DataSet $CmHealthConfig
+		if (!$MaxRunTime) {
+			$MaxRunTime = 300 # seconds
+		}
 		Write-Log -Message "daysback = $DaysBack"
 		Write-Log -Message "maxruntime = $MaxRunTime"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
