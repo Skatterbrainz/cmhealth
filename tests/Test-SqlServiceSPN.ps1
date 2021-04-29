@@ -10,7 +10,7 @@ function Test-SqlServiceSPN {
 		$startTime = (Get-Date)
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS"
-		$except = "FAIL"
+		$except = "WARNING"
 		$msg    = "No issues found"
 		$sqlserver = $ScriptParams.SqlInstance
 		Write-Log -Message "instance name = $sqlserver"
@@ -23,15 +23,15 @@ function Test-SqlServiceSPN {
 		if ($res -contains "No such SPN found.") {
 			$stat = $except
 			$msg  = "No MSSQLSvc SPNs have been registered for $fqdn"
-		} else {
-			foreach ($sp in $res) {
-				if (![string]::IsNullOrEmpty($sp) -and (-not($sp.StartsWith("Checking") -or $sp.StartsWith("Existing SPN")))) {
-					$tempdata.Add(
-						[pscustomobject]@{
-							SPN = $sp
-						}
-					)
-				}
+		}
+		foreach ($sp in $res) {
+			if (![string]::IsNullOrEmpty($sp) -and (-not($sp.StartsWith("Checking") -or $sp.StartsWith("Existing SPN")))) {
+				$tempdata.Add(
+					[pscustomobject]@{
+						HostName = $fqdn
+						SPN = $sp
+					}
+				)
 			}
 		}
 	}
