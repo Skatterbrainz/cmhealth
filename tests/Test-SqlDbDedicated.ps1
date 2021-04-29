@@ -26,29 +26,26 @@ function Test-SqlDbDedicated {
 			if (($_ -notmatch 'CM_') -and ($_ -notin $supported)) {
 				Write-Log -Message "database is not supported: $($_)"
 				$dblist1 += $($_).ToString()
+				$isSupported = $False
 			} else {
 				Write-Log -Message "database is supported: $($_)"
 				$dblist2 += $($_).ToString()
+				$isSupported = $True
 			}
+			$tempdata.Add(
+				[pscustomobject]@{
+					SqlInstance = $($ScriptParams.SqlInstance)
+					Database = $($_)
+					Supported = $isSupported
+				}
+			)
 		}
 		if ($dblist1.Count -gt 0) {
 			Write-Log -Message "$($dblist1.Count) unsupported names were found"
-			$stat = $except
 			$msg  = "$($dblist1.Count) databases are not supported by MEMCM SQL licensing"
-			$dblist1 | Foreach-Object {
-				$tempdata.Add(
-					[pscustomobject]@{
-						Unsupported = $($_).ToString()
-					}
-				)
-			}
+			$stat = $except
 		} else {
 			Write-Log -Message "no unsupported names were found"
-			if ($dblist2.Count -gt 0) {
-				$tempdata.Add("$($dblist2 -join ',')")
-			} else {
-				$tempdata.Add("$($supported -join ',')")
-			}
 			$msg = "All databases are supported for MEMCM SQL licensing"
 		}
 	}
