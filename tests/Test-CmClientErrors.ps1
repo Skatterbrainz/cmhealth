@@ -15,7 +15,10 @@ function Test-CmClientErrors {
 		$query  = "SELECT DISTINCT
 stat.MachineName,
 fcm.SiteCode,
-stat.Component
+stat.Component,
+stat.MessageID,
+stat.MessageType,
+stat.Severity
 FROM v_StatusMessage stat
 INNER JOIN v_FullCollectionMembership_Valid fcm ON fcm.Name = stat.MachineName
 WHERE stat.Time > DATEADD(dd,-CONVERT(INT,7),GETDATE()) and
@@ -30,6 +33,9 @@ ORDER BY stat.MachineName"
 					[pscustomobject]@{
 						ComputerName = $_.MachineName
 						Component = $_.Component
+						MessageID = $_.MessageID
+						MessageType = $_.MessageType
+						Severity = $_.Severity
 						SiteCode = $_.SiteCode
 					}
 				)
