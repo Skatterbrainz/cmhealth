@@ -23,7 +23,7 @@ function Test-CmClientEPPInfections {
 					[pscustomobject]@{
 						DeviceName = $_.Name
 						ThreatName = $_.EP_LastThreatName
-						DateTime = $_.EP_LastThreatName
+						DateTime   = $_.EP_LastInfectionTime
 					}
 				)
 			}
