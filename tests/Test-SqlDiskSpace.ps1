@@ -1,4 +1,4 @@
-function Test-CMDPDiskSpace {
+function Test-SqlDiskSpace {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "SQL Instance Disk Space",
