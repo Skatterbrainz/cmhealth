@@ -30,7 +30,7 @@ WHERE (sm.Severity IN (-1073741824, -2147483648)) AND
 			$msg  = "$($res.Count) items found within the last $DaysBack days"
 			Write-Log -Message $msg
 			$res | Foreach-Object {
-				Write-Log -Message "adding to testdata queue"
+				Write-Log -Message "$($_.Component) - $($_.MessageID) - $($_.MachineName)"
 				$tempdata.Add(
 					[pscustomobject]@{
 						Component    = $_.Component
