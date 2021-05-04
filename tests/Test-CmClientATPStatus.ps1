@@ -14,10 +14,10 @@ function Test-CmClientATPStatus {
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
 		$query = "select distinct [ATP_OnboardingState] as ATPOnboard, Count(*) as Devices 
-		from v_CombinedDeviceResources where Name not in 
-		('x86 Unknown Computer (x86 Unknown Computer)','x64 Unknown Computer (x64 Unknown Computer)',
-		'Provisioning Device (Provisioning Device)')
-		group by [ATP_OnboardingState]"
+from v_CombinedDeviceResources where Name not in 
+('x86 Unknown Computer (x86 Unknown Computer)','x64 Unknown Computer (x64 Unknown Computer)',
+'Provisioning Device (Provisioning Device)')
+group by [ATP_OnboardingState]"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$onboard = $res | Where-Object {$_.ATPOnboard -eq 1}
