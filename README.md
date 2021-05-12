@@ -37,9 +37,9 @@ packages or the dependencies, and install them manually.
 * Modules:
   * [dbatools](https://www.powershellgallery.com/packages/dbatools/)
   * [carbon](https://www.powershellgallery.com/packages/carbon/)
-  * [adsips](https://www.powershellgallery.com/packages/adsips/)
   * [cmhealth](https://www.powershellgallery.com/packages/cmhealth/)
   * [psWindowsUpdate](https://www.powershellgallery.com/packages/pswindowsupdate/)
+* (adsips dependency was removed as of cmhealth 0.3.5)
 
 ## Usage / Examples
 
@@ -122,7 +122,7 @@ $result = Test-CmHealth @params
 
 ## Generate an HTML Report
 
-The Out-HealthReport function converts the output from a test run into HTML. Use 
+Out-HealthReport converts the output from a test run into HTML. Use 
 ```Get-Help Out-HealthReport``` for more details about the parameters provided. Some examples 
 for using it:
 
