@@ -3,7 +3,7 @@ function Test-CmQueryExpensiveRule {
 	param (
 		[parameter()][string] $TestName = "Expensive Query Membership Rules",
 		[parameter()][string] $TestGroup = "configuration",
-		[parameter()][string] $Description = "Check for queries which are expensive to process",
+		[parameter()][string] $Description = "Check for queries which are processing-intensive",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -20,18 +20,18 @@ INNER JOIN v_Collections c3 ON c1.CollectionID = c3.CollectionID
 where c3.SiteID not like 'SMS%'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		foreach ($row in $res) {
-			if ($row.SQL -match 'like \''%\w\w+.|%''') {
+			if ($row.SQL -match "'%" -and $row.SQL -match "%'") {
 				$stat = $except
 				$tempdata.Add(
 					[pscustomobject]@{
 						QueryName = $row.QueryName
 						Collection = $row.CollectionName
 						CollectionID = $row.SiteID
-						Message = "LIKE with a leading wildcard"
+						Message = "LIKE with a leading and trailing wildcard"
 						Query = $row.WQL
 					}
 				)
-			} elseif ('like N\''%\w\w+.|%''') {
+			} elseif ($row.SQL -match "'%") {
 				$stat = $except
 				$tempdata.Add(
 					[pscustomobject]@{
