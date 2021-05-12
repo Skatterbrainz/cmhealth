@@ -14,12 +14,12 @@ function Test-CmClientCoverage {
 		$except = "WARNING"
 		$msg    = "Coverage meets stated threshold of $Coverage percent"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$adcomps = @(Get-AdsiComputer | Select-Object -ExpandProperty Name) # array of AD computer names
+		[array]$adcomps = Get-ADComputer -Filter * | Select-Object -ExpandProperty name
 		$adcount = $adcomps.Count
 		Write-Log -Message "AD computers = $adcount"
 		$query = "select distinct name, clientversion, lasthardwarescan 
 from dbo.v_CombinedDeviceResources 
-where (name not like '%unknown%') and (name not like 'Provisioning Device%')"
+where (name not like '%unknown computer%') and (name not like 'Provisioning Device%')"
 		$cmcomps = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		$cmcount = $cmcomps.Count
 		Write-Log -Message "CM computers = $cmcount"
