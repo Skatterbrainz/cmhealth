@@ -153,60 +153,60 @@ function Convert-DecErrToHex {
 
 # original from http://vcloud-lab.com/entries/powershell/powershell-get-registry-value-data
 function Get-RegistryValueData {
-    [CmdletBinding(SupportsShouldProcess=$True,
-        ConfirmImpact='Medium',
-        HelpURI='http://vcloud-lab.com')]
-    Param ( 
-        [parameter(Position=0, ValueFromPipeline=$True, ValueFromPipelineByPropertyName=$True)]
-        [alias('C')]
-        [String[]]$ComputerName = '.',
-        [Parameter(Position=1, Mandatory=$True, ValueFromPipelineByPropertyName=$True)] 
-        [alias('Hive')]
-        [ValidateSet('ClassesRoot', 'CurrentUser', 'LocalMachine', 'Users', 'CurrentConfig')]
-        [String]$RegistryHive = 'LocalMachine',
-        [Parameter(Position=2, Mandatory=$True, ValueFromPipelineByPropertyName=$True)]
-        [alias('KeyPath')]
-        [String]$RegistryKeyPath = 'SYSTEM\CurrentControlSet\Services\USBSTOR',
-        [parameter(Position=3, Mandatory=$True, ValueFromPipelineByPropertyName=$true)]
-        [alias('Value')]
-        [String]$ValueName = 'Start'
-    )
-    Begin {
-        $RegistryRoot= "[{0}]::{1}" -f 'Microsoft.Win32.RegistryHive', $RegistryHive
-        try {
-            $RegistryHive = Invoke-Expression $RegistryRoot -ErrorAction Stop
-        }
-        catch {
+	[CmdletBinding(SupportsShouldProcess=$True,
+		ConfirmImpact='Medium',
+		HelpURI='http://vcloud-lab.com')]
+	Param ( 
+		[parameter(Position=0, ValueFromPipeline=$True, ValueFromPipelineByPropertyName=$True)]
+		[alias('C')]
+		[String[]]$ComputerName = '.',
+		[Parameter(Position=1, Mandatory=$True, ValueFromPipelineByPropertyName=$True)] 
+		[alias('Hive')]
+		[ValidateSet('ClassesRoot', 'CurrentUser', 'LocalMachine', 'Users', 'CurrentConfig')]
+		[String]$RegistryHive = 'LocalMachine',
+		[Parameter(Position=2, Mandatory=$True, ValueFromPipelineByPropertyName=$True)]
+		[alias('KeyPath')]
+		[String]$RegistryKeyPath = 'SYSTEM\CurrentControlSet\Services\USBSTOR',
+		[parameter(Position=3, Mandatory=$True, ValueFromPipelineByPropertyName=$true)]
+		[alias('Value')]
+		[String]$ValueName = 'Start'
+	)
+	Begin {
+		$RegistryRoot= "[{0}]::{1}" -f 'Microsoft.Win32.RegistryHive', $RegistryHive
+		try {
+			$RegistryHive = Invoke-Expression $RegistryRoot -ErrorAction Stop
+		}
+		catch {
 			Write-Log -Message "incorrect registry hive referenced: $RegistryHive does not exist" -Category Warning -Show
-        }
-    }
-    Process {
-        Foreach ($Computer in $ComputerName) {
+		}
+	}
+	Process {
+		Foreach ($Computer in $ComputerName) {
 			Write-Log -Message "verifying connectivity to $computer"
-            if (Test-Connection $computer -Count 2 -Quiet) {
+			if (Test-Connection $computer -Count 2 -Quiet) {
 				Write-Log -Message "keypath = $RegistryKeyPath - value = $ValueName"
-                $reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey($RegistryHive, $Computer)
-                $key = $reg.OpenSubKey($RegistryKeyPath)
-                $Data = $key.GetValue($ValueName)
-                $Obj = [pscustomobject]@{
-                    Computer = $Computer
-                    RegistryValueName = "$RegistryKeyPath\$ValueName"
-                    RegistryValueData = $Data
-                }
-                $Obj
-            }
-            else {
-                Write-Log -Message "$Computer not reachable" -Category Warning -Show
-            }
-        }
-    }
-    End {
-        #[Microsoft.Win32.RegistryHive]::ClassesRoot
-        #[Microsoft.Win32.RegistryHive]::CurrentUser
-        #[Microsoft.Win32.RegistryHive]::LocalMachine
-        #[Microsoft.Win32.RegistryHive]::Users
-        #[Microsoft.Win32.RegistryHive]::CurrentConfig
-    }
+				$reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey($RegistryHive, $Computer)
+				$key = $reg.OpenSubKey($RegistryKeyPath)
+				$Data = $key.GetValue($ValueName)
+				$Obj = [pscustomobject]@{
+					Computer = $Computer
+					RegistryValueName = "$RegistryKeyPath\$ValueName"
+					RegistryValueData = $Data
+				}
+				$Obj
+			}
+			else {
+				Write-Log -Message "$Computer not reachable" -Category Warning -Show
+			}
+		}
+	}
+	End {
+		#[Microsoft.Win32.RegistryHive]::ClassesRoot
+		#[Microsoft.Win32.RegistryHive]::CurrentUser
+		#[Microsoft.Win32.RegistryHive]::LocalMachine
+		#[Microsoft.Win32.RegistryHive]::Users
+		#[Microsoft.Win32.RegistryHive]::CurrentConfig
+	}
 }
 
 # returns 4-digit ConfigMgr site version build number (e.g. "9045")
