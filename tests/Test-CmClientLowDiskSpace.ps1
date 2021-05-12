@@ -20,9 +20,9 @@ cdr.ADSiteName,
 cdr.LastLogonUser,
 cdr.LastMPServerName,
 ld.Name0 as Drive, 
-ROUND((ld.Size0/1024),2) as SizeMB, 
-ROUND((ld.FreeSpace0/1024),2) as FreeSpaceMB,
-ROUND(((ld.Size0 - ld.FreeSpace0)/1024),2) as UsedMB,
+ROUND((ld.Size0/1024),2) as SizeGB, 
+ROUND((ld.FreeSpace0/1024),2) as FreeSpaceGB,
+ROUND(((ld.Size0 - ld.FreeSpace0)/1024),2) as UsedGB,
 ROUND(((ld.Size0 - ld.FreeSpace0) / CONVERT(decimal,ld.Size0)),2) as PctUsed
 from v_CombinedDeviceResources cdr
 inner join v_GS_LOGICAL_DISK ld on ld.ResourceID = cdr.MachineID
