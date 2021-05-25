@@ -14,7 +14,7 @@ Export HTML report
 
 ```
 Out-HealthReport [-TestData] <Object> [[-Path] <String>] [[-Status] <String>] [[-Title] <String>]
- [[-CssFile] <String>] [-Detailed] [-Show] [<CommonParameters>]
+ [[-CssFile] <String>] [-Detailed] [-Show] [[-LogFile] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -57,7 +57,9 @@ Accept wildcard characters: False
 ```
 
 ### -Path
-HTML file path
+HTML file path and name.
+Default is "healthreport-YYYY-MM-DD.htm"
+The default path location is $env:Temp
 
 ```yaml
 Type: String
@@ -66,7 +68,7 @@ Aliases:
 
 Required: False
 Position: 2
-Default value: "$($env:TEMP)\healthreport.htm"
+Default value: "$($env:TEMP)\healthreport-$(Get-Date -f 'yyyy-MM-dd').htm"
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -87,7 +89,8 @@ Accept wildcard characters: False
 ```
 
 ### -Title
-{{ Fill Title Description }}
+Title for report heading.
+Default is "MECM"
 
 ```yaml
 Type: String
@@ -96,13 +99,14 @@ Aliases:
 
 Required: False
 Position: 4
-Default value: ConfigMgr Site
+Default value: MECM
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -CssFile
-{{ Fill CssFile Description }}
+Path to custom CSS stylesheet file.
+If not provided, internal CSS is used by default.
 
 ```yaml
 Type: String
@@ -146,6 +150,24 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -LogFile
+Path and name of Log file.
+If Test-CmHealth has been invoked during the same PowerShell 
+session, the LogFile will use the same filename and path.
+The default path is $env:Temp
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log"
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -154,7 +176,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
-Released with 0.2.24
+Thank you!
 
 ## RELATED LINKS
 

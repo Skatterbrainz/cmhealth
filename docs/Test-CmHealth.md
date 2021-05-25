@@ -15,7 +15,7 @@ schema: 2.0.0
 ```
 Test-CmHealth [-SiteCode] <String> [-Database] <String> [[-SiteServer] <String>] [[-SqlInstance] <String>]
  [[-TestingScope] <String>] [[-ConfigFile] <String>] [[-Remediate] <Boolean>] [[-Source] <String>]
- [[-Credential] <PSCredential>] [<CommonParameters>]
+ [[-Credential] <PSCredential>] [[-LogFile] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -72,6 +72,21 @@ Aliases:
 
 Required: True
 Position: 1
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -LogFile
+{{ Fill LogFile Description }}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 9
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
