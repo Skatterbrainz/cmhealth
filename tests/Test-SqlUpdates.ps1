@@ -13,11 +13,13 @@ function Test-SqlUpdates {
 		$except = "WARNING"
 		$msg    = "No issues found"
 		if ($null -ne $ScriptParams.Credential) {
+			Write-Log -Message "connecting with explicit credentials"
 			$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update -SqlCredential $ScriptParams.Credential 
 		} else {
+			Write-Log -Message "connecting with default credentials"
 			$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update
 		}
-		if ($null -ne $res) {
+		if ($null -eq $res) {
 			$bcurrent = $null
 			$btarget  = $null
 			$stat     = "ERROR"
