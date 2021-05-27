@@ -12,7 +12,7 @@ function Test-CmBoundariesOrphaned {
 		$stat   = "PASS"
 		$except = "FAIL"
 		$msg    = "No issues found"
-		$query  = "select * from vSMS_Boundary where GroupCount < 1"
+		$query  = "select * from vSMS_Boundary where GroupCount < 1 and DisplayName not like '%Default-First-Site-Name'"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 1) {
 			$stat = $except
