@@ -1,8 +1,8 @@
 ﻿<#
 .SYNOPSIS
-	Export HTML report
+	Export HTML healthcheck report
 .DESCRIPTION
-	Export HTML health test report
+	Export HTML healthcheck report from results captured by Test-CmHealth
 .PARAMETER TestData
 	Health test data, returned from Test-CmHealth
 .PARAMETER Path
@@ -39,7 +39,7 @@ function Out-HealthReport {
 	param (
 		[parameter(Mandatory=$True, ValueFromPipeline=$True)]$TestData,
 		[parameter(Mandatory=$False)][string]$Path = "$($env:TEMP)\healthreport-$(Get-Date -f 'yyyy-MM-dd').htm",
-		[parameter(Mandatory=$False)][string][ValidateSet('All','Fail','Pass','Warning','Error')] $Status = 'All',
+		[parameter(Mandatory=$False)][string][ValidateSet('All','Fail','Pass','Warning','Error','NonPassing')] $Status = 'All',
 		[parameter(Mandatory=$False)][string]$Title = "MECM",
 		[parameter(Mandatory=$False)][string]$CssFile = "",
 		[parameter(Mandatory=$False)][switch]$Detailed,
@@ -58,7 +58,9 @@ function Out-HealthReport {
 	}
 	PROCESS {
 		#$summary = $TestData | Group-Object Status | Select-Object Name,Count,Group
-		if ($Status -ne 'All') {
+		if ($Status -eq 'NonPassing') {
+			$inputData = $TestData | Where-Object {$_.Status -ne 'PASS'}
+		} elseif ($Status -ne 'All') {
 			$inputData = $TestData | Where-Object {$_.Status -eq $Status}
 		} else {
 			$inputData = $TestData
@@ -131,7 +133,7 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 		if ($null -ne $GLOBAL:CmhParams) {
 			$Title += " $(($GLOBAL:CmhParams).SiteCode)"
 		}
-		$mversion = (Get-Module cmhealth -ListAvailable).Version -join '.'
+		$mversion = (Get-Module cmhealth -ListAvailable | Select-Object -First 1).Version -join '.'
 		$heading = "<h1>Configuration Manager Site Health Report - $Title</h1>"
 		$prelim = "<p>$($env:COMPUTERNAME) - $(Get-Date) - $($env:USERNAME)</p>"
 		$prelim += "<p>CMHealth version $mversion</p>"
