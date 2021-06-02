@@ -67,8 +67,8 @@ function Test-CmHealth {
 	param (
 		[parameter(Mandatory=$True)][ValidateLength(3,3)][string] $SiteCode,
 		[parameter(Mandatory=$True)][ValidateNotNullOrEmpty()][string] $Database,
-		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SiteServer = "localhost",
-		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SqlInstance = "localhost",
+		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SiteServer = "$((Get-WmiObject win32_computersystem).DNSHostName+"."+$(Get-WmiObject win32_computersystem).Domain)",
+		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SqlInstance = "$((Get-WmiObject win32_computersystem).DNSHostName+"."+$(Get-WmiObject win32_computersystem).Domain)",
 		[parameter(Mandatory=$False)][ValidateSet('All','AD','CM','Host','SQL','WSUS','Select','Previous')][string] $TestingScope = 'All',
 		[parameter(Mandatory=$False)][string]$ConfigFile = "$($env:TEMP)\cmhealth.json",
 		[parameter(Mandatory=$False)][boolean] $Remediate = $False,
@@ -90,7 +90,7 @@ function Test-CmHealth {
 		Write-Log -Message "configuration data could not be imported" -Category Error -Show
 		break
 	}
-	$params = [ordered]@{
+	$GLOBAL:CmhParams = [ordered]@{
 		ComputerName = $SiteServer
 		SqlInstance  = $SqlInstance
 		SiteCode     = $SiteCode
@@ -100,7 +100,7 @@ function Test-CmHealth {
 		Credential   = $Credential
 		Verbose      = $VerbosePreference
 	}
-	$GLOBAL:CmhParams = $params
+	#$GLOBAL:CmhParams = $params
 	$mpath = $(Split-Path (Get-Module cmhealth).Path)
 	$tpath = "$($mpath)\tests"
 	$tests = Get-ChildItem -Path $tpath -Filter "*.ps1"
@@ -132,7 +132,7 @@ function Test-CmHealth {
 	}
 	foreach ($test in $testset) {
 		Write-Log -Message "TEST == $test"
-		$testname = $test += ' -ScriptParams $params'
+		$testname = $test += ' -ScriptParams $CmhParams'
 		Invoke-Expression -Command $testname
 	}
 	$runTime = New-TimeSpan -Start $startTime1 -End (Get-Date)

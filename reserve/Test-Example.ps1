@@ -34,7 +34,7 @@ function Test-Example {
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) items found"
+			$msg  = "$($res.Count) items returned"
 			#$res | Foreach-Object {$tempdata.Add( [pscustomobject]@{Name=$_.Name} )}
 		}
 		=======================================================

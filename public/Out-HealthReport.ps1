@@ -111,7 +111,7 @@ function Out-HealthReport {
 		} # foreach
 	}
 	END {
-		$stats = $inputData | Group-Object Status | Select-Object Name,Count,Group
+		#$stats = $inputData | Group-Object Status | Select-Object Name,Count,Group
 		if ([string]::IsNullOrEmpty($CssFile)) {
 			Write-Log -Message "using default CSS"
 			$styles = @"

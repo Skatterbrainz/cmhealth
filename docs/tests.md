@@ -12,6 +12,7 @@
 * Event Log Errors - System
 * Disk Space
 * Disk Drive Volume Block Size
+* DNS registration
 * Driver Automation Tool installed
 * Firewall Port Exclusions
 * IESC Disabled
@@ -78,5 +79,3 @@
 * SQL Maintenance implementation (Ola Ola Ola!)
 * WSUS maintenance implementation (Bryan Dam)
 * (your idea here!)
-
-
