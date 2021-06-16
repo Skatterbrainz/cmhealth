@@ -38,7 +38,7 @@ ORDER BY cdr.Name"
 						ADSite       = $_.ADSiteName
 						SerialNumber = $_.SerialNumber
 						MACAddress   = $_.MACAddress
-						LastLogon    = $_.LastLogonUser
+						LastUser     = $_.LastLogonUser
 					}
 				)
 			}
