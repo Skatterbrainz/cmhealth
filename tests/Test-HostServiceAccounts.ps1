@@ -6,6 +6,10 @@ function Test-HostServiceAccounts {
 		[parameter()][string] $Description = "Validate services accounts and permissions",
 		[parameter()][hashtable] $ScriptParams
 	)
+	if (!(Get-Module carbon -ListAvailable)) {
+		Write-Log -Message "[carbon] PowerShell module is not installed - skipping this test" -Category Warning -Show
+		break
+	}
 	$privs = ('SeServiceLogonRight','SeAssignPrimaryTokenPrivilege','SeChangeNotifyPrivilege','SeIncreaseQuotaPrivilege')
 	$builtin = ('LocalSystem','NT AUTHORITY\NetworkService','NT AUTHORITY\LocalService')
 	try {
