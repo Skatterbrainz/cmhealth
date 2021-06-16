@@ -6,7 +6,7 @@
 .PARAMETER TestData
 	Health test data, returned from Test-CmHealth
 .PARAMETER Path
-	HTML file path and name. Default is "healthreport-YYYY-MM-DD.htm"
+	HTML file path and name. Default is "cmhealthreport-YYYY-MM-DD.htm"
 	The default path location is $env:Temp
 .PARAMETER Title
 	Title for report heading. Default is "MECM"
@@ -23,27 +23,28 @@
 	session, the LogFile will use the same filename and path. The default path is $env:Temp
 .EXAMPLE
 	$testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
-	$testresult | Out-HealthReport -Show
+	$testresult | Out-CmHealthReport -Show
 .EXAMPLE
-	Test-CmHealth -SiteCode P01 -Database CM_P01 | Out-HealthReport -Status Fail -Show
+	Test-CmHealth -SiteCode P01 -Database CM_P01 | Out-CmHealthReport -Status Fail -Show
 .EXAMPLE
-	Test-CmHealth -SiteCode P01 -Database CM_P01 | Out-HealthReport -Status Fail -Detailed -Show
+	Test-CmHealth -SiteCode P01 -Database CM_P01 | Out-CmHealthReport -Status Fail -Detailed -Show
 .LINK
-	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-HealthReport.md
+	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-CmHealthReport.md
 .NOTES
 	Thank you!
 #>
 
-function Out-HealthReport {
+function Out-CmHealthReport {
 	[CmdletBinding()]
 	param (
 		[parameter(Mandatory=$True, ValueFromPipeline=$True)]$TestData,
-		[parameter(Mandatory=$False)][string]$Path = "$($env:TEMP)\healthreport-$(Get-Date -f 'yyyy-MM-dd').htm",
+		[parameter(Mandatory=$False)][string]$Path = "$($env:TEMP)\cmhealthreport-$(Get-Date -f 'yyyy-MM-dd').htm",
 		[parameter(Mandatory=$False)][string][ValidateSet('All','Fail','Pass','Warning','Error','NonPassing')] $Status = 'All',
 		[parameter(Mandatory=$False)][string]$Title = "MECM",
 		[parameter(Mandatory=$False)][string]$CssFile = "",
 		[parameter(Mandatory=$False)][switch]$Detailed,
 		[parameter(Mandatory=$False)][switch]$Show,
+		[parameter(Mandatory=$False)][string]$Footer = "",
 		[parameter(Mandatory=$False)][string]$LogFile = "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log"
 	)
 	BEGIN {
@@ -137,8 +138,10 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 		$heading = "<h1>Configuration Manager Site Health Report - $Title</h1>"
 		$prelim = "<p>$($env:COMPUTERNAME) - $(Get-Date) - $($env:USERNAME)</p>"
 		$prelim += "<p>CMHealth version $mversion</p>"
-		$footer  = "<p>Copyright &copy;$(Get-Date -f 'yyyy') Skatterbrainz, All rights reserved. No tables reserved.</p>"
-		$body = $heading + $prelim + $body + $footer
+		if (![string]::IsNullOrEmpty($Footer)) {
+			$Footer = "<p>$($Footer)</p>"
+		}
+		$body = $heading + $prelim + $body + $Footer
 		$report = "Health Report" | ConvertTo-Html -Title "Health Report" -Body $body -Head $styles
 		$report | Out-File $Path -Force
 		if ($Show) { Start-Process $Path }
