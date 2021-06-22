@@ -183,17 +183,25 @@ function Get-RegistryValueData {
 	Process {
 		Foreach ($Computer in $ComputerName) {
 			Write-Log -Message "verifying connectivity to $computer"
-			if (Test-Connection $computer -Count 2 -Quiet) {
-				Write-Log -Message "keypath = $RegistryKeyPath - value = $ValueName"
-				$reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey($RegistryHive, $Computer)
+			if ($computer -eq '.') {
+				$reg = [Microsoft.Win32.RegistryKey]::OpenBaseKey($RegistryHive, 'default')
 				$key = $reg.OpenSubKey($RegistryKeyPath)
 				$Data = $key.GetValue($ValueName)
-				$Obj = [pscustomobject]@{
+				[pscustomobject]@{
 					Computer = $Computer
 					RegistryValueName = "$RegistryKeyPath\$ValueName"
 					RegistryValueData = $Data
 				}
-				$Obj
+			} elseif (Test-Connection $computer -Count 2 -Quiet) {
+				Write-Log -Message "keypath = $RegistryKeyPath - value = $ValueName"
+				$reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey($RegistryHive, $Computer)
+				$key = $reg.OpenSubKey($RegistryKeyPath)
+				$Data = $key.GetValue($ValueName)
+				[pscustomobject]@{
+					Computer = $Computer
+					RegistryValueName = "$RegistryKeyPath\$ValueName"
+					RegistryValueData = $Data
+				}
 			}
 			else {
 				Write-Log -Message "$Computer not reachable" -Category Warning -Show
