@@ -13,14 +13,15 @@ function Test-SqlDbDiskAlignment {
 		$except = "WARNING"
 		$msg    = "No issues found"
 		if ($null -ne $ScriptParams.Credential) {
-			$da = Test-DbaDiskAlignment -ComputerName $ScriptParams.SqlInstance -SqlCredential $ScriptParams.Credential
+			$da = Test-DbaDiskAlignment -ComputerName $ScriptParams.SqlInstance -SqlCredential $ScriptParams.Credential -EnableException -ErrorAction SilentlyContinue
 		} else {
-			$da = Test-DbaDiskAlignment -ComputerName $ScriptParams.SqlInstance
+			$da = Test-DbaDiskAlignment -ComputerName $ScriptParams.SqlInstance -EnableException -ErrorAction SilentlyContinue
 		}
 		if ($da -eq $false) {
 			$stat = $except
 			$msg  = "One or more disks are not aligned using recommended practices"
 		}
+		$tempdata.Add($da)
 	}
 	catch {
 		$stat = 'ERROR'
