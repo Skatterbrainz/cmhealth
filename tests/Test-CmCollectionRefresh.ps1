@@ -30,6 +30,8 @@ case
 	end as RefreshType,
 SiteID, CollectionName, MemberCount,
 case when CollectionType = 2 then 'Device' 
+else 'User' 
+end as CollectionType
 from dbo.v_Collections
 where RefreshType in (2,4,6)
 order by CollectionName"
