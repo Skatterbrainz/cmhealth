@@ -21,15 +21,16 @@ function Test-CmCollectionRefresh {
 		$except = "WARNING"
 		$msg    = "No issues found"
 		$query = "Select
-(case
-when RefreshType = 1 then 'Manual'
-when RefreshType = 2 then 'Scheduled'
-when RefreshType = 4 then 'Incremental'
-when RefreshType = 6 then 'Scheduled and Incremental'
-else 'Unknown' end) as RefreshType,
+case
+	when RefreshType = 1 then 'Manual'
+	when RefreshType = 2 then 'Scheduled'
+	when RefreshType = 4 then 'Incremental'
+	when RefreshType = 6 then 'Scheduled and Incremental'
+	else 'Unknown' 
+	end as RefreshType,
 SiteID, CollectionName, MemberCount,
 case when CollectionType = 2 then 'Device' 
-from v_Collections
+from dbo.v_Collections
 where RefreshType in (2,4,6)
 order by CollectionName"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
