@@ -130,10 +130,13 @@ function Test-CmHealth {
 	} else {
 		Write-Log -Message "no tests were selected"
 	}
+	$testcount = $testset.Count
+	$counter = 1
 	foreach ($test in $testset) {
-		Write-Log -Message "TEST == $test"
+		Write-Log -Message "TEST $counter of $testcount`: $test" -Show
 		$testname = $test += ' -ScriptParams $CmhParams'
 		Invoke-Expression -Command $testname
+		$counter++
 	}
 	$runTime = New-TimeSpan -Start $startTime1 -End (Get-Date)
 	Write-Log -Message "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec" -Show
