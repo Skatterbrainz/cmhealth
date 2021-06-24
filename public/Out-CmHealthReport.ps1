@@ -38,7 +38,7 @@ function Out-CmHealthReport {
 	[CmdletBinding()]
 	param (
 		[parameter(Mandatory=$True, ValueFromPipeline=$True)]$TestData,
-		[parameter(Mandatory=$False)][string]$Path = "$($env:TEMP)\cmhealthreport-$(Get-Date -f 'yyyy-MM-dd').htm",
+		[parameter(Mandatory=$False)][string]$ReportFile = "$($env:TEMP)\cmhealthreport-$(Get-Date -f 'yyyy-MM-dd').htm",
 		[parameter(Mandatory=$False)][string][ValidateSet('All','Fail','Pass','Warning','Error','NonPassing')] $Status = 'All',
 		[parameter(Mandatory=$False)][string]$Title = "MECM",
 		[parameter(Mandatory=$False)][string]$CssFile = "",
@@ -143,7 +143,8 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 		}
 		$body = $heading + $prelim + $body + $Footer
 		$report = "Health Report" | ConvertTo-Html -Title "Health Report" -Body $body -Head $styles
-		$report | Out-File $Path -Force
-		if ($Show) { Start-Process $Path }
+		Write-Host "exporting data to $ReportFile"
+		$report | Out-File $ReportFile -Force
+		if ($Show) { Start-Process $ReportFile }
 	}
 }
