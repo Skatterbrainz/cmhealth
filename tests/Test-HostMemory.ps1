@@ -47,6 +47,15 @@ function Test-HostMemory {
 					}
 				)
 			}
+		} else {
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Total    = $($TotalRam)
+						Expected = $($MinMemory)
+					}
+				)
+			}
 		}
 	}
 	catch {

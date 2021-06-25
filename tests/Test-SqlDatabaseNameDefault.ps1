@@ -36,7 +36,7 @@ function Test-SqlDatabaseNameDefault {
 				Write-Log -Message $msg
 			}
 		} else {
-			Write-Log -Message "Unable to read registry data" -Message Error
+			Write-Log -Message "Unable to read registry data" -Category Error
 		}
 
 		$tempdata.Add(
