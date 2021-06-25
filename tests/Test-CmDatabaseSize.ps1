@@ -15,10 +15,10 @@ function Test-CmDatabaseSize {
 		Write-Log -Message "Max Utilization Percent = $maxUtilization"
 		Write-Log -Message "Per Device Data MB = $PerDevData"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		$stat   = "PASS"
-		$except = "WARNING"
-		$msg    = "Correct configuration"
-		$query  = "select distinct ResourceID,Name0 from v_R_System"
+		$stat    = "PASS"
+		$except  = "WARNING"
+		$msg     = "Correct configuration"
+		$query   = "select distinct ResourceID,Name0 from v_R_System"
 		$devices = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		Write-Log -Message "calculating expected space requirements"
 		$devSizeMB = (($devices.Count * $devData) + $devData) / 1MB
@@ -29,6 +29,8 @@ function Test-CmDatabaseSize {
 		} else {
 			$dbSizeMB = (Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database).SizeMB
 		}
+		Write-Log -Message "rounding result to precision 2"
+		$dbSizeMB = [math]::Round($dbSizeMB,2)
 		Write-Log -Message "actual space: $dbSizeMB MB"
 		$pct = [math]::Round(($devSizeMB / $dbSizeMB) * 100, 1)
 		Write-Log -Message "actual utilization: $pct`%"
