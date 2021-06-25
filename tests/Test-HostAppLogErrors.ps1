@@ -25,6 +25,8 @@ $query = @"
 		if ($ScriptParams.ComputerName -ne $ScriptParams.SqlInstance) {
 			$computers += $ScriptParams.SqlInstance
 		}
+		$count1 = 0 # errors
+		$count2 = 0 # warnings
 		foreach ($computer in $computers) {
 			Write-Log -Message "computer: $computer"
 			if ($computer -ne $env:COMPUTERNAME) {
@@ -39,8 +41,25 @@ $query = @"
 			}
 			$vwarnings = $res | Where-Object {$_.LevelDisplayName -eq 'Warning'}
 			$verrors   = $res | Where-Object {$_.LevelDisplayName -eq 'Error'}
-			if (($verrors.Count -gt 0) -or ($vwarnings.Count -gt 0)) {
-				$msg  = "$($verrors.Count) Errors and $($vwarnings.Count) Warnings occurred in the Application log within the past $MaxHours hours"
+			$count1 += $verrors.Count
+			$count2 += $vwarnings.Count
+			if ($vwarnings.Count -gt 0) {
+				$stat = $except
+				$vwarnings | ForEach-Object {
+					$tempdata.Add(
+						[pscustomobject]@{
+							Computer = $_.MachineName
+							Level = $_.LevelDisplayName
+							ID = $_.Id
+							Provider = $_.ProviderName
+							Log = $_.LogName
+							TimeCreated = $_.TimeCreated
+							Message = $_.Message
+						}
+					)
+				}
+			}
+			if ($verrors.Count -gt 0) {
 				$stat = $except
 				$res | Foreach-Object {
 					$tempdata.Add(
@@ -57,6 +76,7 @@ $query = @"
 				}
 			}
 		} # foreach
+		$msg  = "$(count1) Errors and $($count2) Warnings occurred in the Application log within the past $MaxHours hours"
 	}
 	catch {
 		$stat = 'ERROR'
