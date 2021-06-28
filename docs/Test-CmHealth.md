@@ -1,7 +1,7 @@
 ---
 external help file: cmhealth-help.xml
 Module Name: cmhealth
-online version: https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-HealthReport.md
+online version: https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-CmHealthReport.md
 schema: 2.0.0
 ---
 
