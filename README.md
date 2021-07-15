@@ -123,12 +123,12 @@ $result = Test-CmHealth @params
 ## Generate an HTML Report
 
 Out-HealthReport converts the output from a test run into HTML. Use 
-```Get-Help Out-HealthReport``` for more details about the parameters provided. Some examples 
+```Get-Help Out-CMHealthReport``` for more details about the parameters provided. Some examples 
 for using it:
 
 ```
 $result = Test-CmHealth -SiteCode P01 -Databsae CM_P01 -Verbose
-$result | Out-HealthReport -Show
+$result | Out-CMHealthReport -Show
 ```
 
 Converts the test results from $result to an HTML report, using default CSS styling, report title,
