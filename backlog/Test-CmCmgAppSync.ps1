@@ -1,0 +1,11 @@
+$query = "SELECT TOP (1000) [AppModelId]
+,[InternalId]
+,[ProgramId]
+,[ProductName]
+,[ProductVersion]
+,[Publisher]
+,[ProductLanguage]
+,[ProductCode]
+,[IsDeleted]
+,[SequenceNumber]
+FROM [CM_SIA].[dbo].[vCMGS_AppProgramSyncData]"

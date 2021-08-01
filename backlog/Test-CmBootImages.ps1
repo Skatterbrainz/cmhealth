@@ -13,24 +13,41 @@ function Test-CmBootImages {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
-		$query = "SELECT 
-PackageID,Name,Version,case 
-when (left(Version,10) = '10.0.17134') then '1803'
-when (left(Version,10) = '10.0.17763') then '1809'
-when (left(Version,10) = '10.0.18362') then '1903'
-when (left(Version,10) = '10.0.18363') then '1909'
-when (left(Version,10) = '10.0.19041') then '2004'
-when (left(Version,10) = '10.0.19042') then '20H2'
-else '' end as BuildNumber,
-Description,
-PkgSourcePath,
-SourceDate,
-LastRefreshTime
-FROM v_BootImagePackage"
-		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
-			$stat = $except
+		$query = "SELECT DISTINCT
+bip.PackageID, bip.Name, bip.Version, 
+CASE 
+WHEN (LEFT(Version, 10) = '10.0.10240') THEN '1507' 
+WHEN (LEFT(Version, 10) = '10.0.10586') THEN '1511' 
+WHEN (LEFT(Version, 10) = '10.0.14393') THEN '1607' 
+WHEN (LEFT(Version, 10) = '10.0.15063') THEN '1703' 
+WHEN (LEFT(Version, 10) = '10.0.16299') THEN '1709' 
+WHEN (LEFT(Version, 10) = '10.0.17134') THEN '1803' 
+WHEN (LEFT(Version, 10) = '10.0.17763') THEN '1809' 
+WHEN (LEFT(Version, 10) = '10.0.18362') THEN '1903' 
+WHEN (LEFT(Version, 10) = '10.0.18363') THEN '1909' 
+WHEN (LEFT(Version, 10) = '10.0.19041') THEN '2004' 
+WHEN (LEFT(Version, 10) = '10.0.19042') THEN '20H2' 
+WHEN (LEFT(Version, 10) = '10.0.19043') THEN '21H1' 
+WHEN (LEFT(Version, 10) = '10.0.19044') THEN '21H2' 
+WHEN (LEFT(Version, 10) = '10.0.22000') THEN '21H1' 
+ELSE '' END AS BuildNumber, 
+bip.Description, 
+bip.PkgSourcePath, 
+bip.SourceDate, 
+bip.LastRefreshTime, 
+CASE WHEN (DPNALPath LIKE '%cloudapp.net%') then 'Cloud DP' 
+else 'OnPrem DP' end as DPType
+FROM            
+dbo.v_BootImagePackage as bip LEFT OUTER JOIN
+dbo.v_DistributionStatus AS ds ON bip.PackageID = ds.PkgID"
+		[array]$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
+		if ($res.Count -gt 0) {
 			$msg  = "$($res.Count) items found"
+			[array]$cdp  = $res | Where-Object {$_.DPType -eq 'Cloud DP'}
+			if ($cdp.Count -gt 0) {
+				$stat = $except
+				$msg = "Content distributed to $($cdp.Count) cloud distribution points"
+			}
 			$res | Foreach-Object {
 				$tempdata.Add(
 					[pscustomobject]@{
@@ -40,9 +57,12 @@ FROM v_BootImagePackage"
 						BuildNumber = $_.BuildNumber
 						Description = $_.Description
 						SourcePath  = $_.PkgSourcePath
+						DPType      = $_.DPType
 					}
 				)
 			}
+		} else {
+			$msg = "No boot images found"
 		}
 	}
 	catch {

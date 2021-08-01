@@ -37,6 +37,7 @@ function Test-HostADKVersion {
 				[pscustomobject]@{
 					ADKPE   = $name
 					Version = $version
+					Build   = $versionName
 				}
 			)
 		} # foreach
