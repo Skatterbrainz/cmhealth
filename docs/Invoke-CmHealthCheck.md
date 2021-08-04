@@ -1,7 +1,7 @@
 ---
 external help file: cmhealth-help.xml
 Module Name: cmhealth
-online version:
+online version: https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Get-CmHealthTests.md
 schema: 2.0.0
 ---
 
