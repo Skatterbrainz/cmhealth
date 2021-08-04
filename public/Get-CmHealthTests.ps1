@@ -8,7 +8,7 @@
 .NOTES
 	Added in 0.3.8
 .LINK
-	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/List-CmHealthTests.md
+	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Get-CmHealthTests.md
 #>
 function Get-CmHealthTests {
 	[CmdletBinding()]
