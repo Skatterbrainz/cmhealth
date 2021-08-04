@@ -271,7 +271,7 @@ function Get-WindowsBuildNumber {
 		[parameter(Mandatory=$True)][string] $Version
 	)
 	switch ($Version) {
-		'10.0.10240' { '1507' } # Windows 10
+		'10.0.10240' { '1507' }
 		'10.0.10586' { '1511' }
 		'10.0.14393' { '1607' }
 		'10.0.15063' { '1703' }
@@ -284,7 +284,7 @@ function Get-WindowsBuildNumber {
 		'10.0.19042' { '20H2' }
 		'10.0.19043' { '21H1' }
 		'10.0.19044' { '21H2' }
-		'10.0.22000' { '21H1' } # Windows 11
+		'10.0.22000' { '21H1' }
 		Default { 'unknown' }
 	}
 }
