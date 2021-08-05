@@ -14,6 +14,73 @@ function Test-SqlDbFileGrowth {
 		$msg    = "No issues found"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 
+		<#
+ComputerName             : SIDE-SC01
+InstanceName             : MSSQLSERVER
+SqlInstance              : SIDE-SC01
+Database                 : CM_SIA
+FileGroupName            : PRIMARY
+ID                       : 1
+Type                     : 0
+TypeDescription          : ROWS
+LogicalName              : CM_SIA
+PhysicalName             : H:\Microsoft SQL Server\Data\CM_SIA.mdf
+State                    : ONLINE
+MaxSize                  : Unlimited
+Growth                   : 2 <-- should be calculated value based on initial DB size (clients x 5mb + 5G)
+GrowthType               : Percent <-- should be size/MB
+NextGrowthEventSize      : 244.77 MB
+Size                     : 11.95 GB
+UsedSpace                : 10.00 GB
+AvailableSpace           : 1.95 GB
+IsOffline                : False
+IsReadOnly               : False
+IsReadOnlyMedia          : False
+IsSparse                 : False
+NumberOfDiskWrites       : 3050621
+NumberOfDiskReads        : 771039
+ReadFromDisk             : 144.92 GB
+WrittenToDisk            : 46.83 GB
+VolumeFreeSpace          : 121.85 GB
+FileGroupDataSpaceId     : 1
+FileGroupType            : FG
+FileGroupTypeDescription : ROWS_FILEGROUP
+FileGroupDefault         : True
+FileGroupReadOnly        : False
+
+ComputerName             : SIDE-SC01
+InstanceName             : MSSQLSERVER
+SqlInstance              : SIDE-SC01
+Database                 : CM_SIA
+FileGroupName            :
+ID                       : 2
+Type                     : 1
+TypeDescription          : LOG
+LogicalName              : CM_SIA_log
+PhysicalName             : H:\Microsoft SQL Server\Data\CM_SIA_log.ldf
+State                    : ONLINE
+MaxSize                  : 2.00 TB
+Growth                   : 65536
+GrowthType               : kb
+NextGrowthEventSize      : 64.00 MB
+Size                     : 3.76 GB
+UsedSpace                : 81.63 MB
+AvailableSpace           : 3.68 GB
+IsOffline                : False
+IsReadOnly               : False
+IsReadOnlyMedia          : False
+IsSparse                 : False
+NumberOfDiskWrites       : 3744695
+NumberOfDiskReads        : 685
+ReadFromDisk             : 528.74 MB
+WrittenToDisk            : 26.11 GB
+VolumeFreeSpace          : 121.85 GB
+FileGroupDataSpaceId     :
+FileGroupType            :
+FileGroupTypeDescription :
+FileGroupDefault         :
+FileGroupReadOnly        :
+		#>
 		if ($ScriptParams.Credential) {
 			$dbfiles = Get-DbaDbFile -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -SqlCredential $ScriptParams.Credential
 		} else {

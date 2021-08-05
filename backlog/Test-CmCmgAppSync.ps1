@@ -8,4 +8,4 @@ $query = "SELECT TOP (1000) [AppModelId]
 ,[ProductCode]
 ,[IsDeleted]
 ,[SequenceNumber]
-FROM [CM_SIA].[dbo].[vCMGS_AppProgramSyncData]"
+FROM [dbo].[vCMGS_AppProgramSyncData]"
