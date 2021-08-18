@@ -16,7 +16,8 @@ function Test-CmClientOldVersion {
 sys.Client_Version0 as ClientVersion,
 fcm.Domain,
 sys.User_Name0 as UserName,
-fcm.SiteCode
+fcm.SiteCode,
+st.Version as SiteVersion 
 FROM v_FullCollectionMembership_Valid fcm
 INNER JOIN v_R_System_Valid sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_Site st ON st.SiteCode = fcm.SiteCode
@@ -30,9 +31,10 @@ WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
 				$tempdata.Add(
 					[pscustomobject]@{
 						ComputerName = $($_.Name)
-						Version = $($_.ClientVersion)
-						UserName = $($_.UserName)
-						SiteCode = $($_.SiteCode)
+						SiteCode     = $($_.SiteCode)
+						Version      = $($_.ClientVersion)
+						SiteVersion  = $($_.SiteVersion)
+						UserName     = $($_.UserName)
 					}
 				)
 			}
