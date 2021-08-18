@@ -43,9 +43,9 @@ order by Name"
                         LastUser = $_.LastLogonUser
                         LastMP   = $_.LastMPServerName
                         Drive    = $_.Drive
-                        SizeMB   = $_.SizeMB
-                        UsedMB   = $_.UsedMB
-                        FreeMB   = $_.FreeSpaceMB
+                        SizeMB   = $_.SizeGB
+                        UsedMB   = $_.UsedGB
+                        FreeMB   = $_.FreeSpaceGB
                         PctUsed  = [math]::Round(($_.PctUsed * 100),1)
                     }
                 )
