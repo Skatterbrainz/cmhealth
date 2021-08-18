@@ -22,7 +22,16 @@ ORDER BY sys.Name0"
 		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items returned"
-			$res | Foreach-Object {$tempdata.Add( [pscustomobject]@{Name=$_.Name} )}
+			$res | Foreach-Object {
+				$tempdata.Add(
+					[pscustomobject]@{
+						Name = $_.Name0
+						SMSID = $_.SMSID
+						MAC = $_.MACAddress
+						SerialNumber = $_.SerialNumber
+					}
+				)
+			}
 		}
 	}
 	catch {
