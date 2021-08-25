@@ -48,10 +48,22 @@ packages or the dependencies, and install them manually.
 The first time you invoke Test-CmHealth, it will create a file on your Desktop named "cmhealth.json".
 This file contains the default values for all of the tests to use for comparing with nominal or "best practices". 
 
-**Not happy with the baseline values? Not a problem!** Simple edit the cmhealth.json file on your 
+**Not happy with the baseline values? Not a problem!** Simply edit the cmhealth.json file on your 
 desktop, and adjust to your preferences. Thi
 
 You can copy an existing cmhealth.json from one machine or user desktop to another to save time.
+
+### Keep Up to Date
+
+```powershell
+Update-Module cmhealth
+```
+
+Check and Update dependencies
+
+```powershell
+Test-CmHealthDependencies -Update
+```
 
 ### Show Detailed Help and Examples
 

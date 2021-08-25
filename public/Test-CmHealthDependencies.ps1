@@ -1,3 +1,20 @@
+<#
+.SYNOPSIS
+	Check (and update) dependent PowerShell modules
+.DESCRIPTION
+	Check current install versions of dependent PowerShell modules against
+	PowerShell Gallery and update them if desired
+.PARAMETER Update
+	Optional. Update modules which older than PS Gallery versions
+.EXAMPLE
+	Test-CmHealthDependencies
+	Returns status of installed modules which are used by CMHealth
+.EXAMPLE
+	Test-CmHealthDependencies -Update
+	Updates installed modules used by CMHealth if they are older than published on PS Galler
+.LINK
+	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealthDependencies.md
+#>
 function Test-CmHealthDependencies {
 	[CmdletBinding()]
 	param()
