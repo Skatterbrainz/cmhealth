@@ -39,7 +39,8 @@ group by [ATP_OnboardingState]"
 	}
 	catch {
 		$stat = 'ERROR'
-		$msg = $_.Exception.Message -join ';'
+		$msg  = "$($_.Exception.Message -join ';')"
+		$msg += " / trace: $($_.ScriptStackTrace -join ';')"
 	}
 	finally {
 		Write-Output $([pscustomobject]@{
