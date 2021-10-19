@@ -76,7 +76,7 @@ $query = @"
 				}
 			}
 		} # foreach
-		$msg  = "$(count1) Errors and $($count2) Warnings occurred in the Application log within the past $MaxHours hours"
+		$msg  = "$($count1) Errors and $($count2) Warnings occurred in the Application log within the past $MaxHours hours"
 	}
 	catch {
 		$stat = 'ERROR'
