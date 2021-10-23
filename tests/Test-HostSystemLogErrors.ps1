@@ -42,7 +42,7 @@ $query = @"
 			if (($verrors.Count -gt 0) -or ($vwarnings.Count -gt 0)) {
 				$msg  = "$($verrors.Count) Errors and $($vwarnings.Count) Warnings occurred in the System log within the past $MaxHours hours"
 				$stat = $except
-				$res | Foreach-Object {
+				$res | Where-Object {$_.LevelDisplayName -in ('Warning','Error')} | Foreach-Object {
 					$tempdata.Add(
 						[pscustomobject]@{
 							Computer = $_.MachineName
