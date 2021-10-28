@@ -14,7 +14,8 @@ function Test-HostDriveBlockSize {
 		$stat   = "PASS"
 		$except = "WARNING"
 		$msg    = "Success"
-		$vols = Get-WmiQueryResult -ClassName "Win32_Volume" -Query "DriveType=3" -Params $ScriptParams
+		[array]$vols = Get-WmiQueryResult -ClassName "Win32_Volume" -Query "DriveType=3" -Params $ScriptParams |
+			Where-Object {$_.DriveLetter}
 		foreach ($vol in $vols) {
 			if ($vol.BlockSize -ne $bsize) {
 				$res  = "FAIL"
