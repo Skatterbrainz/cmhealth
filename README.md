@@ -135,7 +135,7 @@ $result = Test-CmHealth @params
 
 ## Generate an HTML Report
 
-You can this several ways. One is is to use the ```Invoke-CmHealthCheck``` function, which will
+You can save the output to HTML several ways. One is is to use the ```Invoke-CmHealthCheck``` function, which will
 generate both "detailed" and "summary" HTML reports.  Another is to capture the output from 
 ```Test-CmHealth``` to a variable and then pipe that to ```Out-CmHealthReport``` to export an
 HTML report. This option allows you to inspect the results from the variable contents, before
