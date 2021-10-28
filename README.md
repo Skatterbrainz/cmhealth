@@ -1,15 +1,13 @@
 # cmhealth
 
 Test and validate various aspects of a MEM / Configuration Manager site server using packaged 
-test rules.  The default parameters for each rule are stored in the cmhealth.json file under 
+"test" rules.  The default parameters for each rule are stored in the cmhealth.json file under 
 the "reserve" folder. This module is intended to be invoked on the Primary or CAS server using
 an account which has full administrator rights to the host server, ConfigMgr, and SQL environments.
 
-The purpose of this module is not to generate documentation, although you can easily send the output
-to any document type you desire (or database, REST API, Log Analytics, carrier pidgeon, or two cans 
-connected with a string). The purpose of this is to output the test results to the PowerShell pipeline
-to enable automation to be triggered. Send an email, output to a log/database/whatever, invoke an 
-automation job (Azure Automation, Azure Function, Power Automate, etc.).
+The main purpose of this module is to generate pipeline output for subsequent action/automation, 
+not to generate documentation. However, you can easily send the output to HTML reports using 
+```Out-CmHealthReport``` or by using ```Invoke-CmHealthCheck``` functions.
 
 You can invoke this module from an Azure Automation runbook against on-prem servers using a hybrid
 worker. If you want more information on this, let me know.
@@ -90,14 +88,14 @@ Get-Help Invoke-CmHealthReport -Full
 $result = Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -SiteServer "cmserver01.contoso.local" -SqlInstance "db1.contoso.local"
 ```
 
-### Run only site server host tests
+### Run specific types of tests by TestingScope name
 
 ```powershell
 Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope Host
 ```
-Note: The default -TestingScope is "ALL".
+Note: This will run all "Host" tests. The default -TestingScope is "ALL".
 
-### Run selected tests only, from a grid-view menu
+### Run selected tests by selecting in a GridView menu
 
 ```powershell
 Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -TestingScope Select
@@ -137,13 +135,20 @@ $result = Test-CmHealth @params
 
 ## Generate an HTML Report
 
-Out-HealthReport converts the output from a test run into HTML. Use 
-```Get-Help Out-CMHealthReport``` for more details about the parameters provided. Some examples 
-for using it:
+You can this several ways. One is is to use the ```Invoke-CmHealthCheck``` function, which will
+generate both "detailed" and "summary" HTML reports.  Another is to capture the output from 
+```Test-CmHealth``` to a variable and then pipe that to ```Out-CmHealthReport``` to export an
+HTML report. This option allows you to inspect the results from the variable contents, before
+you send the output to a report file.
+
+For more information use ```Get-Help Out-CmHealthReport``` and ```Get-Help Invoke-CmHealthCheck```
+
+### Examples
 
 ```
-$result = Test-CmHealth -SiteCode P01 -Databsae CM_P01 -Verbose
-$result | Out-CMHealthReport -Show
+$result = Test-CmHealth -SiteCode P01 -Databsae CM_P01 # run tests
+$result | Where-Object {$_.Status -ne 'Pass'} # view fail and warning test results only
+$result | Out-CMHealthReport -Show # send to report file
 ```
 
 Converts the test results from $result to an HTML report, using default CSS styling, report title,
