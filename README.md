@@ -145,14 +145,13 @@ For more information use ```Get-Help Out-CmHealthReport``` and ```Get-Help Invok
 
 ### Examples
 
-```
-$result = Test-CmHealth -SiteCode P01 -Databsae CM_P01 # run tests
-$result | Where-Object {$_.Status -ne 'Pass'} # view fail and warning test results only
-$result | Out-CMHealthReport -Show # send to report file
-```
+Save non-passing results to an HTML report
 
-Converts the test results from $result to an HTML report, using default CSS styling, report title,
-path location and then opens it in your default web browser.
+```
+$result = Test-CmHealth -SiteCode P01 -Databsae CM_P01
+$nonpassing = $result | Where-Object {$_.Status -ne 'Pass'}
+$nonpassing | Out-CMHealthReport -Show
+```
 
 ## Adding Your Own Tests
 
