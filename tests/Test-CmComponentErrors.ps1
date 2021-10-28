@@ -48,19 +48,19 @@ Order by Status,ComponentName"
 			$stat = $except
 			$msg  = "$($res.Count) component status issues found"
 			$res | Foreach-Object {
-                $tempdata.Add(
-                    [pscustomobject]@{
-                        ComponentName = $_.ComponentName
-                        ComponentType = $_.ComponentType
-                        Status = $_.Status
-                        State  = $_.State
-                        AvailabilityState = $_.AvailabilityState
-                        Info = $_.Infos
-                        Warnings = $_.Warnings
-                        Errors = $_.Errors
-                    }
-                )
-            }
+				$tempdata.Add(
+					[pscustomobject]@{
+						ComponentName = $_.ComponentName
+						ComponentType = $_.ComponentType
+						Status = $_.Status
+						State  = $_.State
+						AvailabilityState = $_.AvailabilityState
+						Info = $_.Infos
+						Warnings = $_.Warnings
+						Errors = $_.Errors
+					}
+				)
+			}
 		}
 	}
 	catch {

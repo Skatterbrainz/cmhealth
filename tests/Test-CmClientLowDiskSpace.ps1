@@ -35,21 +35,21 @@ order by Name"
 			$msg  = "$($res.Count) clients were found having more than 80% full on C drive"
 			Write-Log -Message $msg
 			$res | Foreach-Object {
-                $tempdata.Add(
-                    [pscustomobject]@{
-                        Computer = $_.Name
-                        OS       = $_.DeviceOS
-                        ADSite   = $_.ADSiteName
-                        LastUser = $_.LastLogonUser
-                        LastMP   = $_.LastMPServerName
-                        Drive    = $_.Drive
-                        SizeMB   = $_.SizeGB
-                        UsedMB   = $_.UsedGB
-                        FreeMB   = $_.FreeSpaceGB
-                        PctUsed  = [math]::Round(($_.PctUsed * 100),1)
-                    }
-                )
-            }
+				$tempdata.Add(
+					[pscustomobject]@{
+						Computer = $_.Name
+						OS       = $_.DeviceOS
+						ADSite   = $_.ADSiteName
+						LastUser = $_.LastLogonUser
+						LastMP   = $_.LastMPServerName
+						Drive    = $_.Drive
+						SizeMB   = $_.SizeGB
+						UsedMB   = $_.UsedGB
+						FreeMB   = $_.FreeSpaceGB
+						PctUsed  = [math]::Round(($_.PctUsed * 100),1)
+					}
+				)
+			}
 		}
 	}
 	catch {
