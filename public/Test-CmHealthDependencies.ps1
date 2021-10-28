@@ -18,6 +18,7 @@
 function Test-CmHealthDependencies {
 	[CmdletBinding()]
 	param()
+	Write-Host "checking dependencie module versions" -ForegroundColor Cyan
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 	$modules = @('dbatools','carbon','adsips','pswindowsupdate')
 	foreach ($module in $modules) {

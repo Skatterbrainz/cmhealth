@@ -466,27 +466,3 @@ function Test-CmHealthModuleVersion {
 		Write-Error $_.Exception.Message
 	}
 }
-
-function Test-CmHealthDependentModules {
-	param()
-	Write-Host "checking module dependencies for latest versions..." -ForegroundColor Cyan
-	try {
-		foreach ($module in ('dbatools','carbon','adsips','pswindowsupdate')) {
-			$mv = Get-Module $module -ListAvailable | Select-Object -First 1 -ExpandProperty Version 
-			if ($null -ne $mv) {
-				$mv = $mv -join '.'
-				$fv = Find-Module $module | Select-Object -ExpandProperty Version
-				if ([version]$fv -gt [version]$mv) {
-					Write-Warning "$module version $mv is installed. $fv is available."
-				} else {
-					Write-Host "$module version $mv is the latest version." -ForegroundColor Cyan
-				}
-			} else {
-				Write-Warning "$module is not installed or could not be located on this computer."
-			}
-		}
-	}
-	catch {
-		Write-Error $_.Exception.Message
-	}
-}
