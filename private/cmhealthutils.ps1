@@ -297,6 +297,7 @@ site status messages. Refer to https://smsagent.blog/2015/07/22/retrieving-confi
 #>
 function Get-StatusMessage {
 	param (
+		$SmsMsgsPath,
 		$iMessageID,
 		[ValidateSet("srvmsgs.dll","provmsgs.dll","climsgs.dll")]$DLL,
 		[ValidateSet("Informational","Warning","Error")]$Severity,
@@ -333,17 +334,23 @@ function Get-StatusMessage {
 	$objMessage
 }
 
+<#
+CREDIT to Trevor Jones for this function as part of the script that queries
+site status messages. Refer to https://smsagent.blog/2015/07/22/retrieving-configmgr-status-messages-with-powershell/
+The only real modification was to replace the ADO.NET code using module DbaTools: Invoke-DbaQuery
+#>
+
 function Get-SiteStatusMessages {
 	[CmdletBinding()]
 	param ($Params)
 	try {
+		# get installation path to determine smsmsgs DLL path
 		$site =Get-CimInstance -ClassName SMS_Site -ComputerName $Params.ComputerName -Namespace "root/sms/site_$($Params.SiteCode)"
 		if ($null -ne $site.InstallDir) {
 			$SMSMSGSLocation = "$($site.InstallDir)\bin\X64\system32\smsmsgs"
 		} else {
 			throw "unable to get installation path"
 		}
-
 		$Query = "
 select smsgs.RecordID,
 CASE smsgs.Severity
@@ -400,11 +407,10 @@ public static extern IntPtr LoadLibrary(string lpFileName);
 		$flags = 0x00000800 -bor 0x00000200
 		$stringOutput = New-Object System.Text.StringBuilder $sizeOfBuffer 
  
-		# Put desired fields into an object for each result
 		$StatusMessages = @()
-
 		foreach ($Row in $Table) {
 			$Params = @{
+				SmsMsgsPath = $SMSMSGSLocation
 				iMessageID  = $Row.MessageID
 				DLL         = $Row.MsgDLLName
 				Severity    = $Row.SeverityName
@@ -437,5 +443,50 @@ public static extern IntPtr LoadLibrary(string lpFileName);
 	}
 	catch {
 		Write-Error $_.Exception.Message 
+	}
+}
+
+function Test-CmHealthModuleVersion {
+	param()
+	try {
+		$mv = Get-Module 'cmhealth' -ListAvailable | Select-Object -First 1 -ExpandProperty Version
+		if ($null -ne $mv) {
+			$mv = $mv -join '.'
+			$fv = Find-Module 'cmhealth' | Select-Object -ExpandProperty Version
+			if ([version]$fv -gt [version]$mv) {
+				Write-Warning "cmhealth $mv is installed. $fv is available"
+			} else {
+				Write-Host "cmhealth version $mv is the latest available" -ForegroundColor Cyan
+			}
+		} else {
+			Write-Warning "cmhealth version could not be determined"
+		}
+	}
+	catch {
+		Write-Error $_.Exception.Message
+	}
+}
+
+function Test-CmHealthDependentModules {
+	param()
+	Write-Host "checking module dependencies for latest versions..." -ForegroundColor Cyan
+	try {
+		foreach ($module in ('dbatools','carbon','adsips','pswindowsupdate')) {
+			$mv = Get-Module $module -ListAvailable | Select-Object -First 1 -ExpandProperty Version 
+			if ($null -ne $mv) {
+				$mv = $mv -join '.'
+				$fv = Find-Module $module | Select-Object -ExpandProperty Version
+				if ([version]$fv -gt [version]$mv) {
+					Write-Warning "$module version $mv is installed. $fv is available."
+				} else {
+					Write-Host "$module version $mv is the latest version." -ForegroundColor Cyan
+				}
+			} else {
+				Write-Warning "$module is not installed or could not be located on this computer."
+			}
+		}
+	}
+	catch {
+		Write-Error $_.Exception.Message
 	}
 }
