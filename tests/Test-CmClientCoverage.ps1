@@ -14,13 +14,11 @@ function Test-CmClientCoverage {
 		$except = "WARNING"
 		$msg    = "Coverage meets stated threshold of $Coverage percent"
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
-		[array]$adcomps = Get-ADComputer -Filter * | Select-Object -ExpandProperty name
+		[array]$adcomps = Get-ADSIComputer | Select-Object -ExpandProperty name
 		$adcount = $adcomps.Count
 		Write-Log -Message "AD computers = $adcount"
-		$query = "select distinct name, clientversion, lasthardwarescan 
-from dbo.v_CombinedDeviceResources 
-where (name not like '%unknown computer%') and (name not like 'Provisioning Device%')"
-		$cmcomps = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
+		[array]$cmcomps = Get-CimInstance -ClassName "SMS_CombinedDeviceResources" -Namespace "root/sms/site_$($ScriptParams.SiteCode)" -ErrorAction Stop |
+			Where-Object {$_.IsClient -eq $True} | Select-Object -ExpandProperty Name
 		$cmcount = $cmcomps.Count
 		Write-Log -Message "CM computers = $cmcount"
 		if (($adcount -gt 0) -and ($cmcount -gt 0)) {

@@ -55,11 +55,13 @@ You can copy an existing cmhealth.json from one machine or user desktop to anoth
 
 ### Keep Up to Date
 
+Use the ```Update-Module``` cmdlet to update the cmhealth module, as shown below:
+
 ```powershell
 Update-Module cmhealth
 ```
 
-Check and Update dependencies
+Check and Update dependencies. This will keep the other modules up to date, such as dbatools and carbon.
 
 ```powershell
 Test-CmHealthDependencies -Update
@@ -69,6 +71,7 @@ Test-CmHealthDependencies -Update
 
 ```powershell
 Get-Help Test-CmHealth -Full
+Get-Help Invoke-CmHealthReport -Full
 ```
 
 ### Run all tests (default options when running on the CM site server)
