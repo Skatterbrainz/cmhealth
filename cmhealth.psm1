@@ -2,3 +2,4 @@
 	Get-ChildItem -Path (Join-Path $PSScriptRoot -ChildPath $_) -Filter "*.ps1" | Foreach-Object { . $_.FullName }
 }
 Test-CmHealthModuleVersion
+Test-CmHealthDependentModules
