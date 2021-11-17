@@ -12,6 +12,15 @@ not to generate documentation. However, you can easily send the output to HTML r
 You can invoke this module from an Azure Automation runbook against on-prem servers using a hybrid
 worker. If you want more information on this, let me know.
 
+## Module Changes and Updates
+
+* Version 0.3.14 (2021-11-17)
+  * Renamed Invoke-CmHealthCheck to Invoke-CmHealthTests - to avoid conflicts with CMHealthCheck module
+  * Moved automatic module version check from Import-Module to Test-CmHealth
+  * Test-CmHealth has -NoVersionCheck to skip version checking
+  * Added -OutputFolder to Invoke-CmHealthTests to control report file(s) location
+  * Bug fixes, documentation updates
+
 ## Installation
 
 ### Installing from PowerShell Gallery
