@@ -29,6 +29,8 @@
 	PS Credential object for authenticating under alternate context
 .PARAMETER LogFile
 	Path and name of log file. Default is $env:TEMP\cmhealth_yyyy-mm-dd.log
+.PARAMETER NoVersionCheck
+	Skip checking for newer module version (default is to attempt a version check)
 .EXAMPLE
 	Test-CmHealth -SiteCode "P01" -Database "CM_P01"
 	Runs all tests on the local machine using the current user credentials
@@ -74,10 +76,14 @@ function Test-CmHealth {
 		[parameter(Mandatory=$False)][boolean] $Remediate = $False,
 		[parameter(Mandatory=$False)][string] $Source = "c:\windows\winsxs",
 		[parameter(Mandatory=$False)][pscredential] $Credential,
-		[parameter(Mandatory=$False)][string]$LogFile = "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log"
+		[parameter(Mandatory=$False)][string]$LogFile = "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log",
+		[parameter(Mandatory=$False)][switch]$NoVersionCheck
 	)
+	if (-not($NoVersionCheck)) { Test-CmHealthModuleVersion }
 	if (-not(Test-Path $ConfigFile)) { New-CmHealthConfig -Path $ConfigFile }
 	$startTime1 = (Get-Date)
+	Write-Host "Thank you for using CMHealth! (and your ConfigMgr site thanks you too)" -ForegroundColor Cyan
+	Write-Host "Thanks to the authors of PowerShell modules: DbaTools, Carbon, AdsiPS and psWindowsUpdate" -ForegroundColor Cyan
 	Write-Warning "If you haven't refreshed the cmhealth.json file since 0.2.24 or earlier, rename or delete the file and run this command again."
 	Write-Host "log file = $LogFile"
 	Write-Log -Message "------------------ begin processing --------------------"
