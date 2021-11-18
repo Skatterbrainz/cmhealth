@@ -3,6 +3,7 @@ function Test-CmQueryExpensiveRule {
 	param (
 		[parameter()][string] $TestName = "Expensive Query Membership Rules",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for queries which are processing-intensive",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -57,6 +58,7 @@ where c3.SiteID not like 'SMS%'"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -3,6 +3,7 @@ function Test-CmUpdateDeploymentErrors {
 	param (
 		[parameter()][string] $TestName = "Software Update Deployment Errors",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Update Deployment Error Messages",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -53,6 +54,7 @@ ORDER BY fcm.Name"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

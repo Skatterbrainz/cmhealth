@@ -3,6 +3,7 @@ function Test-HostWindowsUpdates {
 	param (
 		[parameter()][string] $TestName = "Windows Update Compliance",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Check if server is up to date on patches",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -46,6 +47,7 @@ function Test-HostWindowsUpdates {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

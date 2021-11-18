@@ -3,6 +3,7 @@ function Test-CmClientMissing {
 	param (
 		[parameter()][string] $TestName = "Missing Clients",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for discovered devices without a client",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -49,6 +50,7 @@ ORDER BY fcm.Name"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

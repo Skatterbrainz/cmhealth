@@ -3,6 +3,7 @@ function Test-CmInvMaxMIFSize {
 	param (
 		[parameter()][string] $TestName = "Max MIF File Size",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Validate inventory loader maximum MIF file size setting",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -39,6 +40,7 @@ function Test-CmInvMaxMIFSize {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

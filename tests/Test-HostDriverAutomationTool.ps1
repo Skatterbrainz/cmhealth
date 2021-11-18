@@ -3,6 +3,7 @@ function Test-HostDriverAutomationTool {
 	param (
 		[parameter()][string] $TestName = "Check if Driver Automation Tool is installed",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Check if Driver Automation Tool is installed",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -44,6 +45,7 @@ function Test-HostDriverAutomationTool {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

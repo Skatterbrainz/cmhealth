@@ -3,6 +3,7 @@ function Test-AdSysMgtContainer {
 	param (
 		[parameter()][string] $TestName = "Active Directory System Management Container",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "AD",
 		[parameter()][string] $Description = "Verify System Management container has been created with delegated permissions",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -27,6 +28,7 @@ function Test-AdSysMgtContainer {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

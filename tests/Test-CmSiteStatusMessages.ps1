@@ -3,6 +3,7 @@ function Test-CmSiteStatusMessages {
 	param (
 		[parameter()][string] $TestName = "Site Status Messages",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Site status messages with recent errors",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -29,6 +30,7 @@ function Test-CmSiteStatusMessages {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

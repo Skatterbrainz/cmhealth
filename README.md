@@ -14,6 +14,18 @@ worker. If you want more information on this, let me know.
 
 ## Module Changes and Updates
 
+* Version 0.3.15 (2021-11-17)
+  * Out-CmHealthReport
+    * Detailed option produces separate files for each test rather than one gigantic stupid-ass endless CVS-receipt-style report
+    * Detailed now creates an index page with links to all the actual test result files
+  * Updates
+    * Added TestCategory (Category) for each test for easier grouping
+    * Test file template has been updated
+  * Fixed bugs, I mean features:
+    * Test-AdSchemaExtension - If RSAT is not installed, skips test
+    * Test-CmWsusLastSync - fixed TestGroup
+    * Test-CmClientATPStatus - fixed TestGroup
+
 * Version 0.3.14 (2021-11-17)
   * Renamed Invoke-CmHealthCheck to Invoke-CmHealthTests - to avoid conflicts with CMHealthCheck module
   * Moved automatic module version check from Import-Module to Test-CmHealth

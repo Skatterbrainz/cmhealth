@@ -3,6 +3,7 @@ function Test-CmDpNoGroups {
 	param (
 		[parameter()][string] $TestName = "DP Servers Not in a DP Group",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for DPs which are not in a DP group",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -32,6 +33,7 @@ function Test-CmDpNoGroups {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

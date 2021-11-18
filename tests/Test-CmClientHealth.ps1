@@ -3,6 +3,7 @@ function Test-CmClientHealth {
 	param (
 		[parameter()][string] $TestName = "Client Health Summary",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "ConfigMgr Client Health Status",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -62,6 +63,7 @@ Order by ClientStateDescription,ComputerName"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

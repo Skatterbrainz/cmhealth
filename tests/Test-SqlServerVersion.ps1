@@ -3,6 +3,7 @@ function Test-SqlServerVersion {
 	param (
 		[parameter()][string] $TestName = "Check SQL Server Version",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Check if SQL Server is a supported version",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -45,6 +46,7 @@ function Test-SqlServerVersion {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

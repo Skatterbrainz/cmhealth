@@ -3,6 +3,7 @@ function Test-CmClientErrors {
 	param (
 		[parameter()][string] $TestName = "Clients with Errors",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for clients reporting errors",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -50,6 +51,7 @@ ORDER BY stat.MachineName"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

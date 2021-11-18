@@ -3,6 +3,7 @@ function Test-CmComponentStatusSummary {
 	param (
 		[parameter()][string] $TestName = "Component Status Summary",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check Component Status summary counts",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -52,6 +53,7 @@ Errors > 0"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

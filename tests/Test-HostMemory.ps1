@@ -3,6 +3,7 @@ function Test-HostMemory {
 	param (
 		[parameter()][string] $TestName = "Server Memory Allocation",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Verify site system has at least minimum required memory",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -66,6 +67,7 @@ function Test-HostMemory {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

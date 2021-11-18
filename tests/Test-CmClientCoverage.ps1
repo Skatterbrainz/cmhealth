@@ -3,6 +3,7 @@ function Test-CmClientCoverage {
 	param (
 		[parameter()][string] $TestName = "Device Client Coverage Status",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Confirm AD computers managed by CM",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -56,6 +57,7 @@ function Test-CmClientCoverage {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -3,6 +3,7 @@ function Test-CmSiteLastBackup {
 	param (
 		[parameter()][string] $TestName = "Last Site Backup",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Validate last ConfigMgr site backup status",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -69,6 +70,7 @@ END AS 'Comments'"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -3,6 +3,7 @@ function Test-CmClientInventoryStale {
 	param (
 		[parameter()][string] $TestName = "Stale Client Inventory Data",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Clients with outdated or missing inventory data",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -53,6 +54,7 @@ ORDER BY fcm.Name"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

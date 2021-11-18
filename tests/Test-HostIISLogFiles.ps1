@@ -3,6 +3,7 @@ function Test-HostIISLogFiles {
 	param (
 		[parameter()][string] $TestName = "IIS Log Files",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Validate IIS Log File retention",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -63,6 +64,7 @@ function Test-HostIISLogFiles {
 		$result = [pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

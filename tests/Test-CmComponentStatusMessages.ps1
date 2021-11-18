@@ -3,6 +3,7 @@ function Test-CmComponentStatusMessages {
 	param (
 		[parameter()][string] $TestName = "Component Status Exceptions",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Get component status exception messages",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -54,6 +55,7 @@ WHERE (sm.Severity IN (-1073741824, -2147483648)) AND
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -3,6 +3,7 @@ function Test-HostOperatingSystem {
 	param (
 		[parameter()][string] $TestName = "Supported Operating System",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Validate supported operating system for CM site system roles",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -35,6 +36,7 @@ function Test-HostOperatingSystem {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

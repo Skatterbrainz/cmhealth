@@ -3,6 +3,7 @@ function Test-SqlServiceSPN {
 	param (
 		[parameter()][string] $TestName = "SQL Service Principal Names (SPNs)",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Verify SQL instance Service Principal Name registration",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -43,6 +44,7 @@ function Test-SqlServiceSPN {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

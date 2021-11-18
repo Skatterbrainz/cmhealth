@@ -3,6 +3,7 @@ function Test-CmDatabaseSize {
 	param (
 		[parameter()][string] $TestName = "Database Size",
 		[parameter()][string] $TestGroup = "database",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Validate CM site database file size",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -49,6 +50,7 @@ function Test-CmDatabaseSize {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

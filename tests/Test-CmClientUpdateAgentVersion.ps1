@@ -3,6 +3,7 @@ function Test-CmClientUpdateAgentVersion {
 	param (
 		[parameter()][string] $TestName = "Clients with Old Windows Update Agent",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Clients with old Windows Update agent",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -25,9 +26,7 @@ JOIN v_R_System_Valid rsys WITH (NOLOCK) ON rsys.ResourceID = uss.ResourceID
 JOIN v_FullCollectionMembership_VaLID fcm WITH (NOLOCK) ON uss.ResourceID = fcm.ResourceID AND fcm.CollectionID = 'SMS00001'
 INNER JOIN v_GS_OPERATING_SYSTEM ops ON rsys.ResourceID = ops.ResourceID
 WHERE ops.Version0 < '10.0' AND uss.LastWUAVersion < '7.6.7600.256'
-
 UNION
-
 SELECT DISTINCT
 	rsys.Netbios_Name0 as MachineName,
 	rsys.Client_Version0,
@@ -40,9 +39,7 @@ JOIN v_R_System_Valid rsys WITH (NOLOCK) ON rsys.ResourceID = uss.ResourceID
 JOIN v_FullCollectionMembership_VaLID fcm WITH (NOLOCK) ON uss.ResourceID = fcm.ResourceID AND fcm.CollectionID = 'SMS00001'
 INNER JOIN v_GS_OPERATING_SYSTEM ops ON rsys.ResourceID = ops.ResourceID
 WHERE ops.Version0 like '6.2.%' AND uss.LastWUAVersion < '7.8.9200.16693'
-
 UNION
-
 SELECT DISTINCT
 	rsys.Netbios_Name0 as MachineName,
 	rsys.Client_Version0,
@@ -78,6 +75,7 @@ WHERE ops.Version0 > '6.2' AND uss.LastWUAVersion < '7.9.9600.16422'"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

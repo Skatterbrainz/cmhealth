@@ -3,6 +3,7 @@ function Test-HostDiskSpace {
 	param (
 		[parameter()][string] $TestName = "Disk Space Health",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Validate logical disk utilitization",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -45,6 +46,7 @@ function Test-HostDiskSpace {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

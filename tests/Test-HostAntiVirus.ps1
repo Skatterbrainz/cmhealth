@@ -3,6 +3,7 @@ function Test-HostAntiVirus {
 	param (
 		[parameter()][string] $TestName = "AntiVirus Product Installations",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Check for third-party antivirus software installations",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -39,6 +40,7 @@ function Test-HostAntiVirus {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

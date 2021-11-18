@@ -3,6 +3,7 @@ function Test-CmCMGCostEstimate {
 	param (
 		[parameter()][string] $TestName = "Estimated CMG Operational Cost Estimate",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "CMG Per Client Average Data usage",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -44,6 +45,7 @@ function Test-CmCMGCostEstimate {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

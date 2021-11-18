@@ -3,6 +3,7 @@ function Test-CmSiteAdminsCount {
 	param (
 		[parameter()][string] $TestName = "Site Admins Membership Count",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check if more users are full admins than should be",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -38,6 +39,7 @@ function Test-CmSiteAdminsCount {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

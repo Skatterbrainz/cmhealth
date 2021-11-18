@@ -3,6 +3,7 @@ function Test-CmClientATPStatus {
 	param (
 		[parameter()][string] $TestName = "ATP Client Onboarding and Activity Status",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "ATP Devices onboarded and active",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -21,7 +22,7 @@ group by [ATP_OnboardingState]"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
 		if ($res.Count -gt 0) {
 			$onboard = $res | Where-Object {$_.ATPOnboard -eq 1}
-			$total = $($res.Devices | Measure-Object -Sum).Sum
+			$total = $($res.Devices | Measure-Object -Sum | Select-Object -ExpandProperty Sum)
 			$pending = $total - $onboard
 			if (($onboard -gt 0) -and ($pending -gt 0)) {
 				$stat = $except
@@ -46,6 +47,7 @@ group by [ATP_OnboardingState]"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

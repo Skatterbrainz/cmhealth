@@ -3,6 +3,7 @@ function Test-CmSiteInstallAccountRoles {
 	param (
 		[parameter()][string] $TestName = "ConfigMgr Install Account Roles and Permissions",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check if site install account has more permissions/roles than it needs",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -81,6 +82,7 @@ function Test-CmSiteInstallAccountRoles {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

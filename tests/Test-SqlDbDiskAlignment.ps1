@@ -3,6 +3,7 @@ function Test-SqlDbDiskAlignment {
 	param (
 		[parameter()][string] $TestName = "SQL Server Disk Alignment Status",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Validate disk alignment with SQL recommended practices",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -31,6 +32,7 @@ function Test-SqlDbDiskAlignment {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

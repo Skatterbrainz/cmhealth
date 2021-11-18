@@ -3,6 +3,7 @@ function Test-SqlRoleMembers {
 	param (
 		[parameter()][string] $TestName = "SQL Database Role Members",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Validate SQL database ownership role",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -30,6 +31,7 @@ function Test-SqlRoleMembers {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

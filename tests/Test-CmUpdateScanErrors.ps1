@@ -3,6 +3,7 @@ function Test-CmUpdateScanErrors {
 	param (
 		[parameter()][string] $TestName = "Clients with Update Scan Errors",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Update scanning errors",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -42,6 +43,7 @@ ORDER BY cdr.Name"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

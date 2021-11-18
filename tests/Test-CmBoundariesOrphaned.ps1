@@ -3,6 +3,7 @@ function Test-CmBoundariesOrphaned {
 	param (
 		[parameter()][string] $TestName = "Orphaned Site Boundaries",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Validate Site Boundaries are in Boundary Groups",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -35,6 +36,7 @@ function Test-CmBoundariesOrphaned {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

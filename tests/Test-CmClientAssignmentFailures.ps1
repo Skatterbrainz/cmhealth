@@ -3,6 +3,7 @@ function Test-CmClientAssignmentFailures {
 	param (
 		[parameter()][string] $TestName = "Client Assignment Failures",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for clients that failed site assignment",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -37,6 +38,7 @@ WHERE LastMessageStateID > 500 AND LastMessageStateID < 700"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -3,6 +3,7 @@ function Test-CmContentDistErrors {
 	param (
 		[parameter()][string] $TestName = "Content Distribution Errors",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for content with distribution errors",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -33,6 +34,7 @@ WHERE (cds.NumberErrors > 0)"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

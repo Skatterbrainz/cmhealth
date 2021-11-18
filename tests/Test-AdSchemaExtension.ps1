@@ -3,12 +3,17 @@ function Test-AdSchemaExtension {
 	param (
 		[parameter()][string] $TestName = "Active Directory Schema Extended",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "AD",
 		[parameter()][string] $Description = "Verify AD schema extensions have been installed",
 		[parameter()][hashtable] $ScriptParams
 	)
 	$startTime = (Get-Date)
 	$stat = "PASS"
 	$except = "FAIL"
+	if (!(Get-Module ActiveDirectory -ListAvailable)) {
+		Write-Warning "RSAT is not installed on this host. Test skipped: $TestName"
+		break
+	}
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		Write-Log -Message "Verifying for AD Schema extension"
@@ -47,6 +52,7 @@ function Test-AdSchemaExtension {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

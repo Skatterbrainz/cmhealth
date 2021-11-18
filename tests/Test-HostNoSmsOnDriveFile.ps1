@@ -3,6 +3,7 @@ function Test-HostNoSmsOnDriveFile {
 	param (
 		[parameter()][string] $TestName = "SMS Content Drive Exclusion",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Confirm NO_SMS_ON_DRIVE.SMS file resides on appropriate disks",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -86,6 +87,7 @@ function Test-HostNoSmsOnDriveFile {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

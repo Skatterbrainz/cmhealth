@@ -3,6 +3,7 @@ function Test-CMDPDiskSpace {
 	param (
 		[parameter()][string] $TestName = "Distribution Point Disk Space",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check disk space status on all DPs",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -86,6 +87,7 @@ function Test-CMDPDiskSpace {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

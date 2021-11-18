@@ -3,6 +3,7 @@ function Test-HostInstalledComponents {
 	param (
 		[parameter()][string] $TestName = "Installed Software Components",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Validate CM prerequisites and support components",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -69,6 +70,7 @@ function Test-HostInstalledComponents {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

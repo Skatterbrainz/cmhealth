@@ -3,6 +3,7 @@ function Test-CmClientDeploymentFailures {
 	param (
 		[parameter()][string] $TestName = "Client Deployment Failures",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for failed client deployments",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -37,6 +38,7 @@ WHERE LastMessageStateID < 100 AND LastMessageStateID > 400"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

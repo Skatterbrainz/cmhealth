@@ -3,6 +3,7 @@ function Test-CmClientBoundaryExceptions {
 	param (
 		[parameter()][string] $TestName = "Check client boundary groups",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for Clients not in a boundary group",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -52,6 +53,7 @@ ORDER BY cdr.Name"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

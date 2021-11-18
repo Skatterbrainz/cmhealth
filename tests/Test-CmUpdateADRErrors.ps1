@@ -3,6 +3,7 @@ function Test-CmUpdateADRErrors {
 	param (
 		[parameter()][string] $TestName = "ADR Errors",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for ADR Rule Errors",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -35,6 +36,7 @@ function Test-CmUpdateADRErrors {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

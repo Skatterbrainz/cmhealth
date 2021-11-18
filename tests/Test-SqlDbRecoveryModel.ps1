@@ -3,6 +3,7 @@ function Test-SqlDbRecoveryModel {
 	param (
 		[parameter()][string] $TestName = "SQL Database Recovery Models",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Validate database recovery model settings",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -42,6 +43,7 @@ function Test-SqlDbRecoveryModel {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

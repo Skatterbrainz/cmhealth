@@ -3,6 +3,7 @@ function Test-HostFirewallPorts {
 	param (
 		[parameter()][string] $TestName = "Network Firewall Ports",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Test open firewall TCP ports",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -60,6 +61,7 @@ function Test-HostFirewallPorts {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

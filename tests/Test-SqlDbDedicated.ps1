@@ -3,6 +3,7 @@ function Test-SqlDbDedicated {
 	param (
 		[parameter()][string] $TestName = "Unsupported Databases",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Verify SQL Instance is dedicated to ConfigMgr site",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -57,6 +58,7 @@ function Test-SqlDbDedicated {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

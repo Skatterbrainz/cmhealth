@@ -3,6 +3,7 @@ function Test-SqlUpdates {
 	param (
 		[parameter()][string] $TestName = "SQL Server Update Status",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Verify SQL Updates and Service Packs",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -39,6 +40,7 @@ function Test-SqlUpdates {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

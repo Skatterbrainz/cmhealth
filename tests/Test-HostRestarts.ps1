@@ -3,6 +3,7 @@ function Test-HostRestarts {
 	param (
 		[parameter()][string] $TestName = "Unplanned Server Restarts",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Check for unplanned system restarts",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -47,6 +48,7 @@ function Test-HostRestarts {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

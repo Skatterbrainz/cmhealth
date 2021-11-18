@@ -3,6 +3,7 @@ function Test-CmClientInventoryMissing {
 	param (
 		[parameter()][string] $TestName = "Clients Missing Inventory Data",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Clients with no inventory data",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -53,6 +54,7 @@ ORDER BY fcm.Name"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

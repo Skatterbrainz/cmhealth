@@ -3,6 +3,7 @@ function Test-SqlLogSpace {
 	param (
 		[parameter()][string] $TestName = "SQL Log Space Usage",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Check for SQL logs with excessive space used",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -39,6 +40,7 @@ function Test-SqlLogSpace {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

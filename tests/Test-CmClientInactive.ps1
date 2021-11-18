@@ -3,6 +3,7 @@ function Test-CmClientInactive {
 	param (
 		[parameter()][string] $TestName = "Inactive Clients",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for inactive clients",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -50,6 +51,7 @@ order by fcm.Name"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

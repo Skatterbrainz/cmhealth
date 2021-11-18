@@ -3,6 +3,7 @@ function Test-SqlDiskSpace {
 	param (
 		[parameter()][string] $TestName = "SQL Instance Disk Space",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Check disk space status on SQL Instance",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -86,6 +87,7 @@ function Test-SqlDiskSpace {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

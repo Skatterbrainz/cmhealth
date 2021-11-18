@@ -3,6 +3,7 @@ function Test-SqlDbBackupTimes {
 	param (
 		[parameter()][string] $TestName = "SQL Database Backup Times",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Check for backups that took too long to finish",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -66,6 +67,7 @@ ORDER BY T1.Seconds DESC"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -3,6 +3,7 @@ function Test-HostDriveBlockSize {
 	param (
 		[parameter()][string] $TestName = "Logical Drive Block Allocation",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Validate disk format block size",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -42,6 +43,7 @@ function Test-HostDriveBlockSize {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

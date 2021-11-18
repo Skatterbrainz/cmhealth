@@ -3,6 +3,7 @@ function Test-SqlDbBackupHistory {
 	param (
 		[parameter()][string] $TestName = "SQL Database Backup History",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Validate CM SQL database backup history",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -40,6 +41,7 @@ function Test-SqlDbBackupHistory {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

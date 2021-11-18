@@ -3,6 +3,7 @@ function Test-CmClientLowDiskSpace {
 	param (
 		[parameter()][string] $TestName = "Clients with Low Disk Space",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Clients with low disk space on C`: drive",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -60,6 +61,7 @@ order by Name"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

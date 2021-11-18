@@ -3,6 +3,7 @@ function Test-HostDnsRegistration {
 	param (
 		[parameter()][string] $TestName = "Validate Host DNS A-record Registration",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Validate Host DNS A-record Registration",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -42,6 +43,7 @@ function Test-HostDnsRegistration {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

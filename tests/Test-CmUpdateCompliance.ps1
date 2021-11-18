@@ -3,6 +3,7 @@ function Test-CmUpdateCompliance {
 	param (
 		[parameter()][string] $TestName = "Software Update Compliance Summary",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Summary of required updates not yet installed",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -70,6 +71,7 @@ ORDER BY
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

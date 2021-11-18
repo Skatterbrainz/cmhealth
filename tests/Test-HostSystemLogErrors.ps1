@@ -3,6 +3,7 @@ function Test-HostSystemLogErrors {
 	param (
 		[parameter()][string] $TestName = "System Event Log Errors",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Check for recent System log errors and warnings",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -66,6 +67,7 @@ $query = @"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

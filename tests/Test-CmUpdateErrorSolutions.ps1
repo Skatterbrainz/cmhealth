@@ -3,6 +3,7 @@ function Test-CmUpdateErrorSolutions {
 	param (
 		[parameter()][string] $TestName = "Software Update Error Solutions",
 		[parameter()][string] $TestGroup = "operations",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Update Error Solution Details",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -45,6 +46,7 @@ AND fcm.CollectionID = 'SMS00001'"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

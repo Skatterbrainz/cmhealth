@@ -3,6 +3,7 @@ function Test-HostServices {
 	param (
 		[parameter()][string] $TestName = "Windows Services Health",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Verify auto-start services are running",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -36,6 +37,7 @@ function Test-HostServices {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

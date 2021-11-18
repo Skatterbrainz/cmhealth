@@ -3,6 +3,7 @@ function Test-CmContentNotDistributed {
 	param (
 		[parameter()][string] $TestName = "Content Not Distributed",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for content not distributed",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -51,6 +52,7 @@ ORDER BY SoftwareName"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

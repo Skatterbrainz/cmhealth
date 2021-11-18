@@ -3,6 +3,7 @@ function Test-SqlDatabaseNameDefault {
 	param (
 		[parameter()][string] $TestName = "Check if SQL DB name uses default format",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Check if site database name is using the CM_XXX format",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -56,6 +57,7 @@ function Test-SqlDatabaseNameDefault {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

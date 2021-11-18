@@ -3,6 +3,7 @@ function Test-SqlDbResourceWaits {
 	param (
 		[parameter()][string] $TestName = "SQL Database Resource Wait Times",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Check for excessive resource wait times",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -39,6 +40,7 @@ FROM sys.dm_os_wait_stats OPTION (RECOMPILE)"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -3,6 +3,7 @@ function Test-Example {
 	param (
 		[parameter()][string] $TestName = "Short Description",
 		[parameter()][string] $TestGroup = "configuration or operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Detailed description of this test",
 		[parameter()][hashtable] $ScriptParams
 	)

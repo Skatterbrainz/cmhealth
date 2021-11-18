@@ -3,6 +3,7 @@ function Test-SqlServerMemory {
 	param (
 		[parameter()][string] $TestName = "SQL Server Memory Allocation",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Validate maximum memory allocation of SQL instance",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -64,6 +65,7 @@ function Test-SqlServerMemory {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -3,6 +3,7 @@ function Test-HostIESCDisabled {
 	param (
 		[parameter()][string] $TestName = "IESC Feature Disabled",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Disable Internet Explorer Enhanced Security Configuration",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -38,6 +39,7 @@ function Test-HostIESCDisabled {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

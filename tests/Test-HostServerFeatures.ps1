@@ -3,6 +3,7 @@ function Test-HostServerFeatures {
 	param (
 		[parameter()][string] $TestName = "Installed Windows Features",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Validate Windows Server roles and features for CM site systems",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -101,6 +102,7 @@ function Test-HostServerFeatures {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

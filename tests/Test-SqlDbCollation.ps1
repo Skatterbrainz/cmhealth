@@ -3,6 +3,7 @@ function Test-SqlDbCollation {
 	param (
 		[parameter()][string] $TestName = "SQL Database Collation",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Validate SQL database collation configuration",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -39,6 +40,7 @@ function Test-SqlDbCollation {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

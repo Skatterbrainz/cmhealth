@@ -3,6 +3,7 @@ function Test-CmClientOldVersion {
 	param (
 		[parameter()][string] $TestName = "Old Client Versions",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for clients with version older than site version",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -48,6 +49,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

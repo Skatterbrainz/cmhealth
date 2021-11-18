@@ -3,6 +3,7 @@ function Test-CmClientUpdateScanErrors {
 	param (
 		[parameter()][string] $TestName = "Client Update Scan Errors",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for clients with software update scan errors",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -55,6 +56,7 @@ ORDER BY rsys.Name0"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

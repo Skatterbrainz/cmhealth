@@ -3,6 +3,7 @@ function Test-CmAppDeploymentExceptions {
 	param (
 		[parameter()][string] $TestName = "Application Deployment Exceptions",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Summary of application deployment failures",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -61,6 +62,7 @@ order by DeploymentName"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

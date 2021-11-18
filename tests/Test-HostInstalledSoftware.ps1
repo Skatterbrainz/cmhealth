@@ -3,6 +3,7 @@ function Test-HostInstalledSoftware {
 	param (
 		[parameter()][string] $TestName = "Installed Software Applications",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Check for excessive junk installed on site server",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -40,6 +41,7 @@ function Test-HostInstalledSoftware {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

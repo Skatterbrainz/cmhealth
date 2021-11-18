@@ -3,6 +3,7 @@ function Test-CmSiteMaintenanceTasks {
 	param (
 		[parameter()][string] $TestName = "Check Site Maintenance Tasks",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check site maintenance task settings",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -56,6 +57,7 @@ FROM vSMS_SC_SQL_Task WHERE SiteCode = '$($ScriptParams.SiteCode)'"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

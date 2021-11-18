@@ -3,6 +3,7 @@ function Test-HostServiceAccounts {
 	param (
 		[parameter()][string] $TestName = "Service Account Permissions",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Validate services accounts and permissions",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -113,6 +114,7 @@ function Test-HostServiceAccounts {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

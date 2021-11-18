@@ -3,6 +3,7 @@ function Test-CmMpResponse {
 	param (
 		[parameter()][string] $TestName = "Management Point Response",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Validate MP web service reponse",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -65,6 +66,7 @@ ORDER BY srs.ServerName"
 	Write-Output $([pscustomobject]@{
 		TestName    = $TestName
 		TestGroup   = $TestGroup
+		Category    = $TestCategory
 		TestData    = $tempdata
 		Description = $Description
 		Status      = $stat

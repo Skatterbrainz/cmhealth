@@ -3,6 +3,7 @@ function Test-CmUnknownDevices {
 	param (
 		[parameter()][string] $TestName = "Check for Unknown Devices",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Devices named UNKNOWN* or MININT* left from failed imaging events",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -42,6 +43,7 @@ ORDER BY sys.Name0"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -9,6 +9,7 @@ function Test-CmCollectionRefresh {
 	param (
 		[parameter()][string] $TestName = "Collection Refresh Performance",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Validate Collections refresh impact on performance",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -62,6 +63,7 @@ order by CollectionName"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

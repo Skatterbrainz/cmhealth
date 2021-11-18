@@ -1,8 +1,9 @@
 function Test-CmWsusLastSync {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Last SUP / WSUS Synchronization",
+		[parameter()][string] $TestName = "Last SUP WSUS Synchronization",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Validate last WSUS synchronization result",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -61,6 +62,7 @@ END AS 'Comments'"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

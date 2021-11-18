@@ -3,6 +3,7 @@ function Test-CmContentMissing {
 	param (
 		[parameter()][string] $TestName = "Packages Missing Content",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check for items missing content for distribution",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -55,6 +56,7 @@ WHERE Targeted > 0 AND NumberInstalled <> Targeted"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

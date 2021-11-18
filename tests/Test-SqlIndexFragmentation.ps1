@@ -3,6 +3,7 @@ function Test-SqlIndexFragmentation {
 	param (
 		[parameter()][string] $TestName = "SQL Database Index Fragmentation Status",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Validate SQL database index fragmentation status",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -58,6 +59,7 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

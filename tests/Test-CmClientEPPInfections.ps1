@@ -2,7 +2,8 @@ function Test-CmClientEPPInfections {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Check for Endpoint Protection Infections",
-		[parameter()][string] $TestGroup = "configuration or operation",
+		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Query history of EP client infections",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -37,6 +38,7 @@ function Test-CmClientEPPInfections {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

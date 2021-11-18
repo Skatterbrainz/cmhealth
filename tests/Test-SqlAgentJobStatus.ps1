@@ -3,6 +3,7 @@ function Test-SqlAgentJobStatus {
 	param (
 		[parameter()][string] $TestName = "SQL Agent Job Status",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Validate SQL Agent Job status",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -51,6 +52,7 @@ function Test-SqlAgentJobStatus {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

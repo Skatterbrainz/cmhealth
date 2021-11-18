@@ -3,6 +3,7 @@ function Test-CmComponentErrors {
 	param (
 		[parameter()][string] $TestName = "Site Component Errors",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Site Component Errors and Warnings",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -71,6 +72,7 @@ Order by Status,ComponentName"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

@@ -1,9 +1,10 @@
 function Test-SqlDatabaseFileGrowth {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Short Description",
-		[parameter()][string] $TestGroup = "configuration or operation",
-		[parameter()][string] $Description = "Detailed description of this test",
+		[parameter()][string] $TestName = "SQL Database File Growth",
+		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
+		[parameter()][string] $Description = "Results of SQL file auto-growth configuration",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -55,6 +56,7 @@ ORDER BY s.database_name, backup_finish_date DESC, backup_start_date ASC"
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat

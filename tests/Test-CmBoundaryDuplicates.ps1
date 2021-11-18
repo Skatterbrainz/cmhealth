@@ -3,6 +3,7 @@ function Test-CmBoundaryDuplicates {
 	param (
 		[parameter()][string] $TestName = "Duplicate Site Boundaries",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Validate Site Boundaries are not duplicated",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -30,6 +31,7 @@ function Test-CmBoundaryDuplicates {
 		Write-Output $([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
+			Category    = $TestCategory
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat
