@@ -38,16 +38,27 @@ ORDER BY indexstats.avg_fragmentation_in_percent desc"
 				}
 		}
 		if ($result.Count -gt 1) {
-			$stat = $except
-			$msg = "$($result.Count) indexes were fragmented more than $MinValue percent"
-			$result | Foreach-Object {
-				$tempdata.Add(
-					[pscustomobject]@{
-						Table = $($_.Table)
-						Index = $($_.Index)
-						FragPct=$($_.AvgFragPct)
-					}
-				)
+			if ($ScriptParams.Remediate -eq $True) {
+				Write-Log -Message "REMEDIATION: Check for existing Database Maintenance Solution"
+				if (-not(Get-DbaDatabase -SqlInstance $ScriptParams.SqlInstance -Database DBA)) {
+					Write-Log -Message "REMEDIATION: Installing Database Maintenance Solution"
+					Install-DbMaintenanceSolution -SQLInstance $ScriptParams.SqlInstance
+				} else {
+					Write-Log -Message "REMEDIATION: Warning - Database Maintenance Solution is already installed" -Category Warning
+					Write-Log -Message "Review Sql Agent Jobs to confirm settings and schedules" -Category Warning
+				}
+			} else {
+				$stat = $except
+				$msg = "$($result.Count) indexes were fragmented more than $MinValue percent"
+				$result | Foreach-Object {
+					$tempdata.Add(
+						[pscustomobject]@{
+							Table = $($_.Table)
+							Index = $($_.Index)
+							FragPct=$($_.AvgFragPct)
+						}
+					)
+				}
 			}
 		}
 	}
