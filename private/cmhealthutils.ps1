@@ -466,3 +466,85 @@ function Test-CmHealthModuleVersion {
 		Write-Error $_.Exception.Message
 	}
 }
+
+function Install-DbMaintenanceSolution {
+<# 
+.SYNOPSIS
+	Configure DB Maintenance Solution and Scheduling
+.DESCRIPTION
+	Create new database for Database Maintenance plan, install Ola's solution, create and schedule IndexOptimize task
+.PARAMETER SQLInstance
+	Name of SQL host instance
+.PARAMETER DBName
+	Name of new maintenance database
+.EXAMPLE
+	.\Install-CmDbMaintenanceSolution.ps1 -SQLInstance "cm01.contoso.local" -DBName "dba"
+.NOTES
+	8/27/2021
+	Author: Steve Thompson
+#>
+	[CmdletBinding()]
+	param (
+		[parameter(Mandatory=$False)][string]$SQLInstance = "localhost",
+		[parameter(Mandatory=$False)][string]$DBName = "DBA"
+	)
+
+	# Create a new database on the localhost named DBA
+	$param = @{
+		SqlInstance = $SQLInstance
+		Name = $DBName
+		Owner = "sa"
+		RecoveryModel = "Simple"
+	}
+	New-DbaDatabase @param
+
+	# Install Ola Hallengrens Database Maintenance solution using the DBA database
+	$param = @{
+		SqlInstance = $SQLInstance
+		Database = $DBName
+		ReplaceExisting =-"InstallJobs"
+	}
+	Install-DbaMaintenanceSolution @param
+
+	# Create a new SQL Server Agent Job to schedule the custom Agent Task
+	$param = @{
+		SqlInstance = $SQLInstance
+		Job = "OptimizeIndexes"
+		Owner = "sa"
+		Description = "Ola Hallengren Optimize Indexes"
+	}
+	New-DbaAgentJob @param
+
+	$sqlcmd = "EXECUTE dbo.IndexOptimize
+@Databases = 'USER_DATABASES',
+@FragmentationLow = NULL,
+@FragmentationMedium = 'INDEX_REORGANIZE,INDEX_REBUILD_ONLINE,INDEX_REBUILD_OFFLINE',
+@FragmentationHigh = 'INDEX_REBUILD_ONLINE,INDEX_REBUILD_OFFLINE',
+@FragmentationLevel1 = 10,
+@FragmentationLevel2 = 40,
+@UpdateStatistics = 'ALL',
+@OnlyModifiedStatistics = 'Y',
+@LogToTable = 'Y'"
+
+	# Create a new SQL Agent Task step with the optimal parameters for MEMCM
+	$param = @{
+		SqlInstance = $SQLInstance
+		Job = "OptimizeIndexes"
+		StepName = "Step1"
+		Database = $DBName
+		Command = $sqlcmd
+	}
+	New-DbaAgentJobStep @param
+
+	# Optionally, create a schedule to run the SQL Agent Tast once a week on Sunday @ 1:00AM
+	$param = @{
+		SqlInstance = $SQLInstance
+		Job = "OptimizeIndexes"
+		Schedule = "RunWeekly"
+		FrequencyType = "Weekly"
+		FrequencyInterval = "Sunday"
+		StartTime = "010000"
+		Force = $True
+	}
+	New-DbaAgentSchedule @param
+}
