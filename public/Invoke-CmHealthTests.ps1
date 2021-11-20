@@ -41,11 +41,8 @@ function Invoke-CmHealthTests {
 	)
 	Import-Module cmhealth
 	$res = Test-CmHealth -SiteCode $SiteCode -Database $DBName -SiteServer $SiteServer -SqlInstance $SQLInstance -TestingScope All
-	Write-Verbose "determining report file names and location"
-	$report1 = Join-Path -Path $OutputFolder -ChildPath "cmhealth_$($ClientName)_detailed_$(Get-Date -f 'yyyyMMdd').htm"
-	$report2 = Join-Path -Path $OutputFolder -ChildPath "cmhealth_$($ClientName)_summary_$(Get-Date -f 'yyyyMMdd').htm"
 	Write-Verbose "exporting detailed and summary report files"
-	$res | Out-CmHealthReport -ReportFile $report1 -Title $ClientName -Detailed
-	$res | Out-CmHealthReport -ReportFile $report2 -Title $ClientName
+	$res | Out-CmHealthReport -Title $ClientName -Footer $ClientName -Detailed -OutputFolder $OutputFolder
+	$res | Out-CmHealthReport -Title $ClientName -Footer $ClientName -OutputFolder $OutputFolder
 	Write-Host "Report files saved to folder: $OutputFolder"
 }
