@@ -15,21 +15,82 @@ function Test-SqlUpdates {
 		$msg    = "No issues found"
 		if ($null -ne $ScriptParams.Credential) {
 			Write-Log -Message "connecting with explicit credentials"
-			$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update -SqlCredential $ScriptParams.Credential 
+			try {
+				$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -SqlCredential $ScriptParams.Credential -ErrorAction SilentlyContinue
+				if ($null -eq $res) {
+					$bcurrent = $null
+					$btarget  = $null
+					$stat     = "ERROR"
+					$msg      = "Unable to connect to SQL instance ($($ScriptParams.SqlInstance))"
+				} elseif ($res.Compliant -ne $True) {
+					$bcurrent = $res.BuildLevel
+					$btarget  = $res.BuildTarget
+					$stat = $except
+					$msg = "SQL $($res.NameLevel) build level is $($bcurrent), but should be $($btarget): SP: $($res.SPTarget) CU: $($res.CULevel)"
+				}
+				$res | Foreach-Object {
+					$tempdata.Add(
+						[pscustomobject]@{
+							Build = $_.BuildLevel
+							Target = $_.BuildTarget
+						}
+					)
+				}
+			}
+			catch {
+				$res = Get-DbaBuild -SqlInstance $ScriptParams.SqlInstance
+				$tempdata.Add(
+					[PSCustomObject]@{
+						SqlInstance    = $res.SqlInstance
+						Build          = $res.Build
+						NameLevel      = $res.NameLevel
+						SPLevel        = $res.SPLevel
+						CULevel        = $res.CULevel
+						KBLevel        = $res.KBLevel
+						BuildLevel     = $res.BuildLevel
+						SupportedUntil = $res.SupportedUntil
+					}
+				)
+			}
 		} else {
 			Write-Log -Message "connecting with default credentials"
-			$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -Update
-		}
-		if ($null -eq $res) {
-			$bcurrent = $null
-			$btarget  = $null
-			$stat     = "ERROR"
-			$msg      = "Unable to connect to SQL instance ($($ScriptParams.SqlInstance))"
-		} elseif ($res.Compliant -ne $True) {
-			$bcurrent = $res.BuildLevel
-			$btarget  = $res.BuildTarget
-			$stat = $except
-			$msg = "SQL $($res.NameLevel) build level is $($bcurrent), but should be $($btarget): SP: $($res.SPTarget) CU: $($res.CULevel)"
+			try {
+				$res = Test-DbaBuild -Latest -SqlInstance $ScriptParams.SqlInstance -ErrorAction SilentlyContinue
+				if ($null -eq $res) {
+					$bcurrent = $null
+					$btarget  = $null
+					$stat     = "ERROR"
+					$msg      = "Unable to connect to SQL instance ($($ScriptParams.SqlInstance))"
+				} elseif ($res.Compliant -ne $True) {
+					$bcurrent = $res.BuildLevel
+					$btarget  = $res.BuildTarget
+					$stat = $except
+					$msg = "SQL $($res.NameLevel) build level is $($bcurrent), but should be $($btarget): SP: $($res.SPTarget) CU: $($res.CULevel)"
+				}
+				$res | Foreach-Object {
+					$tempdata.Add(
+						[pscustomobject]@{
+							Build = $_.BuildLevel
+							Target = $_.BuildTarget
+						}
+					)
+				}
+			}
+			catch {
+				$res = Get-DbaBuild -SqlInstance $ScriptParams.SqlInstance
+				$tempdata.Add(
+					[PSCustomObject]@{
+						SqlInstance    = $res.SqlInstance
+						Build          = $res.Build
+						NameLevel      = $res.NameLevel
+						SPLevel        = $res.SPLevel
+						CULevel        = $res.CULevel
+						KBLevel        = $res.KBLevel
+						BuildLevel     = $res.BuildLevel
+						SupportedUntil = $res.SupportedUntil
+					}
+				)
+			}
 		}
 	}
 	catch {

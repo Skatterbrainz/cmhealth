@@ -10,10 +10,6 @@ function Test-AdSchemaExtension {
 	$startTime = (Get-Date)
 	$stat = "PASS"
 	$except = "FAIL"
-	if (!(Get-Module ActiveDirectory -ListAvailable)) {
-		Write-Warning "RSAT is not installed on this host. Test skipped: $TestName"
-		break
-	}
 	try {
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		Write-Log -Message "Verifying for AD Schema extension"
