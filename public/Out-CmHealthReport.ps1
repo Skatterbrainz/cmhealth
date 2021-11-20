@@ -24,6 +24,12 @@
 .EXAMPLE
 	Test-CmHealth -SiteCode P01 -Database CM_P01 | Where-Object {$_.Status -eq 'FAIL'} | Out-CmHealthReport -Show
 	Create reports for failed tests only, then open in browser when finished
+.EXAMPLE
+	$testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
+	$testresult | Out-CmHealthReport -Detailed -Title "Contoso Health Report" -Show
+.EXAMPLE
+	$testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
+	$testresult | Out-CmHealthReport -Detailed -Title "Contoso Health Report" -CssFile "c:\stylesheet.css" -Footer "Contoso Corp"
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-CmHealthReport.md
 .NOTES
@@ -98,7 +104,7 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 	PROCESS {
 		if ($Detailed) {
 			Write-Log -Message "appending test-block: $($_.TestName)"
-			if ([string]::IsNullOrEmpty($_.TestData)) {
+			if ($null -eq $_.TestData) {
 				$testdata = "(no test data returned)"
 			} else {
 				Write-Log -Message "expanding test results data"
