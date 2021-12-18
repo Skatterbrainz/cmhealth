@@ -3,6 +3,7 @@ function Test-CmCMGStatus {
 	param (
 		[parameter()][string] $TestName = "Cloud Management Gateway Status",
 		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check status of CMG",
 		[parameter()][hashtable] $ScriptParams
 	)

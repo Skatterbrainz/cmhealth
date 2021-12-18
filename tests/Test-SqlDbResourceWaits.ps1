@@ -37,7 +37,7 @@ FROM sys.dm_os_wait_stats OPTION (RECOMPILE)"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

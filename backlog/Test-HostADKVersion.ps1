@@ -3,6 +3,7 @@ function Test-HostADKVersion {
 	param (
 		[parameter()][string] $TestName = "Validate ADK Version",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Verify ADK version is supported",
 		[parameter()][hashtable] $ScriptParams
 	)

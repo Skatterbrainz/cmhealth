@@ -63,7 +63,7 @@ ORDER BY srs.ServerName"
 		}		
 	} # foreach
 
-	Write-Output $([pscustomobject]@{
+	$([pscustomobject]@{
 		TestName    = $TestName
 		TestGroup   = $TestGroup
 		Category    = $TestCategory

@@ -72,7 +72,7 @@ DROP TABLE ##temp_DatabaseAnalysis"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

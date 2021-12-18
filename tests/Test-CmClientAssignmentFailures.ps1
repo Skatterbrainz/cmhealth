@@ -35,7 +35,7 @@ WHERE LastMessageStateID > 500 AND LastMessageStateID < 700"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

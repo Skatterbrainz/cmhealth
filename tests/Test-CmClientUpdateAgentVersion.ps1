@@ -72,7 +72,7 @@ WHERE ops.Version0 > '6.2' AND uss.LastWUAVersion < '7.9.9600.16422'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

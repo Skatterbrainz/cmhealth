@@ -44,7 +44,7 @@ group by [ATP_OnboardingState]"
 		$msg += " / trace: $($_.ScriptStackTrace -join ';')"
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

@@ -52,7 +52,7 @@ WHERE (sm.Severity IN (-1073741824, -2147483648)) AND
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

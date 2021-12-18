@@ -3,6 +3,7 @@ function Test-SqlDbFileGrowth {
 	param (
 		[parameter()][string] $TestName = "SQL Database File Growth",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "SQL",
 		[parameter()][string] $Description = "Validate SQL Database File Auto-Growth settings",
 		[parameter()][hashtable] $ScriptParams
 	)

@@ -53,7 +53,7 @@ ORDER BY s.database_name, backup_finish_date DESC, backup_start_date ASC"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

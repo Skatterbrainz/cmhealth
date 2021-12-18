@@ -40,7 +40,7 @@ function Test-HostDriveBlockSize {
 	}
 	finally {
 		if ($cs) { $cs.Close(); $cs = $null }
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

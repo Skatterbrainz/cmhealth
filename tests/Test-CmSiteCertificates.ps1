@@ -52,7 +52,7 @@ FROM dbo.vCM_SiteConfiguration where RoleName like '%Certificate'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

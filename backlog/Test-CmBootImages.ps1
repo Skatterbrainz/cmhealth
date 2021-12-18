@@ -3,6 +3,7 @@ function Test-CmBootImages {
 	param (
 		[parameter()][string] $TestName = "Verify Boot Image OS Versions",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "CM",
 		[parameter()][string] $Description = "Check if Boot Images are supported OS versions",
 		[parameter()][hashtable] $ScriptParams
 	)
@@ -70,7 +71,7 @@ dbo.v_DistributionStatus AS ds ON bip.PackageID = ds.PkgID"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata

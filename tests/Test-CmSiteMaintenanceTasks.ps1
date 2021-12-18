@@ -54,7 +54,7 @@ FROM vSMS_SC_SQL_Task WHERE SiteCode = '$($ScriptParams.SiteCode)'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

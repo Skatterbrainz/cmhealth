@@ -78,8 +78,7 @@ function Test-CmSiteInstallAccountRoles {
 		$msg += $_.Exception.Message -join ';'
 	}
 	finally {
-		$msg = $($msg -join ';')
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

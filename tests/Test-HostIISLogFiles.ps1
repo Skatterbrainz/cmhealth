@@ -61,7 +61,13 @@ function Test-HostIISLogFiles {
 			Message = $msg
 			Note    = "Capacity = $totalDiskSize , LogSpace = $logSpaceUsed"
 		})
-		$result = [pscustomobject]@{
+	}
+	catch {
+		$stat = 'ERROR'
+		$msg = $_.Exception.Message -join ';'
+	}
+	finally {
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory
@@ -71,25 +77,6 @@ function Test-HostIISLogFiles {
 			Message     = $msg
 			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
-		}
-	}
-	catch {
-		$result = [pscustomobject]@{
-			TestName    = $TestName
-			TestGroup   = $TestGroup
-			TestData    = $tempdata
-			Description = $Description
-			Status      = 'ERROR'
-			Activity    = $($_.CategoryInfo.Activity -join(";"))
-			Message     = $($_.Exception.Message -join(";"))
-			RunTime     = $(Get-RunTime -BaseTime $startTime)
-			Trace       = $($_.ScriptStackTrace -join(";"))
-			RunAs       = $($env:USERNAME)
-			RunOn       = $($env:COMPUTERNAME)
-			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
-		}
-	}
-	finally {
-		Write-Output $result
+		})
 	}
 }

@@ -3,6 +3,7 @@ function Test-WsusWebConfig {
 	param (
 		[parameter()][string] $TestName = "WSUS Application Web Config Settings",
 		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestCategory = "HOST",
 		[parameter()][string] $Description = "Validate WSUS web configuration file parameters",
 		[parameter()][hashtable] $ScriptParams
 	)

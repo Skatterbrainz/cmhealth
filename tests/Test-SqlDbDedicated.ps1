@@ -55,7 +55,7 @@ function Test-SqlDbDedicated {
 		$stat = "ERROR"
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

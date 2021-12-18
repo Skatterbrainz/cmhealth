@@ -46,7 +46,7 @@ WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			Category    = $TestCategory

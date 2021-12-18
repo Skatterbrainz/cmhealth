@@ -1,10 +1,10 @@
 function Test-Example {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Short Description",
-		[parameter()][string] $TestGroup = "configuration or operation",
-		[parameter()][string] $TestCategory = "CM",
-		[parameter()][string] $Description = "Detailed description of this test",
+		[parameter()][string] $TestName = "Short_Description",
+		[parameter()][string] $TestGroup = "configuration_or_operation",
+		[parameter()][string] $TestCategory = "AD,CM,SQL,HOST",
+		[parameter()][string] $Description = "Detailed_description_of_this_test",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -75,7 +75,7 @@ function Test-Example {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata

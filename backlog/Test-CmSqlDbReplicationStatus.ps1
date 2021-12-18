@@ -1,9 +1,10 @@
-function Test-CmDiscoveryExclusions {
+function Test-CmSqlDbReplicationStatus {
 	[CmdletBinding()]
 	param (
-		[parameter()][string] $TestName = "Discovery Methods with Exclusions",
-		[parameter()][string] $TestGroup = "configuration",
-		[parameter()][string] $Description = "Warn about exclusions and possible missing resources",
+		[parameter()][string] $TestName = "CM Database Replication Status",
+		[parameter()][string] $TestGroup = "operation",
+		[parameter()][string] $TestCategory = "CM",
+		[parameter()][string] $Description = "Check for SQL Replication Errors and Warnings",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -15,11 +16,24 @@ function Test-CmDiscoveryExclusions {
 		$msg    = "No issues found" # do not change this either
 		<#
 		=======================================================
+		|	COMMENT: DELETE THIS BLOCK WHEN FINISHED:
+		|
+		|	perform test and return result as an object...
+		|		$stat = $except (no need to set "PASS" since it's the default)
+		|		$msg = "custom message that N issues were found"
+		|		add supporting data to $tempdata array if it helps output
+		|		loop output into $tempdata.Add() array to return as TestData param in output
+		=======================================================
+		#>
+
+		<#
+		=======================================================
 		COMMENT: EXAMPLE FOR SQL QUERY RELATED TESTS... DELETE THIS BLOCK IF NOT USED
 		=======================================================
+
 		$query = ""
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
-		if ($null -ne $res -and $res.Count -gt 0) {
+		if ($res.Count -gt 0) {
 			$stat = $except
 			$msg  = "$($res.Count) items found"
 			#$res | Foreach-Object {$tempdata.Add( [pscustomobject]@{Name=$_.Name} )}
