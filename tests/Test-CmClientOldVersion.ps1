@@ -1,5 +1,6 @@
 function Test-CmClientOldVersion {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Old Client Versions",
 		[parameter()][string] $TestGroup = "operation",

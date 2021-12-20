@@ -1,5 +1,6 @@
 function Test-CmComponentErrors {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Site Component Errors",
 		[parameter()][string] $TestGroup = "operation",

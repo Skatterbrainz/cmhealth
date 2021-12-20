@@ -1,5 +1,6 @@
 function Test-CmComponentStatusSummary {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Component Status Summary",
 		[parameter()][string] $TestGroup = "operation",

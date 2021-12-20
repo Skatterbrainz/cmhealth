@@ -1,5 +1,6 @@
 function Test-CmClientATPStatus {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "ATP Client Onboarding and Activity Status",
 		[parameter()][string] $TestGroup = "operation",

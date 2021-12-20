@@ -1,5 +1,6 @@
 function Test-CmClientEPPInfections {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Check for Endpoint Protection Infections",
 		[parameter()][string] $TestGroup = "operation",

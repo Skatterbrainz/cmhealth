@@ -1,5 +1,6 @@
 function Test-CmSiteCertificates {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Site Certificate Expirations",
 		[parameter()][string] $TestGroup = "operation",

@@ -1,5 +1,6 @@
 function Test-CmContentDistErrors {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Content Distribution Errors",
 		[parameter()][string] $TestGroup = "operation",

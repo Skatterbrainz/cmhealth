@@ -1,5 +1,6 @@
 function Test-CmSiteInstallAccountRoles {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "ConfigMgr Install Account Roles and Permissions",
 		[parameter()][string] $TestGroup = "configuration",

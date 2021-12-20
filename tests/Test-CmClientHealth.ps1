@@ -1,5 +1,6 @@
 function Test-CmClientHealth {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Client Health Summary",
 		[parameter()][string] $TestGroup = "operation",

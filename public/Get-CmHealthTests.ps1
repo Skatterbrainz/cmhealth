@@ -12,6 +12,7 @@
 #>
 function Get-CmHealthTests {
 	[CmdletBinding()]
+	[OutputType()]
 	param()
 	$mpath = $(Split-Path (Get-Module cmhealth).Path)
 	$tpath = "$($mpath)\tests"

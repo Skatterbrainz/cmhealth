@@ -1,5 +1,6 @@
 function Test-CmUpdateCompliance {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Software Update Compliance Summary",
 		[parameter()][string] $TestGroup = "operation",

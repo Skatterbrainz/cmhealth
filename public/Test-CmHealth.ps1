@@ -66,6 +66,7 @@
 
 function Test-CmHealth {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter(Mandatory=$True)][ValidateLength(3,3)][string] $SiteCode,
 		[parameter(Mandatory=$True)][ValidateNotNullOrEmpty()][string] $Database,
@@ -104,6 +105,7 @@ function Test-CmHealth {
 		Source       = $Source
 		Remediate    = $Remediate
 		Credential   = $Credential
+		LogFile      = $LogFile
 		Verbose      = $VerbosePreference
 	}
 	#$GLOBAL:CmhParams = $params

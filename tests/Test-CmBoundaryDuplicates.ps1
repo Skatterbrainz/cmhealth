@@ -1,5 +1,6 @@
 function Test-CmBoundaryDuplicates {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Duplicate Site Boundaries",
 		[parameter()][string] $TestGroup = "configuration",

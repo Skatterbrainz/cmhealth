@@ -1,5 +1,6 @@
 function Test-CmClientInventoryStale {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Stale Client Inventory Data",
 		[parameter()][string] $TestGroup = "operation",

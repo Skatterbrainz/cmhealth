@@ -1,5 +1,6 @@
 function Test-CmClientAssignmentFailures {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Client Assignment Failures",
 		[parameter()][string] $TestGroup = "operation",

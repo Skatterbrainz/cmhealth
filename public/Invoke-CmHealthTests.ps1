@@ -31,6 +31,7 @@
 #>
 function Invoke-CmHealthTests {
 	[CmdletBinding()]
+	[OutputType()]
 	param(
 		[parameter(Mandatory=$True)][string]$SiteCode,
 		[parameter(Mandatory=$True)][string]$SiteServer,

@@ -17,6 +17,7 @@
 #>
 function Test-CmHealthDependencies {
 	[CmdletBinding()]
+	[OutputType()]
 	param()
 	Write-Host "checking dependencie module versions" -ForegroundColor Cyan
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

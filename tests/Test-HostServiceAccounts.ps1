@@ -1,5 +1,6 @@
 function Test-HostServiceAccounts {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Service Account Permissions",
 		[parameter()][string] $TestGroup = "configuration",
@@ -103,6 +104,9 @@ function Test-HostServiceAccounts {
 			catch {
 				Write-Error "$svcName = $($_.Exception.Message -join ';')"
 			}
+		} # foreach
+		if ($stat -eq $except) {
+			$msg = "$($tempdata.Count) exceptions were found"
 		}
 	}
 	catch {

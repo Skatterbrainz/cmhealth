@@ -1,5 +1,6 @@
 function Test-CmClientUpdateScanErrors {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Client Update Scan Errors",
 		[parameter()][string] $TestGroup = "operation",

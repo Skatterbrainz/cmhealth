@@ -1,5 +1,6 @@
 function Test-CmClientInactive {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Inactive Clients",
 		[parameter()][string] $TestGroup = "operation",

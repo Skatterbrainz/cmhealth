@@ -38,6 +38,7 @@
 
 function Out-CmHealthReport {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter(Mandatory=$True,ValueFromPipeline=$True)]$InputObject,
 		[parameter(Mandatory=$False)][switch]$Detailed,

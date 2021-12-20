@@ -1,5 +1,6 @@
 function Test-CmBoundariesOrphaned {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Orphaned Site Boundaries",
 		[parameter()][string] $TestGroup = "configuration",

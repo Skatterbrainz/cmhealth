@@ -1,5 +1,6 @@
 function Test-AdSysMgtContainer {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Active Directory System Management Container",
 		[parameter()][string] $TestGroup = "configuration",

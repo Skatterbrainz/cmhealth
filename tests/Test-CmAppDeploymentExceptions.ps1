@@ -1,5 +1,6 @@
 function Test-CmAppDeploymentExceptions {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Application Deployment Exceptions",
 		[parameter()][string] $TestGroup = "operation",

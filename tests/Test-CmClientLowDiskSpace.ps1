@@ -1,5 +1,6 @@
 function Test-CmClientLowDiskSpace {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Clients with Low Disk Space",
 		[parameter()][string] $TestGroup = "operation",

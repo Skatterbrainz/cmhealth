@@ -1,5 +1,6 @@
 function Test-CmClientBoundaryExceptions {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Check client boundary groups",
 		[parameter()][string] $TestGroup = "operation",

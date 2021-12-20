@@ -1,5 +1,6 @@
 function Test-CmCMGCostEstimate {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Estimated CMG Operational Cost Estimate",
 		[parameter()][string] $TestGroup = "operation",

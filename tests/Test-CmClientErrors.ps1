@@ -1,5 +1,6 @@
 function Test-CmClientErrors {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Clients with Errors",
 		[parameter()][string] $TestGroup = "operation",

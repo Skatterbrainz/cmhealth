@@ -1,5 +1,6 @@
 function Test-SqlDatabaseNameDefault {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Check if SQL DB name uses default format",
 		[parameter()][string] $TestGroup = "configuration",
@@ -14,32 +15,16 @@ function Test-SqlDatabaseNameDefault {
 		$stat   = "PASS" # do not change this
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
-		$regkey = "HKLM:\SOFTWARE\Microsoft\SMS\SQL Server"
-		$vname  = "Database Name"
-
-		$reghost = $ScriptParams.ComputerName
-		$dbname  = ""
-		if ($reghost -eq $env:COMPUTERNAME) {
-			Write-Log -Message "reading local registry: $regkey"
-			$dbname = Get-RegistryValueData -RegistryHive LocalMachine -RegistryKeyPath $regkey -ValueName $vname
+		$dbname = $($CmhParams.Database)
+		$dbtest = "CM_$($CmhParams.SiteCode)"
+		if ($dbname -ne $dbtest) {
+			$stat = $except
+			$msg = "$dbname is not using the default naming format CM_(SiteCode)"
+			Write-Log -Message $msg -Category $except
 		} else {
-			Write-Log -Message "reading remote registry: $regkey"
-			$dbname = Get-RegistryValueData -ComputerName $reghost -RegistryHive LocalMachine -RegistryKeyPath $regkey -ValueName $vname
+			$msg = "$dbname is using the default naming format"
+			Write-Log -Message $msg
 		}
-
-		if (![string]::IsNullOrEmpty($dbname)) {
-			if (-not($dbname.StartsWith('CM_'))) {
-				$stat = $except
-				$msg = "$dbname is not using the default naming format"
-				Write-Log -Message $msg -Category $except
-			} else {
-				$msg = "$dbname is using the default naming format"
-				Write-Log -Message $msg
-			}
-		} else {
-			Write-Log -Message "Unable to read registry data" -Category Error
-		}
-
 		$tempdata.Add(
 			[pscustomobject]@{
 				Status = $stat

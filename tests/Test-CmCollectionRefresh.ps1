@@ -6,6 +6,7 @@
 #>
 function Test-CmCollectionRefresh {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Collection Refresh Performance",
 		[parameter()][string] $TestGroup = "configuration",

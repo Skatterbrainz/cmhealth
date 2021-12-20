@@ -1,5 +1,6 @@
 function Test-CmClientCoverage {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Device Client Coverage Status",
 		[parameter()][string] $TestGroup = "operation",

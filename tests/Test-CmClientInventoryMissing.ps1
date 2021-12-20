@@ -1,5 +1,6 @@
 function Test-CmClientInventoryMissing {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Clients Missing Inventory Data",
 		[parameter()][string] $TestGroup = "operation",

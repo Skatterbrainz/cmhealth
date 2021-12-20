@@ -1,5 +1,6 @@
 function Test-CmClientDeploymentFailures {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Client Deployment Failures",
 		[parameter()][string] $TestGroup = "operation",

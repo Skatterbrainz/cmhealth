@@ -1,7 +1,8 @@
-# Updated for 0.3.12
+# Updated for 0.4.0.1
 
 function Import-CmHealthSettings {
 	[CmdletBinding()]
+	[OutputType([string])]
 	param (
 		[parameter()][string] $Primary = "$($env:TEMP)\cmhealth.json",
 		[parameter()][string] $Default = "$(Split-Path $(Get-Module cmhealth).Path)\reserve\cmhealth.json"
@@ -21,12 +22,13 @@ function Import-CmHealthSettings {
 		Write-Error $_.Exception.Message
 	}
 	finally {
-		Write-Output $result
+		$result
 	}
 }
 
 function New-CmHealthConfig {
 	[CmdletBinding()]
+	[OutputType()]
 	param(
 		[parameter(Mandatory=$False)][string]$Path = "$($env:TEMP)\cmhealth.json"
 	)
@@ -36,12 +38,13 @@ function New-CmHealthConfig {
 	Write-Log -Message "source path is $rpath"
 	$configFile = "$($rpath)\cmhealth.json"
 	Write-Log -Message "destination path is $Path"
-	Copy-Item -Path $configFile -Destination $Path -Force
+	Copy-Item -Path $configFile -Destination $Path -Force | Out-Null
 	Write-Log -Message "cmhealth settings file saved as: $($Path)"
 }
 
 function Get-CmHealthDefaultValue {
 	[CmdletBinding()]
+	[OutputType([string])]
 	param (
 		[parameter(Mandatory)][ValidateNotNullOrEmpty()][string] $KeySet,
 		[parameter(Mandatory)][ValidateNotNullOrEmpty()] $DataSet
@@ -66,6 +69,7 @@ function Get-CmHealthDefaultValue {
 
 function Get-CmHealthLastTestSet {
 	[CmdletBinding()]
+	[OutputType([string])]
 	param(
 		[parameter(Mandatory=$False)][string] $FilePath = "$($env:TEMP)\cmhealth-lastrun.txt"
 	)
@@ -79,6 +83,7 @@ function Get-CmHealthLastTestSet {
 
 function Set-CmHealthLastTestSet {
 	[CmdletBinding()]
+	[OutputType()]
 	param(
 		[parameter(Mandatory=$True)][string[]] $TestNames,
 		[parameter(Mandatory=$False)][string] $FilePath = "$($env:TEMP)\cmhealth-lastrun.txt"
@@ -89,6 +94,7 @@ function Set-CmHealthLastTestSet {
 
 function Get-CmSqlQueryResult {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter(Mandatory=$True)][ValidateNotNullOrEmpty()][string] $Query,
 		[parameter(Mandatory=$True)] $Params
@@ -105,6 +111,7 @@ function Get-CmSqlQueryResult {
 
 function Get-WmiQueryResult {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter(Mandatory=$True)][string] $ClassName,
 		[parameter(Mandatory=$False)][string] $Query = "",
@@ -146,6 +153,8 @@ function Get-RunTime {
 }
 
 function Convert-DecErrToHex {
+	[CmdletBinding()]
+	[OutputType([string])]
 	param (
 		[parameter(Mandatory=$True)]$DecimalNumber
 	)
@@ -158,6 +167,7 @@ function Get-RegistryValueData {
 	[CmdletBinding(SupportsShouldProcess=$True,
 		ConfirmImpact='Medium',
 		HelpURI='http://vcloud-lab.com')]
+	[OutputType()]
 	Param ( 
 		[parameter(Position=0, ValueFromPipeline=$True, ValueFromPipelineByPropertyName=$True)]
 		[alias('C')]
@@ -222,6 +232,7 @@ function Get-RegistryValueData {
 # returns 4-digit ConfigMgr site version build number (e.g. "9045")
 function Get-CmBuildNumber {
 	[CmdletBinding()]
+	[OutputType([string])]
 	param (
 		[parameter(Mandatory=$False)][string]$ComputerName = '.'
 	)
@@ -230,6 +241,8 @@ function Get-CmBuildNumber {
 }
 
 function Get-CmVersionName {
+	[CmdletBinding()]
+	[OutputType([string])]
 	param(
 		[parameter(Mandatory=$True)][string] $Version
 	)
@@ -269,6 +282,8 @@ function Write-Log {
 }
 
 function Get-WindowsBuildNumber {
+	[CmdletBinding()]
+	[OutputType([string])]
 	param(
 		[parameter(Mandatory=$True)][string] $Version
 	)
@@ -296,6 +311,8 @@ CREDIT to Trevor Jones for this function as part of the script that queries
 site status messages. Refer to https://smsagent.blog/2015/07/22/retrieving-configmgr-status-messages-with-powershell/
 #>
 function Get-StatusMessage {
+	[CmdletBinding()]
+	[OutputType()]
 	param (
 		$SmsMsgsPath,
 		$iMessageID,
@@ -316,8 +333,9 @@ function Get-StatusMessage {
 	if ($DLL -eq "srvmsgs.dll")	{ $stringPathToDLL = "$SMSMSGSLocation\srvmsgs.dll" }
 	if ($DLL -eq "provmsgs.dll") { $stringPathToDLL = "$SMSMSGSLocation\provmsgs.dll" }
 	if ($DLL -eq "climsgs.dll") { $stringPathToDLL = "$SMSMSGSLocation\climsgs.dll" }
-	 
-	#Load Status Message Lookup DLL into memory and get pointer to memory
+	Write-Verbose "DLL = $stringPathToDLL"
+
+	Write-Verbose "Loading Status Message Lookup DLL into memory and get pointer to memory"
 	$ptrFoo = $Win32LoadLibrary::LoadLibrary($stringPathToDLL.ToString())
 	$ptrModule = $Win32GetModuleHandle::GetModuleHandle($stringPathToDLL.ToString()) 
 	 
@@ -327,6 +345,7 @@ function Get-StatusMessage {
 	 
 	$result = $Win32FormatMessage::FormatMessage($flags, $ptrModule, $Code -bor $iMessageID, 0, $stringOutput, $sizeOfBuffer, $stringArrayInput)
 	if ($result -gt 0) {
+		Write-Verbose "result is non-zero"
 		# Add insert strings to message
 		$objMessage = New-Object System.Object
 		$objMessage | Add-Member -type NoteProperty -name MessageString -value $stringOutput.ToString().Replace("%11","").Replace("%12","").Replace("%3%4%5%6%7%8%9%10","").Replace("%1",$InsString1).Replace("%2",$InsString2).Replace("%3",$InsString3).Replace("%4",$InsString4).Replace("%5",$InsString5).Replace("%6",$InsString6).Replace("%7",$InsString7).Replace("%8",$InsString8).Replace("%9",$InsString9).Replace("%10",$InsString10)
@@ -342,6 +361,7 @@ The only real modification was to replace the ADO.NET code using module DbaTools
 
 function Get-SiteStatusMessages {
 	[CmdletBinding()]
+	[OutputType()]
 	param ($Params)
 	try {
 		# get installation path to determine smsmsgs DLL path
@@ -447,6 +467,8 @@ public static extern IntPtr LoadLibrary(string lpFileName);
 }
 
 function Test-CmHealthModuleVersion {
+	[CmdletBinding()]
+	[OutputType()]
 	param()
 	try {
 		$mv = Get-Module 'cmhealth' -ListAvailable | Select-Object -First 1 -ExpandProperty Version
@@ -484,6 +506,7 @@ function Install-DbMaintenanceSolution {
 	Author: Steve Thompson
 #>
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter(Mandatory=$False)][string]$SQLInstance = "localhost",
 		[parameter(Mandatory=$False)][string]$DBName = "DBA"

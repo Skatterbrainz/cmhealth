@@ -1,5 +1,6 @@
 function Test-AdSchemaExtension {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Active Directory Schema Extended",
 		[parameter()][string] $TestGroup = "configuration",

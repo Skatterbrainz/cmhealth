@@ -1,5 +1,6 @@
 function Test-CmClientMissing {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Missing Clients",
 		[parameter()][string] $TestGroup = "operation",

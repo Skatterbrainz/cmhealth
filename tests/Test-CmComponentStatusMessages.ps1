@@ -1,5 +1,6 @@
 function Test-CmComponentStatusMessages {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Component Status Exceptions",
 		[parameter()][string] $TestGroup = "operation",

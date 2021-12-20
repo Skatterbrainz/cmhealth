@@ -1,5 +1,6 @@
 function Test-CmSiteMaintenanceTasks {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Check Site Maintenance Tasks",
 		[parameter()][string] $TestGroup = "configuration",

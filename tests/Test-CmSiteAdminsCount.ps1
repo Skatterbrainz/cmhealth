@@ -1,5 +1,6 @@
 function Test-CmSiteAdminsCount {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Site Admins Membership Count",
 		[parameter()][string] $TestGroup = "configuration",

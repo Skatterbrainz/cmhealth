@@ -1,5 +1,6 @@
 function Test-CmSiteLastBackup {
 	[CmdletBinding()]
+	[OutputType()]
 	param (
 		[parameter()][string] $TestName = "Last Site Backup",
 		[parameter()][string] $TestGroup = "operation",
