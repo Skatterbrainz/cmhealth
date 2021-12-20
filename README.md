@@ -14,6 +14,13 @@ worker. If you want more information on this, let me know.
 
 ## Module Changes and Updates
 
+* Version 0.4.0.1 (2021-12-19)
+  * All Tests: Code updates to improve performance
+  * Bug fixes
+    * Test-SqlDatabaseNameDefault: was not checking against [Database] parameter value
+    * Test-HostServiceAccounts: incorrect result status and message when not passing
+  * Internal functions: outputtype added for improved compliance
+
 * Version 0.4.0 (2021-11-18)
   * Out-CmHealthReport
     * Detailed option produces separate files for each test rather than one gigantic stupid-ass endless CVS-receipt-style report
