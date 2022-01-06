@@ -131,19 +131,13 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 			<td><a href=`"$ReportFile`" title=`"View Test Results`">$($_.TestName)</a></td></tr>"
 		} else {
 			#$content = $section1
-			switch ($_.Status) {
-				'PASS' { $tstat = "<span style=color:green>$tstat</span>"}
-				'FAIL' { $tstat = "<span style=color:red>$tstat</span>"}
-				'WARNING' { $tstat = "<span style=color:orange>$tstat</span>"}
-				default { $tstat = "<span style=color:red>$tstat</span>"}
-			}
 			Write-Log -Message "appending test-block: $($_.TestName)"
 			$chunk = "<h3>$($_.TestName)</h3>
 			<table>
 			<tr><th style=`"width:200px`">Description</th><td>$($_.Description)</td></tr>
 			<tr><th style=`"width:200px`">Category</th><td>$($_.Category)</td></tr>
 			<tr><th style=`"width:200px`">Group</th><td>$($_.TestGroup)</td></tr>
-			<tr><th style=`"width:200px`">Test Result</th><td>$tstat</td></tr>
+			<tr><th style=`"width:200px`">Test Result</th><td>$($_.Status)</td></tr>
 			<tr><th style=`"width:200px`">Message</th><td>$($_.Message)</td></tr>
 			<tr><th style=`"width:200px`">Runtime</th><td>$($_.RunTime)</td></tr>
 			</table>"
