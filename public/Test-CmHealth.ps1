@@ -85,7 +85,7 @@ function Test-CmHealth {
 	$startTime1 = (Get-Date)
 	Write-Host "Thank you for using CMHealth! (and your ConfigMgr site thanks you too)" -ForegroundColor Cyan
 	Write-Host "Thanks to the authors of PowerShell modules: DbaTools, Carbon, AdsiPS and psWindowsUpdate" -ForegroundColor Cyan
-	Write-Warning "If you haven't refreshed the cmhealth.json file since 0.2.24 or earlier, rename or delete the file and run this command again."
+	#Write-Warning "If you haven't refreshed the cmhealth.json file since 0.2.24 or earlier, rename or delete the file and run this command again."
 	Write-Host "log file = $LogFile"
 	Write-Log -Message "------------------ begin processing --------------------"
 	if (!(Test-Path "$ConfigFile")) {
