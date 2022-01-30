@@ -2,9 +2,9 @@ function Test-HostDiskSpace {
 	[CmdletBinding()]
 	param (
 		[parameter()][string] $TestName = "Disk Space Health",
-		[parameter()][string] $TestGroup = "configuration",
+		[parameter()][string] $TestGroup = "operation",
 		[parameter()][string] $TestCategory = "HOST",
-		[parameter()][string] $Description = "Validate logical disk utilitization",
+		[parameter()][string] $Description = "Validate logical disk space health",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -15,7 +15,7 @@ function Test-HostDiskSpace {
 		$stat   = "PASS"
 		$except = "FAIL"
 		$msg    = "No issues found"
-		$disks  = Get-WmiQueryResult -ClassName "Win32_LogicalDisk" -Query "DriveType = 3" -Params $ScriptParams
+		[array]$disks = Get-WmiQueryResult -ClassName "Win32_LogicalDisk" -Query "DriveType=3" -Params $ScriptParams
 		foreach ($disk in $disks) {
 			$drv  = $disk.DeviceID
 			$size = $disk.Size
@@ -42,16 +42,6 @@ function Test-HostDiskSpace {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$([pscustomobject]@{
-			TestName    = $TestName
-			TestGroup   = $TestGroup
-			Category    = $TestCategory
-			TestData    = $tempdata
-			Description = $Description
-			Status      = $stat
-			Message     = $msg
-			RunTime     = $(Get-RunTime -BaseTime $startTime)
-			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
-		})
+		Set-CmhOutputData
 	}
 }

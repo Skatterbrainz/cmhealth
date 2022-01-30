@@ -116,6 +116,7 @@ FileGroupReadOnly        :
 	}
 	finally {
 		Write-Output $([pscustomobject]@{
+			Computer    = $ScriptParams.ComputerName
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata

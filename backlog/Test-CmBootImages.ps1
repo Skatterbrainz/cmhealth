@@ -72,6 +72,7 @@ dbo.v_DistributionStatus AS ds ON bip.PackageID = ds.PkgID"
 	}
 	finally {
 		$([pscustomobject]@{
+			Computer    = $ScriptParams.ComputerName
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata

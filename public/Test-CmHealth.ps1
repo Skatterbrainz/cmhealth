@@ -31,9 +31,14 @@
 	Path and name of log file. Default is $env:TEMP\cmhealth_yyyy-mm-dd.log
 .PARAMETER NoVersionCheck
 	Skip checking for newer module version (default is to attempt a version check)
+.PARAMETER AllServers
+	Run tests on all site systems within the current ConfigMgr site database
 .EXAMPLE
 	Test-CmHealth -SiteCode "P01" -Database "CM_P01"
-	Runs all tests on the local machine using the current user credentials
+	Runs all tests on the local machine 
+.EXAMPLE
+	Test-CmHealth -SiteCode "P01" -Database "CM_P01" -AllServers
+	Runs all tests on all site systems 
 .EXAMPLE
 	Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "ALL"
 	Runs all tests
@@ -78,7 +83,8 @@ function Test-CmHealth {
 		[parameter(Mandatory=$False)][string] $Source = "c:\windows\winsxs",
 		[parameter(Mandatory=$False)][pscredential] $Credential,
 		[parameter(Mandatory=$False)][string]$LogFile = "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log",
-		[parameter(Mandatory=$False)][switch]$NoVersionCheck
+		[parameter(Mandatory=$False)][switch]$NoVersionCheck,
+		[parameter(Mandatory=$False)][switch]$AllServers
 	)
 	if (-not($NoVersionCheck)) { Test-CmHealthModuleVersion }
 	if (-not(Test-Path $ConfigFile)) { New-CmHealthConfig -Path $ConfigFile }
@@ -140,11 +146,18 @@ function Test-CmHealth {
 	}
 	$testcount = $testset.Count
 	$counter = 1
-	foreach ($test in $testset) {
-		Write-Log -Message "TEST $counter of $testcount`: $test" -Show
-		$testname = $test += ' -ScriptParams $CmhParams'
-		Invoke-Expression -Command $testname
-		$counter++
+	if ($AllServers) {
+		$siteSystems = Get-CmSiteServersList -ComputerName $cmhParams.ComputerName -SiteCode $cmhParams.SiteCode
+		foreach ($server in $siteSystems) {
+			$cmhParams.ComputerName = $server
+		}
+	} else {
+		foreach ($test in $testset) {
+			Write-Log -Message "TEST $counter of $testcount`: $test" -Show
+			$testname = $test += ' -ScriptParams $CmhParams'
+			Invoke-Expression -Command $testname
+			$counter++
+		}
 	}
 	$runTime = New-TimeSpan -Start $startTime1 -End (Get-Date)
 	Write-Log -Message "completed $($testset.Count) tests in: $($runTime.Hours) hrs $($runTime.Minutes) min $($runTime.Seconds) sec" -Show

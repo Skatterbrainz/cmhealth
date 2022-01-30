@@ -55,16 +55,6 @@ FROM vSMS_SC_SQL_Task WHERE SiteCode = '$($ScriptParams.SiteCode)'"
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$([pscustomobject]@{
-			TestName    = $TestName
-			TestGroup   = $TestGroup
-			Category    = $TestCategory
-			TestData    = $tempdata
-			Description = $Description
-			Status      = $stat
-			Message     = $msg
-			RunTime     = $(Get-RunTime -BaseTime $startTime)
-			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
-		})
+		Set-CmhOutputData
 	}
 }

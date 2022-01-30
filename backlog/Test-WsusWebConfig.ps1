@@ -70,7 +70,8 @@ function Test-WsusWebConfig {
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
+			Computer    = $ScriptParams.ComputerName
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata

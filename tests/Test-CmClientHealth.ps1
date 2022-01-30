@@ -54,23 +54,23 @@ Order by ClientStateDescription,ComputerName"
 			$stat = $except
 			$msg = "$($res.Count) clients are reporting as not healthy"
 		}
-		$res | Foreach-Object { $tempdata.Add($_) }
+		$res | Foreach-Object {
+			$tempdata.Add(
+				[pscustomobject]@{
+					ComputerName = $_.ComputerName
+					UserName     = $_.UserName
+					LastEval     = $_.'Last Evaluation Healthy'
+					Remediation  = $_.'ClientRemediationSuccess'
+					EvalResult   = $_.'LastHealthEvaluationResult'
+				}
+			)
+		}
 	}
 	catch {
 		$stat = 'ERROR'
 		$msg = $_.Exception.Message -join ';'
 	}
 	finally {
-		$([pscustomobject]@{
-			TestName    = $TestName
-			TestGroup   = $TestGroup
-			Category    = $TestCategory
-			TestData    = $tempdata
-			Description = $Description
-			Status      = $stat
-			Message     = $msg
-			RunTime     = $(Get-RunTime -BaseTime $startTime)
-			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
-		})
+		Set-CmhOutputData
 	}
 }

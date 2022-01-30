@@ -1,4 +1,4 @@
-# Updated for 0.4.0.1
+# Updated for 0.4.1.0 / 2022-01-30
 
 function Import-CmHealthSettings {
 	[CmdletBinding()]
@@ -570,4 +570,44 @@ function Install-DbMaintenanceSolution {
 		Force = $True
 	}
 	New-DbaAgentSchedule @param
+}
+
+function Get-CmSiteServersList {
+	[CmdletBinding()]
+	param (
+		[parameter(Mandatory=$True)][string]$SiteCode,
+		[parameter(Mandatory=$True)][string]$ComputerName,
+		[parameter(Mandatory=$False)][switch]$GetRoles
+	)
+	$cimParams = @{
+		NameSpace = "root\sms\site_$($SiteCode)"
+		ClassName = "SMS_SystemResourceList"
+		ComputerName = $ComputerName
+	}
+	try {
+		$result = Get-CimInstance @cimParams -ErrorAction Stop
+		if ($GetRoles) {
+			$result | Select-Object ServerName,RoleName | Sort-Object ServerName
+		} else {
+			$result | Select-Object ServerName -Unique
+		}
+	}
+	catch {
+		Write-Error $_.Exception.Message
+	}
+}
+
+function Set-CmhOutputData () {
+	$([pscustomobject]@{
+		Computer    = $ScriptParams.ComputerName
+		TestName    = $TestName
+		TestGroup   = $TestGroup
+		Category    = $TestCategory
+		TestData    = $tempdata
+		Description = $Description
+		Status      = $stat
+		Message     = $msg
+		RunTime     = $(Get-RunTime -BaseTime $startTime)
+		Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
+	})
 }

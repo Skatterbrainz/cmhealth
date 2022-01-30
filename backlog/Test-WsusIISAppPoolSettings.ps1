@@ -95,15 +95,15 @@ function Test-WsusIisAppPoolSettings {
 	}
 	finally {
 		Set-Location $oldLoc
-		$rt = Get-RunTime -BaseTime $startTime
-		Write-Output $([pscustomobject]@{
+		$([pscustomobject]@{
+			Computer    = $ScriptParams.ComputerName
 			TestName    = $TestName
 			TestGroup   = $TestGroup
 			TestData    = $tempdata
 			Description = $Description
 			Status      = $stat
 			Message     = $msg
-			RunTime     = $rt
+			RunTime     = $(Get-RunTime -BaseTime $startTime)
 			Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 		})
 	}
