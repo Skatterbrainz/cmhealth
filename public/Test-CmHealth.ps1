@@ -147,9 +147,19 @@ function Test-CmHealth {
 	$testcount = $testset.Count
 	$counter = 1
 	if ($AllServers) {
-		$siteSystems = Get-CmSiteServersList -ComputerName $cmhParams.ComputerName -SiteCode $cmhParams.SiteCode
-		foreach ($server in $siteSystems) {
-			$cmhParams.ComputerName = $server
+		[array]$siteSystems = Get-CmSiteServersList -ComputerName $cmhParams.ComputerName -SiteCode $cmhParams.SiteCode
+		if ($siteSystems.Count -gt 0) {
+			foreach ($server in $siteSystems) {
+				$cmhParams.ComputerName = $server.ServerName
+				foreach ($test in $testset) {
+					Write-Log -Message "$($server.ServerName): TEST $counter of $testcount`: $test" -Show
+					$testname = $test += ' -ScriptParams $CmhParams'
+					Invoke-Expression -Command $testname
+					$counter++
+				}
+			}
+		} else {
+			Write-Log -Message "failed to get list of site systems" -Category Error -Show
 		}
 	} else {
 		foreach ($test in $testset) {

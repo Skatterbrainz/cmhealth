@@ -576,8 +576,7 @@ function Get-CmSiteServersList {
 	[CmdletBinding()]
 	param (
 		[parameter(Mandatory=$True)][string]$SiteCode,
-		[parameter(Mandatory=$True)][string]$ComputerName,
-		[parameter(Mandatory=$False)][switch]$GetRoles
+		[parameter(Mandatory=$True)][string]$ComputerName
 	)
 	$cimParams = @{
 		NameSpace = "root\sms\site_$($SiteCode)"
@@ -585,16 +584,34 @@ function Get-CmSiteServersList {
 		ComputerName = $ComputerName
 	}
 	try {
-		$result = Get-CimInstance @cimParams -ErrorAction Stop
-		if ($GetRoles) {
-			$result | Select-Object ServerName,RoleName | Sort-Object ServerName
-		} else {
-			$result | Select-Object ServerName -Unique
+		Write-Verbose "requesting site systems from primary site server"
+		[array]$result = Get-CimInstance @cimParams -ErrorAction Stop
+		$result = $resources | Select-Object ServerName,RoleName | Group-Object ServerName | ForEach-Object {
+			[pscustomobject]@{
+				Server = $_.Name
+				Roles  = @($_.Group.RoleName)
+			}
 		}
+		Write-Verbose "$($result.Count) site systems were returned"
 	}
 	catch {
 		Write-Error $_.Exception.Message
 	}
+	finally {
+		$result
+	}
+}
+
+function Get-CmSiteServersByRole {
+	[CmdletBinding()]
+	param (
+		[parameter(Mandatory=$True)]
+		[ValidateSet('SMS Component Server','SMS Distribution Point','SMS Dmp Connector','SMS Management Point','SMS Notification Server','SMS Provider','SMS Site Server','SMS Site System','SMS SQL Server','SMS Software Update Point','SMS Fallback Status Point','SMS SRS Reporting Point','AI Update Service Point','SMS Endpoint Protection Point')]
+		[string]$RoleName,
+		[parameter(Mandatory=$True)][string]$SiteCode,
+		[parameter(Mandatory=$True)][string]$ComputerName
+	)
+	Get-CmSiteServersList -SiteCode $SiteCode -ComputerName $ComputerName | Where-Object {$_.Roles -contains $RoleName}
 }
 
 function Set-CmhOutputData () {
