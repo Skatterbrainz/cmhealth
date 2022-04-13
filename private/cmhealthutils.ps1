@@ -1,4 +1,4 @@
-# Updated for 0.4.1.0 / 2022-01-30
+# Updated for 0.4.1.1 / 2022-04-12
 
 function Import-CmHealthSettings {
 	[CmdletBinding()]
@@ -623,7 +623,7 @@ function Set-CmhOutputData () {
 		TestData    = $tempdata
 		Description = $Description
 		Status      = $stat
-		Message     = $msg
+		Message     = $($msg -join ';')
 		RunTime     = $(Get-RunTime -BaseTime $startTime)
 		Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 	})

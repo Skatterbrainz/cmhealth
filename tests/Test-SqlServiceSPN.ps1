@@ -17,7 +17,7 @@ function Test-SqlServiceSPN {
 		Write-Log -Message "instance name = $sqlserver"
 		$domain    = $(Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -ExpandProperty Domain)
 		Write-Log -Message "domain suffix = $domain"
-		$fqdn      = "$($sqlserver).$($domain)"
+		$fqdn      = "$($sqlserver)"
 		$spn       = "MSSQLSvc/$($fqdn)*"
 		Write-Log -Message "SPN name = $spn"
 		$res       = $(SetSpn -T "$domain" -F -Q "$spn").Split("`n").Trim()

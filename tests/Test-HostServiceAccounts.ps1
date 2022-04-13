@@ -12,7 +12,7 @@ function Test-HostServiceAccounts {
 		Write-Log -Message "[carbon] PowerShell module is not installed - skipping this test" -Category Warning -Show
 		break
 	}
-	$privs = ('SeServiceLogonRight','SeAssignPrimaryTokenPrivilege','SeChangeNotifyPrivilege','SeIncreaseQuotaPrivilege')
+	$privs   = ('SeServiceLogonRight','SeAssignPrimaryTokenPrivilege','SeChangeNotifyPrivilege','SeIncreaseQuotaPrivilege')
 	$builtin = ('LocalSystem','NT AUTHORITY\NetworkService','NT AUTHORITY\LocalService')
 	try {
 		$startTime = (Get-Date)
@@ -58,30 +58,30 @@ function Test-HostServiceAccounts {
 							if ($priv -notin $cprivs) {
 								$res  = $except
 								$stat = $except
-								$msgx = 'Insufficient privileges'
+								$msgx = "$svcAcct - Incorrect privileges"
 							} else {
 								$res  = 'PASS'
-								$msgx = 'Correct configuration'
+								$msgx = "$svcAcct - Correct privileges"
 							}
-							Write-Log -Message "service account privileges: $res"
+							Write-Log -Message $msgx
 							if ($svcStart -ne $startup) {
 								$res  = $except
 								$stat = $except
-								$msgx = 'Startup type'
+								$msgx = "$svcAcct - $svcStart - Incorrect startup type"
 							} else {
 								$res  = 'PASS'
-								$msgx = 'Correct configuration'
+								$msgx = "$svcAcct - $svcstart - Correct startup type"
 							}
-							Write-Log -Message "startup mode = $res"
+							Write-Log -Message $msgx
 							if ($svcDelay -ne $delayed) {
 								$res  = $except
 								$stat = $except
-								$msgx = 'Delayed start'
+								$msgx = "$svcAcct - $svcDelay - Incorrect delayed start"
 							} else {
 								$res  = 'PASS'
-								$msgx = 'Correct configuration'
+								$msgx = "$svcAcct - $svcDelay - Correct delayed start"
 							}
-							Write-Log -Message "startup delay = $res"
+							Write-Log -Message $msgx
 							$tempdata.Add(
 								[pscustomobject]@{
 									ServiceName = $svcName

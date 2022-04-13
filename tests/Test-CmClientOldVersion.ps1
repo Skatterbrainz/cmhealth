@@ -25,9 +25,10 @@ INNER JOIN v_R_System_Valid sys ON fcm.ResourceID = sys.ResourceID
 INNER JOIN v_Site st ON st.SiteCode = fcm.SiteCode
 WHERE fcm.CollectionID = 'SMS00001' AND sys.Client_Version0 < st.Version"
 		$res = Get-CmSqlQueryResult -Query $query -Params $ScriptParams
+		$siteversion = $res.SiteVersion
 		if ($res.Count -gt 0) {
 			$stat = $except
-			$msg  = "$($res.Count) devices have an outdated client installed"
+			$msg  = "$($res.Count) devices have a client installed older than site version: $($siteversion)"
 			Write-Log -Message $msg
 			$res | Foreach-Object {
 				$tempdata.Add(

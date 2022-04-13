@@ -14,7 +14,12 @@ worker. If you want more information on this, let me know.
 
 ## Module Changes and Updates
 
-* Version 0.4.0.1 (2021-12-19)
+* Version 0.4.1.1 (2022-04-12)
+  * Test-HostServiceAccounts provides exception details in output message
+  * Test-SqlDbDedicated provides names of unsupported databases in output message
+  * Test-CmInvMaxMIFSize includes registry key and value names in output message
+  * Moved several tests to a new "optional" folder to allow users to include them if desired
+* Version 0.4.1.0 (2021-12-19)
   * All Tests: Code updates to improve performance
   * Bug fixes
     * Test-SqlDatabaseNameDefault: was not checking against [Database] parameter value
@@ -184,6 +189,9 @@ $nonpassing | Out-CMHealthReport -Show
 ## Adding Your Own Tests
 
 The tests provided with the basic installation can be viewed [here](https://github.com/Skatterbrainz/cmhealth/tree/master/tests).
+
+Some tests are included, but not enabled by default. These are found under the "optional" sub-folder of the module path.
+To enable any of these tests, simply move them into the "tests" folder.
 
 To add more tests, copy the "Test-Example.ps1" script from the "reserve" folder, to an appropriate name 
 under the "Tests" folder. Then edit the parameters as follows:

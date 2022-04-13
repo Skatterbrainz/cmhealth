@@ -5,7 +5,7 @@ function Test-CmSiteInstallAccountRoles {
 		[parameter()][string] $TestName = "ConfigMgr Install Account Roles and Permissions",
 		[parameter()][string] $TestGroup = "configuration",
 		[parameter()][string] $TestCategory = "CM",
-		[parameter()][string] $Description = "Check if site install account has more permissions/roles than it needs",
+		[parameter()][string] $Description = "Check if site install account has appropriate permissions/roles",
 		[parameter()][hashtable] $ScriptParams
 	)
 	try {
@@ -25,8 +25,8 @@ function Test-CmSiteInstallAccountRoles {
 		$isEntAdmin    = $False
 		$isSchemaAdmin = $False
 		$isSysAdmin    = $False
-		[string]$msg = @()
 		if ($null -ne $res) {
+			[string]$msg = @()
 			$username = $res.LogonName
 			$basename = $($username -split '\\')[1]
 			if ($localAdmins.Name -contains $username) {
@@ -35,7 +35,7 @@ function Test-CmSiteInstallAccountRoles {
 			} else {
 				Write-Log -Message "install account is not a member of local Administrators group"
 				$stat = $except
-				$msg += "install account has fewer permissions than it may require"
+				$msg += "install account is not a local Administrators group member"
 			}
 			if ($sysadmins -contains $username) {
 				Write-Log -Message "install account is a direct member of SQL sysadmins group"
@@ -46,21 +46,21 @@ function Test-CmSiteInstallAccountRoles {
 				Write-Log -Message "install account is a direct member of Domain Admins group"
 				$isDomainAdmin = $True
 				$stat = $except
-				$msg += "install account has more permissions than it may require"
+				$msg += "install account is in Domain Admins group"
 			}
 			$eagroup = Get-ADSIGroupMember -Identity "Enterprise Admins" | Select-Object -expand name
 			if ($eagroup -contains $basename) {
 				Write-Log -Message "install account is a direct member of Enterprise Admins group"
 				$isEntAdmin = $True
 				$stat = $except
-				$msg += "install account has more permissions than it may require"
+				$msg += "install account is in Enterprise Admins group"
 			}
 			$sagroup = Get-ADSIGroupMember -Identity "Schema Admins" | Select-Object -expand name
 			if ($sagroup -contains $basename) {
 				Write-Log -Message "install account is a direct member of Schema Admins group"
 				$isSchemaAdmin = $True
 				$stat = $except
-				$msg += "install account has more permissions than it may require"
+				$msg += "install account is in Schema Admins group"
 			}
 			$tempdata.Add([pscustomobject]@{
 				InstallAccount = $username

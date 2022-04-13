@@ -43,7 +43,7 @@ function Test-SqlDbDedicated {
 		}
 		if ($dblist1.Count -gt 0) {
 			Write-Log -Message "$($dblist1.Count) unsupported names were found"
-			$msg  = "$($dblist1.Count) databases are not supported by MEMCM SQL licensing"
+			$msg  = "$($dblist1.Count) databases are not supported by MEMCM SQL licensing: $($dblist1 -join ',')"
 			$stat = $except
 		} else {
 			Write-Log -Message "no unsupported names were found"

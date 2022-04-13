@@ -22,7 +22,7 @@ function Test-CmInvMaxMIFSize {
 				$msg  = "Max MIF Size is now set to $MaxMIF"
 			} else {
 				$stat = $except
-				$msg  = "Max MIF size is $res (hex) which should be 3200000 (hex) or $MaxMIF"
+				$msg  = "Max MIF size is $res (hex) which should be 3200000 (hex) or $MaxMIF. Check 'Max MIF Size' value under HKLM:\SOFTWARE\Microsoft\SMS\COMPONENTS\SMS_INVENTORY_DATA_LOADER"
 				$tempdata.Add(
 					[pscustomobject]@{
 						CurrentMax  = "$res (hex)"
