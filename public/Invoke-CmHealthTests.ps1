@@ -38,10 +38,19 @@ function Invoke-CmHealthTests {
 		[parameter(Mandatory=$True)][string]$SQLInstance,
 		[parameter(Mandatory=$True)][string]$DBName,
 		[parameter(Mandatory=$True)][string]$ClientName,
-		[parameter(Mandatory=$False)][string]$OutputFolder = "$($env:USERPROFILE)\documents"
+		[parameter(Mandatory=$False)][string]$OutputFolder = "$($env:USERPROFILE)\documents",
+		[parameter(Mandatory=$False)][switch]$NoVersionCheck
 	)
 	Import-Module cmhealth
-	$res = Test-CmHealth -SiteCode $SiteCode -Database $DBName -SiteServer $SiteServer -SqlInstance $SQLInstance -TestingScope All
+	$tparams = @{
+		SiteCode = $SiteCode
+		Database = $DBName
+		SiteServer = $SiteServer
+		SqlInstance = $SQLInstance
+		TestingScope = 'All'
+		$NoVersionCheck = $NoVersionCheck
+	}
+	$res = Test-CmHealth @tparams
 	Write-Verbose "exporting detailed and summary report files"
 	$res | Out-CmHealthReport -Title $ClientName -Footer $ClientName -Detailed -OutputFolder $OutputFolder
 	$res | Out-CmHealthReport -Title $ClientName -Footer $ClientName -OutputFolder $OutputFolder

@@ -14,6 +14,8 @@ worker. If you want more information on this, let me know.
 
 ## Module Changes and Updates
 
+* Version 0.4.1.2 (2022-04-15)
+  * Added NoVersionCheck to Invoke-CmHealthTests
 * Version 0.4.1.1 (2022-04-12)
   * Test-HostServiceAccounts provides exception details in output message
   * Test-SqlDbDedicated provides names of unsupported databases in output message
