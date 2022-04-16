@@ -124,11 +124,12 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 			$content = $($section1 + $chunk + $section2)
 			$fname = "cmhealth-$($($GLOBAL:CmhParams).SiteCode)-$($_.Category)-$($_.Status)-$($_.TestName -replace ' ','-')-$(Get-Date -f 'yyyyMMdd').htm"
 			$ReportFile = Join-Path -Path $OutputFolder -ChildPath $fname
+			$ReportLink = ".\$($fname)"
 			Write-Log -Message "writing file: $ReportFile"
 			$content | Out-File -FilePath $ReportFile -Encoding UTF8 -Force
 			Write-Log -Message "appending table of contents"
 			$toc += "<tr><td>$($_.Category)</td><td>$($_.TestGroup)</td><td>$($_.Status)</td>
-			<td><a href=`"$ReportFile`" title=`"View Test Results`">$($_.TestName)</a></td></tr>"
+			<td><a href=`"$ReportLink`" title=`"View Test Results`">$($_.TestName)</a></td></tr>"
 		} else {
 			#$content = $section1
 			Write-Log -Message "appending test-block: $($_.TestName)"
