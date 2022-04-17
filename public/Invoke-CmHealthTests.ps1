@@ -1,3 +1,4 @@
+function Invoke-CmHealthTests {
 <#
 .SYNOPSIS
 	Auto-generate HTML reports for Test-CmHealth
@@ -29,8 +30,7 @@
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Invoke-CmHealthTests.md
 #>
-function Invoke-CmHealthTests {
-	[CmdletBinding()]
+[CmdletBinding()]
 	[OutputType()]
 	param(
 		[parameter(Mandatory=$True)][string]$SiteCode,
@@ -48,7 +48,7 @@ function Invoke-CmHealthTests {
 		SiteServer = $SiteServer
 		SqlInstance = $SQLInstance
 		TestingScope = 'All'
-		$NoVersionCheck = $NoVersionCheck
+		NoVersionCheck = $NoVersionCheck
 	}
 	$res = Test-CmHealth @tparams
 	Write-Verbose "exporting detailed and summary report files"
