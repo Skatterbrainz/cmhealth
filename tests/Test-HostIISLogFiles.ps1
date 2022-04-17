@@ -33,14 +33,8 @@ function Test-HostIISLogFiles {
 		$TotalSpaceMB = [math]::Round($tsize / 1MB, 2)
 		if ($OldLogs.Count -gt 0) {
 			Write-Log -Message "$($oldLogs.Count) older log files were found"
-			if ($Remediate -eq $True) {
-				$OldLogs | Select-Object -ExpandProperty FullName | Remove-Item -Force
-				$stat = "REMEDIATED"
-				$msg  = "deleted $($OldLogs.Count) of $numlogs IIS logs older than $MaxDaysOld days old"
-			} else {
-				$stat = $except
-				$msg  = "$($OldLogs.Count) of $numlogs IIS logs older than $MaxDaysOld days old"
-			}
+			$stat = $except
+			$msg  = "$($OldLogs.Count) of $numlogs IIS logs older than $MaxDaysOld days old"
 		}
 		$tempdata.Add([pscustomobject]@{
 			Status = $stat

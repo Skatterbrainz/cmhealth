@@ -17,16 +17,8 @@ function Test-HostIESCDisabled {
 		$UserKey  = "HKLM:\SOFTWARE\Microsoft\Active Setup\Installed Components\{A509B1A8-37EF-4b3f-8CFC-4F3A74704073}"
 		if ((Get-ItemProperty -Path $AdminKey -Name "IsInstalled" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty IsInstalled) -ne 0) {
 			Write-Log -Message "configuration is not compliant (is not disabled)"
-			if ($Remediate -eq $True) {
-				Set-ItemProperty -Path $AdminKey -Name "IsInstalled" -Value 0 -Force
-				Set-ItemProperty -Path $UserKey -Name "IsInstalled" -Value 0 -Force
-				Stop-Process -Name Explorer -Force
-				$stat = "REMEDIATED"
-				$msg  = "IE Enhanced Security Configuration (ESC) has been disabled."
-			} else {
-				$stat = $except
-				$msg  = "IE Enhanced Security Configuration (IESC) is currently enabled"
-			}
+			$stat = $except
+			$msg  = "IE Enhanced Security Configuration (IESC) is currently enabled"
 		} else {
 			Write-Log -Message "registry key was not found"
 		}

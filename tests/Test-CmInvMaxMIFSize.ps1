@@ -16,20 +16,14 @@ function Test-CmInvMaxMIFSize {
 		$msg    = "No issues found" # do not change this either
 		$res = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SMS\COMPONENTS\SMS_INVENTORY_DATA_LOADER" -Name "Max MIF Size" | Select-Object -ExpandProperty "Max MIF Size")
 		if ($res -lt $MaxMIF) {
-			if ($ScriptParams.Remediate -eq $True) {
-				Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SMS\COMPONENTS\SMS_INVENTORY_DATA_LOADER" -Name 'Max MIF Size' -Value $MaxMIF -Force | Out-Null
-				$stat = "REMEDIATED"
-				$msg  = "Max MIF Size is now set to $MaxMIF"
-			} else {
-				$stat = $except
-				$msg  = "Max MIF size is $res (hex) which should be 3200000 (hex) or $MaxMIF. Check 'Max MIF Size' value under HKLM:\SOFTWARE\Microsoft\SMS\COMPONENTS\SMS_INVENTORY_DATA_LOADER"
-				$tempdata.Add(
-					[pscustomobject]@{
-						CurrentMax  = "$res (hex)"
-						Recommended = "3200000 ($MaxMIF hex)"
-					}
-				)
-			}
+			$stat = $except
+			$msg  = "Max MIF size is $res (hex) which should be 3200000 (hex) or $MaxMIF. Check 'Max MIF Size' value under HKLM:\SOFTWARE\Microsoft\SMS\COMPONENTS\SMS_INVENTORY_DATA_LOADER"
+			$tempdata.Add(
+				[pscustomobject]@{
+					CurrentMax  = "$res (hex)"
+					Recommended = "3200000 ($MaxMIF hex)"
+				}
+			)
 		}
 	}
 	catch {

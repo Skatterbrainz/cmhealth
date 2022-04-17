@@ -1,4 +1,5 @@
-﻿<#
+﻿function Out-CmHealthReport {
+<#
 .SYNOPSIS
 	Export CMHealth test results to HTML files
 .DESCRIPTION
@@ -35,9 +36,7 @@
 .NOTES
 	Thank you!
 #>
-
-function Out-CmHealthReport {
-	[CmdletBinding()]
+[CmdletBinding()]
 	[OutputType()]
 	param (
 		[parameter(Mandatory=$True,ValueFromPipeline=$True)]$InputObject,

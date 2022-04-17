@@ -1,4 +1,5 @@
 #requires -RunAsAdministrator
+function Test-CmHealth {
 <#
 .SYNOPSIS
 	Validate MECM/ConfigMgr site systems and configuration.
@@ -18,11 +19,6 @@
 .PARAMETER ConfigFile
 	Path to cmhealth.json (create or import). If not found, it will attempt to create a new
 	one in the specified path.  The default path is the user TEMP folder.
-.PARAMETER Remediate
-	Attempt remediation when possible
-.PARAMETER Source
-	Alternate source path for WinSXS referencing. Used only for Test-HostServerFeatures
-	Default is C:\Windows\WinSxS
 .PARAMETER DaysBack
 	Number of days to go back for checking status messages, errors, warnings, etc. Default is 7
 .PARAMETER Credential
@@ -68,9 +64,7 @@
 .NOTES
 	Thank you!
 #>
-
-function Test-CmHealth {
-	[CmdletBinding()]
+[CmdletBinding()]
 	[OutputType()]
 	param (
 		[parameter(Mandatory=$True)][ValidateLength(3,3)][string] $SiteCode,
@@ -79,8 +73,6 @@ function Test-CmHealth {
 		[parameter(Mandatory=$False)][ValidateNotNullOrEmpty()][string] $SqlInstance = "$((Get-WmiObject win32_computersystem).DNSHostName+"."+$(Get-WmiObject win32_computersystem).Domain)",
 		[parameter(Mandatory=$False)][ValidateSet('All','AD','CM','Host','SQL','WSUS','Select','Previous')][string] $TestingScope = 'All',
 		[parameter(Mandatory=$False)][string]$ConfigFile = "$($env:TEMP)\cmhealth.json",
-		[parameter(Mandatory=$False)][boolean] $Remediate = $False,
-		[parameter(Mandatory=$False)][string] $Source = "c:\windows\winsxs",
 		[parameter(Mandatory=$False)][pscredential] $Credential,
 		[parameter(Mandatory=$False)][string]$LogFile = "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log",
 		[parameter(Mandatory=$False)][switch]$NoVersionCheck,
@@ -108,8 +100,6 @@ function Test-CmHealth {
 		SqlInstance  = $SqlInstance
 		SiteCode     = $SiteCode
 		Database     = $Database
-		Source       = $Source
-		Remediate    = $Remediate
 		Credential   = $Credential
 		LogFile      = $LogFile
 		Verbose      = $VerbosePreference

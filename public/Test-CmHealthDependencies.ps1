@@ -1,3 +1,4 @@
+function Test-CmHealthDependencies {
 <#
 .SYNOPSIS
 	Check (and update) dependent PowerShell modules
@@ -15,8 +16,7 @@
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealthDependencies.md
 #>
-function Test-CmHealthDependencies {
-	[CmdletBinding()]
+[CmdletBinding()]
 	[OutputType()]
 	param()
 	Write-Host "checking dependencie module versions" -ForegroundColor Cyan

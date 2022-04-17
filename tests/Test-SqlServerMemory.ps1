@@ -47,15 +47,6 @@ function Test-SqlServerMemory {
 				$msg  = "Current limit $($cmax) MB is greater than $MaxMemAllocation percent physical $($tmem) MB or $($target) MB"
 			}
 		}
-		if ($Remediate -eq $True) {
-			if ($ScriptParams.Credential) {
-				Set-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -Max $target -EnableException -ErrorAction SilentlyContinue -SqlCredential $ScriptParams.Credential
-			} else {
-				Set-DbaMaxMemory -SqlInstance $ScriptParams.SqlInstance -Max $target -EnableException -ErrorAction SilentlyContinue
-			}
-			$stat = 'REMEDIATED'
-			$msg  = "SQL Server max memory is now set to $target MB"
-		}
 	}
 	catch {
 		$stat = 'ERROR'

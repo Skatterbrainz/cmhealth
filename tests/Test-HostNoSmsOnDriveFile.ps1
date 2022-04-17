@@ -33,19 +33,11 @@ function Test-HostNoSmsOnDriveFile {
 							Message = "$($disk) is excluded from ConfigMgr content storage"
 						})
 					} else {
-						if ($ScriptParams.Remediate -eq $True) {
-							$tempdata.Add([pscustomobject]@{
-								Test    = $TestName
-								Status  = "REMEDIATED"
-								Message = "$($disk) is now excluded from ConfigMgr content storage"
-							})
-						} else {
-							$tempdata.Add([pscustomobject]@{
-								Test    = $TestName
-								Status  = $except
-								Message = "$($_.DeviceID) is not excluded from ConfigMgr content storage"
-							})
-						}
+						$tempdata.Add([pscustomobject]@{
+							Test    = $TestName
+							Status  = $except
+							Message = "$($_.DeviceID) is not excluded from ConfigMgr content storage"
+						})
 					}
 				}
 			} # foreaach
@@ -61,19 +53,11 @@ function Test-HostNoSmsOnDriveFile {
 						Message = "$($disk) appears to be a content library drive (not excluded)"
 					})
 				} else {
-					if ($ScriptParams.Remediate -eq $True) {
-						$tempdata.Add([pscustomobject]@{
-							Test    = $TestName
-							Status  = "REMEDIATED"
-							Message = "$($disk) is now excluded from ConfigMgr content storage"
-						})
-					} else {
-						$tempdata.Add([pscustomobject]@{
-							Test    = $TestName
-							Status  = $except
-							Message = "$($disk) is not excluded from ConfigMgr content storage"
-						})
-					}
+					$tempdata.Add([pscustomobject]@{
+						Test    = $TestName
+						Status  = $except
+						Message = "$($disk) is not excluded from ConfigMgr content storage"
+					})
 				}
 			}
 		}

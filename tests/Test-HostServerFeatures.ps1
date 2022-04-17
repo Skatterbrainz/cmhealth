@@ -24,10 +24,6 @@ function Test-HostServerFeatures {
 			$features = Get-WindowsFeature -ErrorAction Stop | Sort-Object Name
 		}
 		$LogFile = Join-Path $env:TEMP "serverfeatures.log"
-		if ($ScriptParams.Remediate -eq $True -and ([string]::IsNullOrEmpty($ScriptParams.Source))) {
-			throw "Source parameter is required for -Remediate but was not specified"
-		}
-
 		$flist = @($CmHealthConfig.windowsfeatures.Feature)
 		if ($flist.Count -lt 1) { throw "failed to read features list from cmhealth settings file" }
 		$exceptions = 0
@@ -36,46 +32,15 @@ function Test-HostServerFeatures {
 			if ($feature.Name -in $flist) {
 				if ($feature.Installed -ne $True) {
 					Write-Log -Message "feature not installed: $($feature.Name)"
-					if ($ScriptParams.Remediate -eq $True) {
-						try {
-							Write-Log -Message "installing: $($Feature.Name)"
-							if ($ScriptParams.ComputerName -ne $env:COMPUTERNAME) {
-								if ($ScriptParams.Credential) {
-									Install-WindowsFeature -Name "$($Feature.Name)" -ComputerName $ScriptParams.ComputerName -Credential $ScriptParams.Credential -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
-								} else {
-									Install-WindowsFeature -Name "$($Feature.Name)" -ComputerName $ScriptParams.ComputerName -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
-								}
-							} else {
-								Install-WindowsFeature -Name "$($Feature.Name)" -Source $ScriptParams.Source -LogPath $LogFile -WarningAction SilentlyContinue -ErrorAction Stop
-							}
-							$tempdata.Add(
-								[pscustomobject]@{
-									Feature = $feature.Name
-									Status  = "Remediated"
-									Message = "Success"
-								}
-							)
+					$exceptions++
+					$tempdata.Add(
+						[pscustomobject]@{
+							Feature = $feature.Name 
+							Status  = $except
+							Message = "Not installed"
 						}
-						catch {
-							$tempdata.Add(
-								[pscustomobject]@{
-									Feature = $feature.Name
-									Status  = "ERROR"
-									Message = $_.Exception.Message -join ';'
-								}
-							)
-						}
-					} else {
-						$exceptions++
-						$tempdata.Add(
-							[pscustomobject]@{
-								Feature = $feature.Name 
-								Status  = $except
-								Message = "Not installed"
-							}
-						)
-						$missing.Add($feature.Name)
-					}
+					)
+					$missing.Add($feature.Name)
 				}
 				else {
 					Write-Log -Message "feature is installed: $($feature.Name)"
@@ -88,7 +53,7 @@ function Test-HostServerFeatures {
 					)
 				}
 			}
-		}
+		} # foreach
 		if ($exceptions -gt 0) {
 			$stat = $except
 			$msg  = "$exceptions features are missing: $($missing -join ',')"

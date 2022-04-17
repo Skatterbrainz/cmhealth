@@ -16,23 +16,16 @@ function Test-HostWindowsUpdates {
 		$res = Get-WindowsUpdate -ComputerName $ScriptParams.ComputerName -WindowsUpdate -ErrorAction Stop
 		if ($res.Count -gt 0) {
 			Write-Log -Message "$($res.Count) updates are not installed"
-			if ($ScriptParams.Remediate -eq $True) {
-				$rsx  = Get-WindowsUpdate -ComputerName $ScriptParams.ComputerName -WindowsUpdate -AcceptAll -Install -RecurseCycle 3 -IgnoreReboot
-				$stat = 'REMEDIATED'
-				$msg  = "$($rsx.Count) updates were installed"
-			}
-			else {
-				$stat = $except
-				$msg  = "$($res.Count) Microsoft updates are waiting to be installed"
-				$res | Foreach-Object {
-					$tempdata.Add( 
-						[pscustomobject]@{
-							KB    = $($_.KB)
-							Title = $($_.Title)
-							ReleaseDate = $($_.LastDeploymentChangeTime)
-						}
-					)
-				}
+			$stat = $except
+			$msg  = "$($res.Count) Microsoft updates are waiting to be installed"
+			$res | Foreach-Object {
+				$tempdata.Add( 
+					[pscustomobject]@{
+						KB    = $($_.KB)
+						Title = $($_.Title)
+						ReleaseDate = $($_.LastDeploymentChangeTime)
+					}
+				)
 			}
 		}
 	}

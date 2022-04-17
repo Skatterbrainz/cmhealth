@@ -1,3 +1,4 @@
+function Get-CmHealthTests {
 <#
 .SYNOPSIS
 	Display CMHealth Tests and description info
@@ -10,8 +11,7 @@
 .LINK
 	https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Get-CmHealthTests.md
 #>
-function Get-CmHealthTests {
-	[CmdletBinding()]
+[CmdletBinding()]
 	[OutputType()]
 	param()
 	$mpath = $(Split-Path (Get-Module cmhealth).Path)

@@ -21,18 +21,8 @@ function Test-SqlDbRecoveryModel {
 			$rm = (Get-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -ErrorAction SilentlyContinue).RecoveryModel
 		}
 		if ($rm -ne $DefaultModel) {
-			if ($Remediate -eq $True) {
-				if ($ScriptParams.Credential) {
-					$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel $DefaultModel -ErrorAction SilentlyContinue -SqlCredential $ScriptParams.Credential 
-				} else {
-					$null = Set-DbaDbRecoveryModel -SqlInstance $ScriptParams.SqlInstance -Database $ScriptParams.Database -RecoveryModel $DefaultModel -ErrorAction SilentlyContinue
-				}
-				$stat = "REMEDIATED"
-				$msg  = "Recovery model is now to $DefaultModel"
-			} else {
-				$stat = $except
-				$msg  = "Recovery model is currently set to $rm"
-			}
+			$stat = $except
+			$msg  = "Recovery model is currently set to $rm"
 		}
 	}
 	catch {

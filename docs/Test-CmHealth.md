@@ -1,14 +1,14 @@
 ---
 external help file: cmhealth-help.xml
 Module Name: cmhealth
-online version: https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Out-CmHealthReport.md
+online version: https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md
 schema: 2.0.0
 ---
 
 # Test-CmHealth
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Validate MECM/ConfigMgr site systems and configuration.
 
 ## SYNTAX
 
@@ -19,66 +19,84 @@ Test-CmHealth [-SiteCode] <String> [-Database] <String> [[-SiteServer] <String>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Validate MECM/ConfigMgr site systems operational health status, and recommended configuration.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+Test-CmHealth -SiteCode "P01" -Database "CM_P01"
 ```
 
-{{ Add example description here }}
+Runs all tests on the local machine
+
+### EXAMPLE 2
+```
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" -AllServers
+```
+
+Runs all tests on all site systems
+
+### EXAMPLE 3
+```
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "ALL"
+```
+
+Runs all tests
+
+### EXAMPLE 4
+```
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "Host"
+```
+
+Runs only the site server host tests
+
+### EXAMPLE 5
+```
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "Host" -Remediate -Credential $cred
+```
+
+Runs only the site server host tests and attempts to remediate identified deficiences using alternate user credentials
+
+### EXAMPLE 6
+```
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
+```
+
+Runs only the site server host tests and attempts to remediate identified deficiences with WinSXS source path provided
+
+### EXAMPLE 7
+```
+$failed = Test-CmHealth -SiteCode "P01" -Database "CM_P01" | Where-Object Status -eq 'Fail'
+```
+
+Runs all tests and only returns those which failed
+
+### EXAMPLE 8
+```
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" | Select-Object TestName,Status,Message | Where-Object Status -eq 'Fail'
+```
+
+Display summary of failed tests
+
+### EXAMPLE 9
+```
+$results = Test-CmHealth -SiteCode "P01" -Database "CM_P01" | Where-Object Status -eq 'Fail'; $results | Select TestData
+```
+
+Display test output from failed tests
+
+### EXAMPLE 10
+```
+$results = Test-CmHealth -SiteCode "P01" -Database "CM_P01" -TestScope Previous
+```
+
+Run the same set of tests as the previous session (each run saves list of test names)
 
 ## PARAMETERS
 
-### -AllServers
-{{ Fill AllServers Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ConfigFile
-{{ Fill ConfigFile Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 5
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Credential
-{{ Fill Credential Description }}
-
-```yaml
-Type: PSCredential
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 8
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Database
-{{ Fill Database Description }}
+### -SiteCode
+ConfigMgr 3-character alphanumeric site code.
 
 ```yaml
 Type: String
@@ -92,11 +110,124 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -LogFile
-{{ Fill LogFile Description }}
+### -Database
+Name of site SQL database.
 
 ```yaml
 Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SiteServer
+NetBIOS or FQDN of site server (primary, CAS, secondary).
+Default is localhost
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: "$((Get-WmiObject win32_computersystem).DNSHostName+"."+$(Get-WmiObject win32_computersystem).Domain)"
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SqlInstance
+NetBIOS or FQDN of site database SQL instance.
+Default is localhost
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: "$((Get-WmiObject win32_computersystem).DNSHostName+"."+$(Get-WmiObject win32_computersystem).Domain)"
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -TestingScope
+Scope of tests to execute: All (default), Host, AD, SQL, CM, WSUS, Select
+The Select option displays a gridview to select the individual tests to perform
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: All
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ConfigFile
+Path to cmhealth.json (create or import).
+If not found, it will attempt to create a new
+one in the specified path. 
+The default path is the user TEMP folder.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: "$($env:TEMP)\cmhealth.json"
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Remediate
+Attempt remediation when possible
+
+```yaml
+Type: Boolean
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 7
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Source
+Alternate source path for WinSXS referencing.
+Used only for Test-HostServerFeatures
+Default is C:\Windows\WinSxS
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 8
+Default value: C:\windows\winsxs
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Credential
+PS Credential object for authenticating under alternate context
+
+```yaml
+Type: PSCredential
 Parameter Sets: (All)
 Aliases:
 
@@ -107,8 +238,24 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -LogFile
+Path and name of log file.
+Default is $env:TEMP\cmhealth_yyyy-mm-dd.log
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 10
+Default value: "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log"
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -NoVersionCheck
-{{ Fill NoVersionCheck Description }}
+Skip checking for newer module version (default is to attempt a version check)
 
 ```yaml
 Type: SwitchParameter
@@ -117,98 +264,22 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Remediate
-{{ Fill Remediate Description }}
+### -AllServers
+Run tests on all site systems within the current ConfigMgr site database
 
 ```yaml
-Type: Boolean
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 6
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SiteCode
-{{ Fill SiteCode Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SiteServer
-{{ Fill SiteServer Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 2
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Source
-{{ Fill Source Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 7
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -SqlInstance
-{{ Fill SqlInstance Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 3
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -TestingScope
-{{ Fill TestingScope Description }}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-Accepted values: All, AD, CM, Host, SQL, WSUS, Select, Previous
-
-Required: False
-Position: 4
-Default value: None
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -218,11 +289,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
-
 ## OUTPUTS
 
-### System.Object
 ## NOTES
+Thank you!
 
 ## RELATED LINKS
+
+[https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md](https://github.com/Skatterbrainz/cmhealth/blob/master/docs/Test-CmHealth.md)
+
