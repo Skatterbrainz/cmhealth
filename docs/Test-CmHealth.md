@@ -14,8 +14,8 @@ Validate MECM/ConfigMgr site systems and configuration.
 
 ```
 Test-CmHealth [-SiteCode] <String> [-Database] <String> [[-SiteServer] <String>] [[-SqlInstance] <String>]
- [[-TestingScope] <String>] [[-ConfigFile] <String>] [[-Remediate] <Boolean>] [[-Source] <String>]
- [[-Credential] <PSCredential>] [[-LogFile] <String>] [-NoVersionCheck] [-AllServers] [<CommonParameters>]
+ [[-TestingScope] <String>] [[-ConfigFile] <String>] [[-Credential] <PSCredential>] [[-LogFile] <String>]
+ [-NoVersionCheck] [-AllServers] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -191,38 +191,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Remediate
-Attempt remediation when possible
-
-```yaml
-Type: Boolean
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 7
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Source
-Alternate source path for WinSXS referencing.
-Used only for Test-HostServerFeatures
-Default is C:\Windows\WinSxS
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 8
-Default value: C:\windows\winsxs
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -Credential
 PS Credential object for authenticating under alternate context
 
@@ -232,7 +200,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 9
+Position: 7
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -248,7 +216,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 10
+Position: 8
 Default value: "$($env:TEMP)\cmhealth_$(Get-Date -f 'yyyy-MM-dd').log"
 Accept pipeline input: False
 Accept wildcard characters: False
