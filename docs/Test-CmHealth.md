@@ -15,7 +15,7 @@ schema: 2.0.0
 ```
 Test-CmHealth [-SiteCode] <String> [-Database] <String> [[-SiteServer] <String>] [[-SqlInstance] <String>]
  [[-TestingScope] <String>] [[-ConfigFile] <String>] [[-Remediate] <Boolean>] [[-Source] <String>]
- [[-Credential] <PSCredential>] [[-LogFile] <String>] [-NoVersionCheck] [<CommonParameters>]
+ [[-Credential] <PSCredential>] [[-LogFile] <String>] [-NoVersionCheck] [-AllServers] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -31,6 +31,21 @@ PS C:\> {{ Add example code here }}
 {{ Add example description here }}
 
 ## PARAMETERS
+
+### -AllServers
+{{ Fill AllServers Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -ConfigFile
 {{ Fill ConfigFile Description }}

@@ -27,8 +27,9 @@ function Test-HostWindowsUpdates {
 				$res | Foreach-Object {
 					$tempdata.Add( 
 						[pscustomobject]@{
-							KB = $($_.KB)
+							KB    = $($_.KB)
 							Title = $($_.Title)
+							ReleaseDate = $($_.LastDeploymentChangeTime)
 						}
 					)
 				}

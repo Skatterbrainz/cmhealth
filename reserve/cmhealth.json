@@ -124,7 +124,14 @@
 			"LicensedDatabases": [
 				"master","tempdb","msdb","model","SUSDB","ReportServer","ReportServerTempDB"
 			],
-			"RecoveryModel": "simple"
+			"RecoveryModel": "simple",
+			"SupportedVersions": [
+				"SQL Server 2019",
+				"SQL Server 2017",
+				"SQL Server 2016",
+				"SQL Server 2014",
+				"SQL Server 2012"
+			]
 		}
 	],
 	"configmgr": [
@@ -143,9 +150,13 @@
 			"DiskFormatBlockSize": "65536",
 			"MinimumMemoryGB": "24",
 			"SupportedOperatingSystems": [
+				"Windows Server 2012",
+				"Windows Server 2012 R2",
 				"Windows Server 2016",
 				"Windows Server 2019",
-				"Windows 10 Enterprise"
+				"Windows Server 2022",
+				"Windows 10 Enterprise",
+				"Windows 11 Enterprise"
 			],
 			"InstalledSoftwareThreshold": "40",
 			"TcpPorts": "443,1433,80,10123,135,445,4022,8530,8531"

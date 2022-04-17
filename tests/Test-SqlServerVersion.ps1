@@ -26,6 +26,7 @@ function Test-SqlServerVersion {
 			$stat = "WARNING"
 			$msg  = "$fname support is will expire within $supported days"
 		} else {
+			$msg = "$fname support is supported until $($res.SupportedUntil)"
 			Write-Log -Message "$fname is supported until $($res.SupportedUntil)"
 		}
 		$tempdata.Add(
@@ -35,6 +36,7 @@ function Test-SqlServerVersion {
 				Build       = $res.Build
 				NameLevel   = $res.NameLevel
 				SupportEnds = $res.SupportedUntil
+				Message     = $msg
 			}
 		)
 	}
