@@ -14,6 +14,14 @@ worker. If you want more information on this, let me know.
 
 ## Module Changes and Updates
 
+* Version 1.0.3 (2022-04-17)
+  * Fixed bugs from 1.0.2 due to lack of caffeine and too many distractions
+* Version 1.0.2 (2022-04-17)
+  * Added Reset-CmHealthConfig function
+* Version 1.0.1 (2022-04-17)
+  * Bug fixes, documentation updates
+* Version 1.0.0 (2022-04-17)
+  * Removed -Remediate option throughout module
 * Version 0.4.1.2 (2022-04-15)
   * Added NoVersionCheck to Invoke-CmHealthTests
 * Version 0.4.1.1 (2022-04-12)
