@@ -25,16 +25,14 @@ PowerShell Gallery and update them if desired
 ### EXAMPLE 1
 ```
 Test-CmHealthDependencies
-```
-
 Returns status of installed modules which are used by CMHealth
+```
 
 ### EXAMPLE 2
 ```
 Test-CmHealthDependencies -Update
-```
-
 Updates installed modules used by CMHealth if they are older than published on PS Galler
+```
 
 ## PARAMETERS
 

@@ -14,7 +14,8 @@ Auto-generate HTML reports for Test-CmHealth
 
 ```
 Invoke-CmHealthTests [-SiteCode] <String> [-SiteServer] <String> [-SQLInstance] <String> [-DBName] <String>
- [-ClientName] <String> [[-OutputFolder] <String>] [-NoVersionCheck] [<CommonParameters>]
+ [-ClientName] <String> [[-OutputFolder] <String>] [-NoVersionCheck] [[-FilterResults] <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -26,18 +27,23 @@ invoking Test-CmHealth and sending the output to two report files
 ### EXAMPLE 1
 ```
 Invoke-CmHealthTests -SiteCode P01 -SiteServer cm01.contoso.local -SQLInstance cm01.contoso.local -DBName CM_P01 -ClientName Contoso
-```
-
 Generates "cmhealth_contoso_detailed_yyyyMMdd.htm" and "cmhealth_contoso_summary_yyyyMMdd.htm" both saved
 under the current user Documents folder ($($env:USERPROFILE)\Documents)
+```
 
 ### EXAMPLE 2
 ```
 Invoke-CmHealthTests -SiteCode P01 -SiteServer cm01.contoso.local -SQLInstance cm01.contoso.local -DBName CM_P01 -ClientName Contoso -OutputFolder c:\windows\temp
+Generates "cmhealth_contoso_detailed_yyyyMMdd.htm" and "cmhealth_contoso_summary_yyyyMMdd.htm", both files saved
+under C:\Windows\Temp
 ```
 
-Generates "cmhealth_contoso_detailed_yyyyMMdd.htm" and "cmhealth_contoso_summary_yyyyMMdd.htm" both saved
-under C:\Windows\Temp
+### EXAMPLE 3
+```
+Invoke-CmHealthTests -SiteCode P01 -SiteServer cm01.contoso.local -SQLInstance cm01.contoso.local -DBName CM_P01 -ClientName Contoso -FilterResults FailuresOnly
+Generates "cmhealth_contoso_detailed_yyyyMMdd.htm" and "cmhealth_contoso_summary_yyyyMMdd.htm", showing only FAIL results, both files saved
+under the current user Documents folder ($($env:USERPROFILE)\Documents)
+```
 
 ## PARAMETERS
 
@@ -142,6 +148,27 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -FilterResults
+Filter test results which are exported to report files:
+
+* FailuresAndWarnings = FAIL, ERROR, WARNING
+* FailuresOnly = FAIL, ERROR
+* WarningsOnly = WARNING
+* Passing = PASS
+* All = All results (default)
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 7
+Default value: All
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

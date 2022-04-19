@@ -28,31 +28,27 @@ If -Detailed is not used, all of the tests are output to a single HTML file.
 ### EXAMPLE 1
 ```
 $testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
-```
-
 $testresult | Out-CmHealthReport -Show
 Create summary report and open in browser when finished
+```
 
 ### EXAMPLE 2
 ```
 Test-CmHealth -SiteCode P01 -Database CM_P01 | Where-Object {$_.Status -eq 'FAIL'} | Out-CmHealthReport -Show
-```
-
 Create reports for failed tests only, then open in browser when finished
+```
 
 ### EXAMPLE 3
 ```
 $testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
-```
-
 $testresult | Out-CmHealthReport -Detailed -Title "Contoso Health Report" -Show
+```
 
 ### EXAMPLE 4
 ```
 $testresult = Test-CmHealth -SiteCode P01 -Database CM_P01
-```
-
 $testresult | Out-CmHealthReport -Detailed -Title "Contoso Health Report" -CssFile "c:\stylesheet.css" -Footer "Contoso Corp"
+```
 
 ## PARAMETERS
 

@@ -26,72 +26,62 @@ Validate MECM/ConfigMgr site systems operational health status, and recommended 
 ### EXAMPLE 1
 ```
 Test-CmHealth -SiteCode "P01" -Database "CM_P01"
-```
-
 Runs all tests on the local machine
+```
 
 ### EXAMPLE 2
 ```
 Test-CmHealth -SiteCode "P01" -Database "CM_P01" -AllServers
-```
-
 Runs all tests on all site systems
+```
 
 ### EXAMPLE 3
 ```
 Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "ALL"
-```
-
 Runs all tests
+```
 
 ### EXAMPLE 4
 ```
 Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "Host"
-```
-
 Runs only the site server host tests
+```
 
 ### EXAMPLE 5
 ```
 Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "Host" -Remediate -Credential $cred
-```
-
 Runs only the site server host tests and attempts to remediate identified deficiences using alternate user credentials
+```
 
 ### EXAMPLE 6
 ```
 Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope "Host" -Remediate -Source "\\server3\sources\ws2019\WinSxS"
-```
-
 Runs only the site server host tests and attempts to remediate identified deficiences with WinSXS source path provided
+```
 
 ### EXAMPLE 7
 ```
 $failed = Test-CmHealth -SiteCode "P01" -Database "CM_P01" | Where-Object Status -eq 'Fail'
-```
-
 Runs all tests and only returns those which failed
+```
 
 ### EXAMPLE 8
 ```
 Test-CmHealth -SiteCode "P01" -Database "CM_P01" | Select-Object TestName,Status,Message | Where-Object Status -eq 'Fail'
-```
-
 Display summary of failed tests
+```
 
 ### EXAMPLE 9
 ```
 $results = Test-CmHealth -SiteCode "P01" -Database "CM_P01" | Where-Object Status -eq 'Fail'; $results | Select TestData
-```
-
 Display test output from failed tests
+```
 
 ### EXAMPLE 10
 ```
 $results = Test-CmHealth -SiteCode "P01" -Database "CM_P01" -TestScope Previous
-```
-
 Run the same set of tests as the previous session (each run saves list of test names)
+```
 
 ## PARAMETERS
 
