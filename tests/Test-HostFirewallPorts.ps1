@@ -10,47 +10,34 @@ function Test-HostFirewallPorts {
 	try {
 		$startTime = (Get-Date)
 		# reference: https://docs.microsoft.com/en-us/mem/configmgr/core/plan-design/hierarchy/ports
-		[string]$Setting = Get-CmHealthDefaultValue -KeySet "siteservers:tcpports" -DataSet $CmHealthConfig
+		[string]$Ports = Get-CmHealthDefaultValue -KeySet "siteservers:tcpports" -DataSet $CmHealthConfig
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
 		$stat   = "PASS" # do not change this
-		$except = "FAIL"
+		$except = "WARNING"
 		$msg    = "No issues found" # do not change this either
 		$ErrorActionPreference = 'SilentlyContinue'
-		$counter = 0; $good = 0; $bad = 0
-		# NOTE FOR FUTURE IMPROVEMENT: ADD OTHER SITE SYSTEMS AND CHECK PORTS PER ROLE/TYPE
 		[array]$complist = @($ScriptParams.ComputerName)
 		if ($ScriptParams.ComputerName -ne $ScriptParams.SqlInstance) {
 			$complist += $ScriptParams.SqlInstance
 		}
 		foreach ($computer in $complist) {
-			foreach ($port in ($setting -split ',')) {
-				Write-Log -Message "testing port: $port ($computer)"
-				try {
-					$conn = New-Object System.Net.Sockets.TcpClient($(hostname),$port)
-					$tempdata.Add(
-						[pscustomobject]@{
-							Hostname = $(hostname)
-							Port     = $port
-							Open     = $conn.Connected
-						}
-					)
-					$good++
+			foreach ($port in $ports.split(',')) {
+				if (Test-NetConnection -ComputerName $computer -Port $port -InformationLevel Quiet) {
+					$pstat = 'open'
+				} else {
+					$pstat = 'blocked'
+					$stat  = $except
+					$msg   = "one or more TCP ports are blocked"
 				}
-				catch {
-					$tempdata.Add(
-						[pscustomobject]@{
-							Hostname = $(hostname)
-							Port     = $port
-							Open     = $False
-						}
-					)
-					$bad++
-				}
-				$counter++
-			} # foreach port
-		} # foreach host
-		if ($bad -gt 0) {
-			$stat = $except
+				Write-Log -Message "computer=$computer, port=$port, status=$pstat"
+				$tempdata.Add(
+					[pscustomobject]@{
+						ComputerName = $computer
+						PortNumber   = $port
+						Status       = $pstat
+					}
+				)
+			}
 		}
 	}
 	catch {
