@@ -21,7 +21,8 @@ function Test-HostDriveBlockSize {
 			if ($vol.BlockSize -ne $bsize) {
 				$res  = "FAIL"
 				$stat = $except
-				$msg  = "1 or more disks is not formatted to the recommended block size: $bsize bytes"
+				$msg  = "1 or more disks are not formatted to the recommended block size: $bsize bytes. "
+				$msg += "Refer to https://docs.microsoft.com/en-us/mem/configmgr/core/plan-design/configs/site-size-performance-guidelines#example-disk-configurations"
 			} else {
 				$res = 'PASS'
 			}

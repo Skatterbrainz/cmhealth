@@ -16,8 +16,13 @@ worker. If you want more information on this, let me know.
 
 * Version 1.0.4
   * Fixed bug in Test-ADSchemaExtension to address multiple site codes
-  * Fixed bug in Test-HostIISLogFiles
+  * Fixed bug in Test-HostIISLogFiles and removed disk space portion for now
   * Set unique log file for Out-CMHealthReport to avoid overwrite from Test-CmHealth
+  * Added -FilterResults to Invoke-CMHealthTests
+  * Fixed HTML formatting issues in Out-CMHealthReport
+  * Corrected HTML relative href links in the Detailed report index file
+  * Replace code in Test-HostFirewallPorts
+  * Began adding URL links to reference sites from test results .Message content, more to come
 * Version 1.0.3 (2022-04-17)
   * Fixed bugs from 1.0.2 due to lack of caffeine and too many distractions
 * Version 1.0.2 (2022-04-17)
@@ -132,38 +137,38 @@ Get-Help Invoke-CmHealthReport -Full
 ### Specifying a Remote or Alternate Site System
 
 ```powershell
-$result = Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -SiteServer "cmserver01.contoso.local" -SqlInstance "db1.contoso.local"
+$result = Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "cmserver01.contoso.local" -SqlInstance "db1.contoso.local"
 ```
 
 ### Run specific types of tests by TestingScope name
 
 ```powershell
-Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope Host
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" -SiteServer "CM01" -SqlInstance "CM01" -TestingScope Host
 ```
 Note: This will run all "Host" tests. The default -TestingScope is "ALL".
 
 ### Run selected tests by selecting in a GridView menu
 
 ```powershell
-Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -TestingScope Select
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" -TestingScope Select
 ```
 
 Seeing more details by using verbose output...
 
 ```powershell
-Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -TestingScope Select -Verbose
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" -TestingScope Select -Verbose
 ```
 
 ### Run all tests on site server and return only failing results
 
 ```powershell
-Test-CmHealth -SiteCode "ABC" -Database "CM_P01" | where {$_.Status -ne 'PASS'}
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" | where {$_.Status -ne 'PASS'}
 ```
 
 ### Run all tests on site server and return only warning results
 
 ```powershell
-Test-CmHealth -SiteCode "ABC" -Database "CM_P01" -TestingScope All | where {$_.Status -eq 'WARNING'}
+Test-CmHealth -SiteCode "P01" -Database "CM_P01" -TestingScope All | where {$_.Status -eq 'WARNING'}
 ```
 
 ### It's also splattable, if that's even a real word
@@ -182,22 +187,44 @@ $result = Test-CmHealth @params
 
 ## Generate an HTML Report
 
-You can save the output to HTML several ways. One is is to use the ```Invoke-CmHealthCheck``` function, which will
+You can save the output to HTML several ways. One is is to use the ```Invoke-CmHealthTests``` function, which will
 generate both "detailed" and "summary" HTML reports.  Another is to capture the output from 
 ```Test-CmHealth``` to a variable and then pipe that to ```Out-CmHealthReport``` to export an
 HTML report. This option allows you to inspect the results from the variable contents, before
 you send the output to a report file.
 
-For more information use ```Get-Help Out-CmHealthReport``` and ```Get-Help Invoke-CmHealthCheck```
+For more information use ```Get-Help Out-CmHealthReport``` and ```Get-Help Invoke-CmHealthTests```
 
 ### Examples
 
 Save non-passing results to an HTML report
 
-```
-$result = Test-CmHealth -SiteCode P01 -Databsae CM_P01
+```powershell
+$result = Test-CmHealth -SiteCode 'P01' -Databsae 'CM_P01'
 $nonpassing = $result | Where-Object {$_.Status -ne 'Pass'}
 $nonpassing | Out-CMHealthReport -Show
+```
+
+Generate non-passing results to an HTML report all in one big-ass command
+
+```powershell
+# inline low self-esteem masochistic version
+
+Invoke-CmHealthTests -SiteCode 'P01' -SiteServer 'cm01.contoso.local' `
+	-SQLInstance 'cm01.contoso.local' -DBName 'CM_P01' -ClientName 'Contoso' `
+	-FilterResults FailuresOnly
+
+# splatted version, because splatting rocks my world
+
+$tparams = @{
+	SiteCode = 'P01'
+	SiteServer = 'cm01.contoso.local'
+	SQLInstance = 'cm01.contoso.local'
+	DBName = 'CM_P01'
+	ClientName = 'Contoso'
+	FilterResults = 'FailuresOnly'
+}
+Invoke-CmHealthTests @tparams
 ```
 
 ## Adding Your Own Tests

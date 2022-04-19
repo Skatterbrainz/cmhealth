@@ -31,6 +31,7 @@ function Test-HostAntiVirus {
 				}
 			} # foreach
 		}
+		$msg = "For more information, refer to https://docs.microsoft.com/en-us/troubleshoot/mem/configmgr/recommended-antivirus-exclusions"
 	}
 	catch {
 		$stat = 'ERROR'

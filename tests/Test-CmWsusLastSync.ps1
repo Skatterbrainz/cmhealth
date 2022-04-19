@@ -50,7 +50,7 @@ END AS 'Comments'"
 		} else {
 			if ($res.Comments -ne 'Success') {
 				$stat = $except
-				$msg = "Status = $($res.Comments)"
+				$msg = "Status = $($res.Comments). Refer to https://damgoodadmin.com/2018/10/17/latest-software-maintenance-script-making-wsus-suck-slightly-less/"
 			}
 		}
 	}

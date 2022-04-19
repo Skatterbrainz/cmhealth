@@ -17,7 +17,7 @@ function Test-CmInvMaxMIFSize {
 		$res = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\SMS\COMPONENTS\SMS_INVENTORY_DATA_LOADER" -Name "Max MIF Size" | Select-Object -ExpandProperty "Max MIF Size")
 		if ($res -lt $MaxMIF) {
 			$stat = $except
-			$msg  = "Max MIF size is $res (hex) which should be 3200000 (hex) or $MaxMIF. Check 'Max MIF Size' value under HKLM:\SOFTWARE\Microsoft\SMS\COMPONENTS\SMS_INVENTORY_DATA_LOADER"
+			$msg  = "Max MIF size is $res (hex) which should be 3200000 (hex) or $MaxMIF. Refer to https://www.recastsoftware.com/resources/change-the-maximum-file-size-of-a-mif"
 			$tempdata.Add(
 				[pscustomobject]@{
 					CurrentMax  = "$res (hex)"

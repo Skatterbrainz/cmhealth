@@ -59,10 +59,14 @@
 			Write-Log -Message "setting internal default CSS style table"
 			$styles = @"
 <style>
-BODY {background-color:#CCCCCC;font-family:Calibri,sans-serif; font-size: small;}
-TABLE {border-width: 1px;border-style: solid;border-color: black;border-collapse: collapse; width: 98%;}
-TH {border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:#293956;color:white;padding: 5px; font-weight: bold;text-align:left;font-size:10pt;}
-TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;background-color:#F0F0F0; padding: 2px;font-size:10pt;}
+BODY {background-color:#CCCCCC; font-family:Calibri,sans-serif; font-size: small;}
+TABLE {border-width: 1px; border-style: solid; border-color: black; border-collapse: collapse; width: 98%; background-color:#fff;}
+TH {border-width: 1px; padding: 0px; border-style: solid;border-color: black; background-color:#293956; color:white; padding: 5px; font-weight: bold; text-align:left; font-size:10pt;}
+TD {border-width: 1px; padding: 0px; border-style: solid;border-color: black; padding:2px; font-size:10pt;}
+TR:nth-child(even) {
+	background-color: #f2f2f2;
+}
+.footer {font-size:10pt;}
 </style>
 "@
 		} else {
@@ -74,28 +78,52 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 			}
 		}
 		Write-Log -Message "setting HTML outer content: section1"
-		$section1 = "<html>
-		<head>
-		<title>$Title</title>
-		$styles
-		</head>
-		<body>
-		<h1>CMHealth Test Results - $Title</h1>
-		<p>Run date: $(Get-Date). Version: cmhealth version $($mversion). Runon: $($env:COMPUTERNAME). RunAs: $($env:USERNAME)</p>"
+		$section1 = @"
+<!DOCTYPE html>
+<html>
+<head>
+<title>$Title</title>
+$styles
+</head>
+	<body>
+
+	<h1>CMHealth Test Results<h1>
+
+	<table>
+		<tr><td style=`"width:150px`">Client Site</td><td>$Title</td></tr>
+		<tr><td style=`"width:150px`">Run On</td><td>$($env:COMPUTERNAME)</td></tr>
+		<tr><td style=`"width:150px`">Run As</td><td>$($env:USERNAME)</td></tr>
+		<tr><td style=`"width:100px`">Run Date</td><td>$(Get-Date)</td></tr>
+		<tr><td style=`"width:150px`">CMHealth Version</td><td>$($mversion)</td></tr>
+	</table>
+	<br/>
+"@
 		Write-Log -Message "setting HTML outer content: section2"
 		if (![string]::IsNullOrEmpty($Footer)) {
-			$section2 = "<p>$Footer</p></body></html>"
+			$section2 = @"
+	<p class=`"footer`">$Footer</p>
+	</body>
+</html>
+"@
 		} else {
-			$section2 = "<p>Please support CMHealth - visit <a href=`"https://github.com/skatterbrainz/cmhealth`">https://github.com/skatterbrainz/cmhealth</a> - Thank you!</p></body></html>"
+			$section2 = @"
+	<p class=`"footer`">
+Please support CMHealth? - visit <a href=`"https://github.com/skatterbrainz/cmhealth`">https://github.com/skatterbrainz/cmhealth</a> - Thank you!</p>
+	</body>
+</html>
+"@
 		}
 		if ($Detailed) {
 			Write-Log -Message "preparing table of contents"
-			$toc = "<table>
-			<tr>
+			$toc = @"
+	<table>
+		<tr>
 			<th style=`"width:100px`">Category</th>
 			<th style=`"width:150px`">Group</th>
 			<th style=`"width:150px`">Result</th>
-			<th>Test Name</th></tr>"
+			<th>Test Name</th>
+		</tr>
+"@
 			$content = $section1
 		} else {
 			$content = $section1
@@ -110,16 +138,20 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 				Write-Log -Message "expanding test results data"
 				$testdata = $($_.TestData | ConvertTo-Html -Fragment)
 			}
-			$chunk = "<h3>$($_.TestName)</h3>
-			<table>
-			<tr><th style=`"width:200px`">Description</th><td>$($_.Description)</td></tr>
-			<tr><th style=`"width:200px`">Category</th><td>$($_.Category)</td></tr>
-			<tr><th style=`"width:200px`">Group</th><td>$($_.TestGroup)</td></tr>
-			<tr><th style=`"width:200px`">Test Result</th><td>$($_.Status)</td></tr>
-			<tr><th style=`"width:200px`">Message</th><td>$($_.Message)</td></tr>
-			<tr><th style=`"width:200px`">Runtime</th><td>$($_.RunTime)</td></tr>
-			<tr><th style=`"width:200px`">Details</th><td>$testdata</td></tr>
-			</table>"
+			$chunk = @"
+
+	<h3>$($_.TestName)</h3>
+
+	<table>
+		<tr><th style=`"width:200px`">Description</th><td>$($_.Description)</td></tr>
+		<tr><th style=`"width:200px`">Category</th><td>$($_.Category)</td></tr>
+		<tr><th style=`"width:200px`">Group</th><td>$($_.TestGroup)</td></tr>
+		<tr><th style=`"width:200px`">Test Result</th><td>$($_.Status)</td></tr>
+		<tr><th style=`"width:200px`">Message</th><td>$($_.Message)</td></tr>
+		<tr><th style=`"width:200px`">Runtime</th><td>$($_.RunTime)</td></tr>
+		<tr><th style=`"width:200px`">Details</th><td>$testdata</td></tr>
+	</table>
+"@
 			$content = $($section1 + $chunk + $section2)
 			$fname = "cmhealth-$($($GLOBAL:CmhParams).SiteCode)-$($_.Category)-$($_.Status)-$($_.TestName -replace ' ','-')-$(Get-Date -f 'yyyyMMdd').htm"
 			$ReportFile = Join-Path -Path $OutputFolder -ChildPath $fname
@@ -127,20 +159,30 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 			Write-Log -Message "writing file: $ReportFile"
 			$content | Out-File -FilePath $ReportFile -Encoding UTF8 -Force
 			Write-Log -Message "appending table of contents"
-			$toc += "<tr><td>$($_.Category)</td><td>$($_.TestGroup)</td><td>$($_.Status)</td>
-			<td><a href=`"$ReportLink`" title=`"View Test Results`">$($_.TestName)</a></td></tr>"
+			$toc += @"
+
+		<tr>
+			<td>$($_.Category)</td>
+			<td>$($_.TestGroup)</td>
+			<td>$($_.Status)</td>
+			<td><a href=`"$ReportLink`" title=`"View Test Results`">$($_.TestName)</a></td>
+		</tr>
+"@
 		} else {
-			#$content = $section1
+			# summary version
 			Write-Log -Message "appending test-block: $($_.TestName)"
-			$chunk = "<h3>$($_.TestName)</h3>
-			<table>
-			<tr><th style=`"width:200px`">Description</th><td>$($_.Description)</td></tr>
-			<tr><th style=`"width:200px`">Category</th><td>$($_.Category)</td></tr>
-			<tr><th style=`"width:200px`">Group</th><td>$($_.TestGroup)</td></tr>
-			<tr><th style=`"width:200px`">Test Result</th><td>$($_.Status)</td></tr>
-			<tr><th style=`"width:200px`">Message</th><td>$($_.Message)</td></tr>
-			<tr><th style=`"width:200px`">Runtime</th><td>$($_.RunTime)</td></tr>
-			</table>"
+			$chunk = @"
+	<h3>$($_.TestName)</h3>
+
+	<table>
+		<tr><th style=`"width:200px`">Description</th><td>$($_.Description)</td></tr>
+		<tr><th style=`"width:200px`">Category</th><td>$($_.Category)</td></tr>
+		<tr><th style=`"width:200px`">Group</th><td>$($_.TestGroup)</td></tr>
+		<tr><th style=`"width:200px`">Test Result</th><td>$($_.Status)</td></tr>
+		<tr><th style=`"width:200px`">Message</th><td>$($_.Message)</td></tr>
+		<tr><th style=`"width:200px`">Runtime</th><td>$($_.RunTime)</td></tr>
+	</table>
+"@
 			$content += $chunk
 		}
 	}
@@ -156,21 +198,36 @@ TD {border-width: 1px;padding: 0px;border-style: solid;border-color: black;backg
 				Write-Host "Report written to: $ReportFile"
 			}
 		} else {
+			# summary version
 			Write-Log -Message "closing table of contents"
-			$toc += "</table>"
+			$toc += @"
+	</table>
+"@
 			$IndexFile = Join-Path -Path $OutputFolder -ChildPath "cmhealth-index-$($($GLOBAL:CmhParams).SiteCode)-$(Get-Date -f 'yyyyMMdd').htm"
 			Write-Log -Message "writing file: $IndexFile"
-			$content = "<html>
-			<head>
-			<title>$Title</title>
-			$styles
-			</head>
-			<body>
-			<h1>CMHealth Test Results - $Title</h1>
-			<p>Run date: $(Get-Date)</p>
-			<p>Version: cmhealth version $($mversion). Runon: $($env:COMPUTERNAME). RunAs: $($env:USERNAME)</p>
-			$toc
-			</body></html>"
+			$content = @"
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>$Title</title>
+	$styles
+	</head>
+<body>
+	<h1>CMHealth Test Results</h1>
+
+	<table>
+		<tr><td style=`"width:150px`">Client Site</td><td>$Title</td></tr>
+		<tr><td style=`"width:150px`">Run On</td><td>$($env:COMPUTERNAME)</td></tr>
+		<tr><td style=`"width:150px`">Run As</td><td>$($env:USERNAME)</td></tr>
+		<tr><td style=`"width:100px`">Run Date</td><td>$(Get-Date)</td></tr>
+		<tr><td style=`"width:150px`">CMHealth Version</td><td>$($mversion)</td></tr>
+	</table>
+	<br/>
+	$toc
+	<p class=`"footer`">Please support CMHealth? - <a href=`"https://github.com/skatterbrainz`" target=_blank>https://github.com/skatterbrainz</a></p>
+</body>
+</html>
+"@
 			$content | Out-File -FilePath $IndexFile -Encoding UTF8 -Force
 			if ($Show) { 
 				Start-Process $IndexFile 
