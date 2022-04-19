@@ -19,41 +19,32 @@ function Test-HostIISLogFiles {
 		$msg    = "No issues found"
 
 		[System.Collections.Generic.List[PSObject]]$tempdata = @() # for detailed test output to return if needed
+
 		if (!(Get-Module WebAdministration -ListAvailable)) { throw "WebAdministration module not installed. Please install RSAT" }
 		Import-Module WebAdministration
 		$LogsBase = $(Get-Item 'IIS:\Sites\Default Web Site').logfile.directory -replace '%SystemDrive%', "$($env:SYSTEMDRIVE)"
-		#$LogsBase = $(Get-ItemProperty -Path 'IIS:\Sites\Default Web Site').logFile.directory -replace '%SystemDrive%', 'C:'
 		$IISLogsPath = Join-Path $LogsBase -ChildPath "W3SVC1"
+		#$IISLogsDrive = Split-Path $IISLogsPath -Qualifier
+		
+		#$disksize = $(Get-WmiQueryResult -ClassName 'Win32_LogicalDisk' -Filter "DeviceID = '$IISLogsDrive'" | Select-Object -ExpandProperty Size
+		#$disksizeMB = $disksize / 1MB
+		#$disksizeGB = $disksize / 1GB
+		
 		$logs = Get-ChildItem -Path $IISLogsPath -Filter "*.log"
-		$numlogs = $logs.Count
-		Write-Log -Message "$numlogs log files were found"
-		$tsize = 0
-		$logs | Select-Object -ExpandProperty Length | Foreach-Object { $tsize += $_ }
+		#$logspace = $logs | Measure-Object -Property Length -Sum | Select-Object -ExpandProperty Sum
+		#$logspaceGB = $logspace / 1GB
+
 		$OldLogs = @($logs | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-$MaxDaysOld) })
-		$TotalSpaceMB = [math]::Round($tsize / 1MB, 2)
+
 		if ($OldLogs.Count -gt 0) {
 			Write-Log -Message "$($oldLogs.Count) older log files were found"
 			$stat = $except
 			$msg  = "$($OldLogs.Count) of $numlogs IIS logs older than $MaxDaysOld days old"
 		}
 		$tempdata.Add([pscustomobject]@{
-			Status = $stat
-			Message = $msg
-			Note    = "Path = $IISLogsPath"
-		})
-		#$totalDiskSize = $(Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DeviceID = 'C:'" | Select-Object -ExpandProperty Size) / 1MB
-		$totalDiskSize = $(Get-WmiQueryResult -ClassName "Win32_LogicalDisk" -Query "DeviceID = 'C:'" -Params $ScriptParams | Select-Object -Expand Size) / 1MB
-		$logSpaceUsed = [math]::Round($TotalSpaceMB / $totalDiskSize, 4)
-		if (($logSpaceUsed * 100) -gt $MaxSpacePct) {
-			$stat = $except
-			$msg  = "IIS logs are using $TotalSpaceMB MB or $($logSpaceUsed * 100)`% of total capacity"
-		} else {
-			Write-Log -Message "IIS logs are using $TotalSpaceMB MB or $($logSpaceUsed * 100)`% of total capacity"
-		}
-		$tempdata.Add([pscustomobject]@{
 			Status  = $stat
 			Message = $msg
-			Note    = "Capacity = $totalDiskSize , LogSpace = $logSpaceUsed"
+			Note    = "Path = $IISLogsPath"
 		})
 	}
 	catch {

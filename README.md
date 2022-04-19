@@ -14,6 +14,10 @@ worker. If you want more information on this, let me know.
 
 ## Module Changes and Updates
 
+* Version 1.0.4
+  * Fixed bug in Test-ADSchemaExtension to address multiple site codes
+  * Fixed bug in Test-HostIISLogFiles
+  * Set unique log file for Out-CMHealthReport to avoid overwrite from Test-CmHealth
 * Version 1.0.3 (2022-04-17)
   * Fixed bugs from 1.0.2 due to lack of caffeine and too many distractions
 * Version 1.0.2 (2022-04-17)

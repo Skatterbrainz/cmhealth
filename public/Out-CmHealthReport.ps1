@@ -48,7 +48,7 @@
 		[parameter(Mandatory=$False)][string]$Footer = ""
 	)
 	BEGIN {
-		$LogFile = Join-Path -Path $OutputFolder -ChildPath "cmhealth_$(Get-Date -f 'yyyy-MM-dd').log"
+		$LogFile = Join-Path -Path $OutputFolder -ChildPath "cmhealth_report_$(Get-Date -f 'yyyy-MM-dd').log"
 		Write-Log -Message "getting module information"
 		$mversion = (Get-Module cmhealth -ListAvailable | Select-Object -First 1).Version -join '.'
 		if ($null -ne $GLOBAL:CmhParams) {

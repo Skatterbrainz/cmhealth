@@ -26,16 +26,19 @@ function Test-AdSchemaExtension {
 		$colResults = $objSearcher.FindAll()
 		if ($colResults.Count -gt 0) {
 			Write-Log -Message "schema has been extended"
-			$obj = Get-ADSIObject -Identity $colResults.Path.Substring(7)
-			$msg  = "Active Directory schema has been extended for configmgr"
-			$tempdata.Add(
-				[pscustomobject]@{
-					ObjectName  = $obj.name
-					Container   = $obj.adspath
-					DateCreated = $obj.whencreated
-					DateChanged = $obj.whenchanged
-				}
-			)
+			foreach ($item in $colResults) {
+				$obj = Get-ADSIObject -Identity $item.Path.Substring(7)
+				$msg  = "Active Directory schema has been extended for configmgr"
+				$tempdata.Add(
+					[pscustomobject]@{
+						ObjectName  = $obj.name
+						Container   = $obj.adspath
+						DateCreated = $obj.whencreated
+						DateChanged = $obj.whenchanged
+						Status      = 'Extended'
+					}
+				)
+			}
 		} else {
 			$stat = $except
 			$msg  = "Active Directory schema has NOT been extended for configmgr"
