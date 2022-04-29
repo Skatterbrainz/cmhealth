@@ -307,8 +307,9 @@ function Get-WindowsBuildNumber {
 }
 
 <#
-CREDIT to Trevor Jones for this function as part of the script that queries
-site status messages. Refer to https://smsagent.blog/2015/07/22/retrieving-configmgr-status-messages-with-powershell/
+CREDIT to Trevor Jones for this function as part of the script that queries site status messages.
+Very few modifications have been made by me.
+Refer to https://smsagent.blog/2015/07/22/retrieving-configmgr-status-messages-with-powershell/
 #>
 function Get-StatusMessage {
 	[CmdletBinding()]
@@ -329,33 +330,42 @@ function Get-StatusMessage {
 		$InsString9,
 		$InsString10
 	)
-	 
-	if ($DLL -eq "srvmsgs.dll")	{ $stringPathToDLL = "$SMSMSGSLocation\srvmsgs.dll" }
-	if ($DLL -eq "provmsgs.dll") { $stringPathToDLL = "$SMSMSGSLocation\provmsgs.dll" }
-	if ($DLL -eq "climsgs.dll") { $stringPathToDLL = "$SMSMSGSLocation\climsgs.dll" }
-	Write-Verbose "DLL = $stringPathToDLL"
+	try {
+		if ($DLL -eq "srvmsgs.dll")	{ $stringPathToDLL = "$SmsMsgsPath\srvmsgs.dll" }
+		if ($DLL -eq "provmsgs.dll") { $stringPathToDLL = "$SmsMsgsPath\provmsgs.dll" }
+		if ($DLL -eq "climsgs.dll") { $stringPathToDLL = "$SmsMsgsPath\climsgs.dll" }
+		Write-Verbose "DLL = $stringPathToDLL"
+		if (-not(Test-Path $stringPathToDLL)) { throw "DLL file not found: $stringPathToDLL" }
 
-	Write-Verbose "Loading Status Message Lookup DLL into memory and get pointer to memory"
-	$ptrFoo = $Win32LoadLibrary::LoadLibrary($stringPathToDLL.ToString())
-	$ptrModule = $Win32GetModuleHandle::GetModuleHandle($stringPathToDLL.ToString()) 
+		Write-Verbose "Loading Status Message Lookup DLL into memory and get pointer to memory"
+		$ptrFoo = $Win32LoadLibrary::LoadLibrary($stringPathToDLL.ToString())
+		$ptrModule = $Win32GetModuleHandle::GetModuleHandle($stringPathToDLL.ToString()) 
 	 
-	if ($Severity -eq "Informational") { $code = 1073741824 }
-	if ($Severity -eq "Warning") { $code = 2147483648 }
-	if ($Severity -eq "Error") { $code = 3221225472 }
+		if ($Severity -eq "Informational") { $code = 1073741824 }
+		if ($Severity -eq "Warning") { $code = 2147483648 }
+		if ($Severity -eq "Error") { $code = 3221225472 }
+		Write-Verbose "Severity $Severity = code: $code"
 	 
-	$result = $Win32FormatMessage::FormatMessage($flags, $ptrModule, $Code -bor $iMessageID, 0, $stringOutput, $sizeOfBuffer, $stringArrayInput)
-	if ($result -gt 0) {
-		Write-Verbose "result is non-zero"
-		# Add insert strings to message
-		$objMessage = New-Object System.Object
-		$objMessage | Add-Member -type NoteProperty -name MessageString -value $stringOutput.ToString().Replace("%11","").Replace("%12","").Replace("%3%4%5%6%7%8%9%10","").Replace("%1",$InsString1).Replace("%2",$InsString2).Replace("%3",$InsString3).Replace("%4",$InsString4).Replace("%5",$InsString5).Replace("%6",$InsString6).Replace("%7",$InsString7).Replace("%8",$InsString8).Replace("%9",$InsString9).Replace("%10",$InsString10)
+		$result = $Win32FormatMessage::FormatMessage($flags, $ptrModule, $Code -bor $iMessageID, 0, $stringOutput, $sizeOfBuffer, $stringArrayInput)
+		if ($result -gt 0) {
+			Write-Verbose "result is non-zero"
+			# Add insert strings to message
+			$objMessage = New-Object System.Object
+			$objMessage | Add-Member -Type NoteProperty -Name MessageString -Value $stringOutput.ToString().Replace("%11","").Replace("%12","").Replace("%3%4%5%6%7%8%9%10","").Replace("%1",$InsString1).Replace("%2",$InsString2).Replace("%3",$InsString3).Replace("%4",$InsString4).Replace("%5",$InsString5).Replace("%6",$InsString6).Replace("%7",$InsString7).Replace("%8",$InsString8).Replace("%9",$InsString9).Replace("%10",$InsString10)
+		} else {
+			Write-Verbose "result is zero (0)"
+		}
+		$objMessage
 	}
-	$objMessage
+	catch {
+		Write-Warning "[Get-StatusMessage] error: $($_.Exception.Message -join (";"))"
+	}
 }
 
 <#
-CREDIT to Trevor Jones for this function as part of the script that queries
-site status messages. Refer to https://smsagent.blog/2015/07/22/retrieving-configmgr-status-messages-with-powershell/
+CREDIT to Trevor Jones for this function as part of the script that queries site status messages.
+Very few modifications have been made by me.
+Refer to https://smsagent.blog/2015/07/22/retrieving-configmgr-status-messages-with-powershell/
 The only real modification was to replace the ADO.NET code using module DbaTools: Invoke-DbaQuery
 #>
 
@@ -398,7 +408,6 @@ where smsgs.MachineName = '$($Params.ComputerName)'
 and DATEDIFF(hour,smsgs.Time,GETDATE()) < '$TimeInHours'
 Order by smsgs.Time DESC
 "
-
 		$table = Invoke-DbaQuery -SqlInstance $Params.SqlInstance -Database $Params.Database -Query $Query
 
 #Start PInvoke Code
@@ -429,7 +438,7 @@ public static extern IntPtr LoadLibrary(string lpFileName);
  
 		$StatusMessages = @()
 		foreach ($Row in $Table) {
-			$Params = @{
+			$mparams = @{
 				SmsMsgsPath = $SMSMSGSLocation
 				iMessageID  = $Row.MessageID
 				DLL         = $Row.MsgDLLName
@@ -445,7 +454,7 @@ public static extern IntPtr LoadLibrary(string lpFileName);
 				InsString9  = $Row.InsString9
 				InsString10 = $Row.InsString10
 			}
-			$Message = Get-StatusMessage @params
+			$Message = Get-StatusMessage @mparams
  
 			$StatusMessage = New-Object psobject
 			Add-Member -InputObject $StatusMessage -Name Severity -MemberType NoteProperty -Value $Row.SeverityName
@@ -487,89 +496,6 @@ function Test-CmHealthModuleVersion {
 	catch {
 		Write-Error $_.Exception.Message
 	}
-}
-
-function Install-DbMaintenanceSolution {
-<# 
-.SYNOPSIS
-	Configure DB Maintenance Solution and Scheduling
-.DESCRIPTION
-	Create new database for Database Maintenance plan, install Ola's solution, create and schedule IndexOptimize task
-.PARAMETER SQLInstance
-	Name of SQL host instance
-.PARAMETER DBName
-	Name of new maintenance database
-.EXAMPLE
-	.\Install-CmDbMaintenanceSolution.ps1 -SQLInstance "cm01.contoso.local" -DBName "dba"
-.NOTES
-	8/27/2021
-	Author: Steve Thompson
-#>
-	[CmdletBinding()]
-	[OutputType()]
-	param (
-		[parameter(Mandatory=$False)][string]$SQLInstance = "localhost",
-		[parameter(Mandatory=$False)][string]$DBName = "DBA"
-	)
-
-	# Create a new database on the localhost named DBA
-	$param = @{
-		SqlInstance = $SQLInstance
-		Name = $DBName
-		Owner = "sa"
-		RecoveryModel = "Simple"
-	}
-	New-DbaDatabase @param
-
-	# Install Ola Hallengrens Database Maintenance solution using the DBA database
-	$param = @{
-		SqlInstance = $SQLInstance
-		Database = $DBName
-		ReplaceExisting =-"InstallJobs"
-	}
-	Install-DbaMaintenanceSolution @param
-
-	# Create a new SQL Server Agent Job to schedule the custom Agent Task
-	$param = @{
-		SqlInstance = $SQLInstance
-		Job = "OptimizeIndexes"
-		Owner = "sa"
-		Description = "Ola Hallengren Optimize Indexes"
-	}
-	New-DbaAgentJob @param
-
-	$sqlcmd = "EXECUTE dbo.IndexOptimize
-@Databases = 'USER_DATABASES',
-@FragmentationLow = NULL,
-@FragmentationMedium = 'INDEX_REORGANIZE,INDEX_REBUILD_ONLINE,INDEX_REBUILD_OFFLINE',
-@FragmentationHigh = 'INDEX_REBUILD_ONLINE,INDEX_REBUILD_OFFLINE',
-@FragmentationLevel1 = 10,
-@FragmentationLevel2 = 40,
-@UpdateStatistics = 'ALL',
-@OnlyModifiedStatistics = 'Y',
-@LogToTable = 'Y'"
-
-	# Create a new SQL Agent Task step with the optimal parameters for MEMCM
-	$param = @{
-		SqlInstance = $SQLInstance
-		Job = "OptimizeIndexes"
-		StepName = "Step1"
-		Database = $DBName
-		Command = $sqlcmd
-	}
-	New-DbaAgentJobStep @param
-
-	# Optionally, create a schedule to run the SQL Agent Tast once a week on Sunday @ 1:00AM
-	$param = @{
-		SqlInstance = $SQLInstance
-		Job = "OptimizeIndexes"
-		Schedule = "RunWeekly"
-		FrequencyType = "Weekly"
-		FrequencyInterval = "Sunday"
-		StartTime = "010000"
-		Force = $True
-	}
-	New-DbaAgentSchedule @param
 }
 
 function Get-CmSiteServersList {
@@ -627,4 +553,27 @@ function Set-CmhOutputData () {
 		RunTime     = $(Get-RunTime -BaseTime $startTime)
 		Credential  = $(if($ScriptParams.Credential){$($ScriptParams.Credential).UserName} else { $env:USERNAME })
 	})
+}
+
+function Get-TestParams {
+	param (
+		[parameter(Mandatory=$True)][string][ValidateNotNullOrEmpty()]$FilePath
+	)
+	if (-not(Test-Path $FilePath)) { throw "File not found: $FilePath" }
+	$f = Get-Item -Path $FilePath
+	$parsed = [System.Management.Automation.Language.Parser]::ParseFile($FilePath,[ref]$null,[ref]$null)
+	$params = $parsed.FindAll({$args[0] -is [System.Management.Automation.Language.ParameterAst]},$true)
+	$result = @{TestFile = $FilePath; FileBase = $($f.BaseName)}
+	$params | Foreach-Object {
+		$name = $_.Name.VariablePath.ToString()
+		$type = $_.StaticType.FullName
+		# Convoluted because the property values themselves present strings rather than booleans where the values are $false or false 
+		$mandatory = [bool]($_.Attributes | Where-Object {$_.NamedArguments.ArgumentName -eq 'Mandatory'} |% {$_.NamedArguments.Argument.SafeGetValue()})
+		$DefaultValue = $_.DefaultValue.Value
+		$result.Add($name, $DefaultValue)
+		#"Name: {0} Type: {1} Mandatory: {2} DefaultValue: {3}" -f $name,$type,$mandatory,$DefaultValue 
+	}
+	if ($result.Keys.Count -gt 0) {
+		[PSCustomObject]$result
+	}
 }

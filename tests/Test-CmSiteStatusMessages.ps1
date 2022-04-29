@@ -15,10 +15,12 @@ function Test-CmSiteStatusMessages {
 		$except = "WARNING" # or "FAIL"
 		$msg    = "No issues found" # do not change this either
 		$res = Get-SiteStatusMessages -Params $ScriptParams
-		$xcount = ($res | Where-Object {$_.Severity -in ('Error','Warning')}).Count
-		if ($xcount -gt 0) {
+		$count1 = $($res | Where-Object {$_.Severity -eq 'Error'}).Count
+		$count2 = $($res | Where-Object {$_.Severity -eq 'Warning'}).Count
+		#$xcount = ($res | Where-Object {$_.Severity -in ('Error','Warning')}).Count
+		if ($($count1+$count2) -gt 0) {
 			$stat = $except
-			$msg = "$xcount status message with ERROR or WARNING were returned"
+			$msg = "Site status message counts: Error=$($count1), Warning=$($count2). Total=$($count1+$count2). Review Monitoring > System Status for more details"
 			$res | Foreach-Object { $tempdata.Add( $_ ) }
 		}
 	}

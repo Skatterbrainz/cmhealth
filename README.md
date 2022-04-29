@@ -14,6 +14,13 @@ worker. If you want more information on this, let me know.
 
 ## Module Changes and Updates
 
+* Version 1.0.6
+  * Fixed bug in gridview output mapping introduced in 1.0.5 which was introduced by lack of sleep
+  * Fixed bug in Test-CmSiteStatusMessages with DLL referencing
+  * Added reference comments to Test-HostFirewallPorts
+  * Added "samples" folder with DB Maintenance Solution installer script from Steve Thompson (more to be added soon)
+* Version 1.0.5
+  * Added detailed descriptions and categories on Test-CmHealth -TestingScope Select (gridview)
 * Version 1.0.4
   * Fixed bug in Test-ADSchemaExtension to address multiple site codes
   * Fixed bug in Test-HostIISLogFiles and removed disk space portion for now
@@ -31,6 +38,7 @@ worker. If you want more information on this, let me know.
   * Bug fixes, documentation updates
 * Version 1.0.0 (2022-04-17)
   * Removed -Remediate option throughout module
+
 * Version 0.4.1.2 (2022-04-15)
   * Added NoVersionCheck to Invoke-CmHealthTests
 * Version 0.4.1.1 (2022-04-12)

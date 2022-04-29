@@ -27,23 +27,26 @@ invoking Test-CmHealth and sending the output to two report files
 ### EXAMPLE 1
 ```
 Invoke-CmHealthTests -SiteCode P01 -SiteServer cm01.contoso.local -SQLInstance cm01.contoso.local -DBName CM_P01 -ClientName Contoso
+```
+
 Generates "cmhealth_contoso_detailed_yyyyMMdd.htm" and "cmhealth_contoso_summary_yyyyMMdd.htm" both saved
 under the current user Documents folder ($($env:USERPROFILE)\Documents)
-```
 
 ### EXAMPLE 2
 ```
 Invoke-CmHealthTests -SiteCode P01 -SiteServer cm01.contoso.local -SQLInstance cm01.contoso.local -DBName CM_P01 -ClientName Contoso -OutputFolder c:\windows\temp
+```
+
 Generates "cmhealth_contoso_detailed_yyyyMMdd.htm" and "cmhealth_contoso_summary_yyyyMMdd.htm", both files saved
 under C:\Windows\Temp
-```
 
 ### EXAMPLE 3
 ```
 Invoke-CmHealthTests -SiteCode P01 -SiteServer cm01.contoso.local -SQLInstance cm01.contoso.local -DBName CM_P01 -ClientName Contoso -FilterResults FailuresOnly
+```
+
 Generates "cmhealth_contoso_detailed_yyyyMMdd.htm" and "cmhealth_contoso_summary_yyyyMMdd.htm", showing only FAIL results, both files saved
 under the current user Documents folder ($($env:USERPROFILE)\Documents)
-```
 
 ## PARAMETERS
 

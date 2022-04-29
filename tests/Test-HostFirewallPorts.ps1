@@ -27,7 +27,7 @@ function Test-HostFirewallPorts {
 				} else {
 					$pstat = 'blocked'
 					$stat  = $except
-					$msg   = "One or more TCP ports are blocked. Refer to https://www.anoopcnair.com/sccm-firewall-ports-download-the-spreadsheet/"
+					$msg   = "One or more TCP ports are blocked. Refer to https://docs.microsoft.com/en-us/mem/configmgr/core/plan-design/hierarchy/ports"
 				}
 				Write-Log -Message "computer=$computer, port=$port, status=$pstat"
 				$tempdata.Add(
