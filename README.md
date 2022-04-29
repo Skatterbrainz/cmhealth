@@ -81,6 +81,8 @@ Install-Module cmhealth
 ```
 Note: this also installs modules dbatools, adsips, and carbon.
 
+Note: Use ```Test-CMHealthDependencies``` to keep these other modules up to date on your machines.
+
 ### Manual or Offline Installation
 
 For situations where the machine you wish to run cmhealth on does not have access to the Internet or the
